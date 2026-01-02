@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://bt4kc8oa72in2"]
+
+[ext_resource type="Script" uid="uid://c7gyykqfnu0wl" path="res://main/card_database.gd" id="1_ega8j"]
+[ext_resource type="Script" uid="uid://bss7gssxhkutk" path="res://CivilWar/civil_war.gd" id="2_1t8k8"]
+
+[node name="YGO Spice" type="Control"]
+custom_minimum_size = Vector2(1600, 900)
+layout_mode = 3
+anchors_preset = 0
+
+[node name="CardDatabase" type="Node" parent="."]
+script = ExtResource("1_ega8j")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="CardDatabase"]
+
+[node name="CivilWar" type="Node" parent="."]
+script = ExtResource("2_1t8k8")
+
+[node name="RaceLabel" type="Label" parent="CivilWar"]
+offset_right = 179.0
+offset_bottom = 62.0
+theme_override_font_sizes/font_size = 24
+
+[node name="RollRaceButton" type="Button" parent="CivilWar"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -4.0
+offset_right = 110.0
+offset_bottom = 26.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 24
+text = "Reroll race"
+
+[node name="PackContainer" type="GridContainer" parent="CivilWar"]
+custom_minimum_size = Vector2(1600, 700)
+offset_top = 100.0
+offset_right = 1600.0
+offset_bottom = 800.0
+columns = 5
+
+[connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_request_completed"]
+[connection signal="pressed" from="CivilWar/RollRaceButton" to="CivilWar" method="_on_roll_race_button_pressed"]
