@@ -39,5 +39,5 @@ offset_right = 1600.0
 offset_bottom = 800.0
 columns = 5
 
-[connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_request_completed"]
+[connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_completed"]
 [connection signal="pressed" from="CivilWar/RollRaceButton" to="CivilWar" method="_on_roll_race_button_pressed"]

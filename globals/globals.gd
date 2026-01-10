@@ -1,6 +1,8 @@
 extends Node
 
-var cards
+var cards: Array[CardData] = []
+var staples: Array[CardData] = []
+var race_counts = {}
 
 const IMAGE_BASE_URL := "https://images.ygoprodeck.com/images/cards/"
 

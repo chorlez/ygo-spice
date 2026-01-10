@@ -1,18 +1,26 @@
 extends Node
 
 const API_URL := "https://db.ygoprodeck.com/api/v7/cardinfo.php"
+const STAPLE_API_URL := "https://db.ygoprodeck.com/api/v7/cardinfo.php?staple=yes"
 const CACHE_PATH := "res://data/cards.json"
 
-var cards: Array = []
+var cards: Array[CardData] = []
+var staple_ids : Array[int] = []
+var staples_fetched := false
+
 
 func _ready():
-	fetch_from_api()
-
+	fetch_staples()
+	
 func fetch_from_api():
 	$HTTPRequest.request(API_URL)
 
-func _on_http_request_request_completed(result, response_code, headers, body):
+func fetch_staples():
+	$HTTPRequest.request(STAPLE_API_URL)
+
+func _on_http_request_completed(_result, response_code, _headers, body):
 	if response_code != 200:
+		print(body.get_string_from_utf8())
 		push_error("Failed to fetch card data")
 		return
 
@@ -21,12 +29,24 @@ func _on_http_request_request_completed(result, response_code, headers, body):
 		push_error("Invalid JSON response")
 		return
 
-	cards.clear()
+	# If this is the staple request
+	if staples_fetched == false:
+		staples_fetched = true
+		for raw_card in json["data"]:
+			staple_ids.append(int(raw_card.get("id")))
+		print(staple_ids)
+
+		# Now fetch all cards
+		$HTTPRequest.request(API_URL)
+		return
+
 	for raw_card in json["data"]:
 		cards.append(normalize_card(raw_card))
 
+
 	save_cache()
 	print("Loaded %d cards from API" % cards.size())
+
 	Globals.cards = cards
 	EventBus.start_civil_war.emit()
 
@@ -66,6 +86,15 @@ func normalize_card(raw: Dictionary) -> CardData:
 	card.atk = get_int_or_zero(raw, "atk")
 	card.def = get_int_or_zero(raw, "def")
 	card.extra_deck = is_extra
+	card.is_staple = card.id in staple_ids
+	if card.is_staple:
+		Globals.staples.append(card)
+
+	# Count races
+	if card.race in Globals.race_counts:
+		Globals.race_counts[card.race] += 1
+	else:
+		Globals.race_counts[card.race] = 1
 
 	return card
 
