@@ -4,6 +4,7 @@ var cards
 var cube: Array[CardData] = []
 @onready var RaceLabel = $RaceLabel
 @onready var RollRaceButton = $RollRaceButton
+@onready var PackContainer = get_parent().get_node('PackContainer')
 var race: String
 var min_race_size := 100	
 
@@ -49,7 +50,7 @@ func add_staples_to_cube():
 
 func show_pack(pack: Array[CardData]):
 	# Clear old children
-	for child in $PackContainer.get_children():
+	for child in PackContainer.get_children():
 		child.queue_free()
 
 	for card in pack:
@@ -59,7 +60,7 @@ func show_pack(pack: Array[CardData]):
 		tex_rect.expand = true
 		tex_rect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		tex_rect.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		$PackContainer.add_child(tex_rect)
+		PackContainer.add_child(tex_rect)
 
 
 		# Load the image live, auto-update TextureRect
