@@ -5,11 +5,16 @@ var cube: Array[CardData] = []
 @onready var RaceLabel = $RaceLabel
 @onready var RollRaceButton = $RollRaceButton
 @onready var PackContainer = get_parent().get_node('PackPanel/PackContainer')
+@onready var MainDeckContainer = get_parent().get_node('MainDeckPanel/MainDeckContainer')
+@onready var ExtraDeckContainer = get_parent().get_node('ExtraDeckPanel/ExtraDeckContainer')
+@onready var TooltipArea = get_parent().get_node('ToolTipPanel/TooltipArea')
 var race: String
 var min_race_size := 100	
 
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
+	EventBus.card_hovered.connect(show_tooltip)
+	EventBus.card_pressed.connect(card_pressed)
 
 func initialize():
 	cards = Globals.cards
@@ -51,14 +56,29 @@ func add_staples_to_cube():
 func show_pack(pack: Array[CardData]):
 	# Clear old children
 	for child in PackContainer.get_children():
-		print(child.name)
 		child.queue_free()
 
 	for card_data in pack:
 		var card = Globals.create_card(card_data)
 		PackContainer.add_child(card)
 
+func show_tooltip(card_data: CardData):
+	for child in TooltipArea.get_children():
+		child.queue_free()
+	
+	var card = Globals.create_card(card_data)
+	TooltipArea.add_child(card)
 
+func card_pressed(card):
+	if card.state == 0:
+		card.get_parent().remove_child(card)
+		if card.card_data.extra_deck:
+			ExtraDeckContainer.add_child(card)
+			card.state = 3
+		else:
+			MainDeckContainer.add_child(card)
+			card.state = 2
+			
 
 func _on_roll_race_button_pressed() -> void:
 	create_cube()

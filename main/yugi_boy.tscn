@@ -55,8 +55,7 @@ offset_bottom = 850.0
 
 [node name="CardImage" parent="ToolTipPanel/TooltipArea" instance=ExtResource("3_ro6sk")]
 layout_mode = 2
-size_flags_vertical = 1
-expand_mode = 5
+size_flags_vertical = 0
 
 [node name="UIPanel" type="Panel" parent="."]
 layout_mode = 0
@@ -100,11 +99,11 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
-[node name="Deck" type="GridContainer" parent="MainDeckPanel"]
-custom_minimum_size = Vector2(1200, 600)
+[node name="MainDeckContainer" type="GridContainer" parent="MainDeckPanel"]
 layout_mode = 0
 offset_right = 1200.0
-offset_bottom = 600.0
+offset_bottom = 500.0
+columns = 10
 
 [node name="ExtraDeckPanel" type="Panel" parent="."]
 layout_mode = 0
@@ -116,8 +115,9 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
 [node name="ExtraDeckContainer" type="GridContainer" parent="ExtraDeckPanel"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 1200.0
+offset_bottom = 170.0
+columns = 10
 
 [connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_completed"]
 [connection signal="pressed" from="CivilWar/RollRaceButton" to="CivilWar" method="_on_roll_race_button_pressed"]

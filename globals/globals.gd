@@ -10,9 +10,10 @@ var CARDSCENE = preload("res://Card/card.tscn")
 func create_card(card_data: CardData) -> Card:
 	var card = CARDSCENE.instantiate()
 	card.card_data = card_data
-
-	load_card_image_to_ui(card_data, card)
-
+	if card_data.texture:
+		card.texture = card_data.texture
+	else:
+		load_card_image_to_ui(card_data, card)
 	return card
 
 # Fetch the image live and assign it to a card immediately
