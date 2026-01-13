@@ -5,9 +5,18 @@ var staples: Array[CardData] = []
 var race_counts = {}
 
 const IMAGE_BASE_URL := "https://images.ygoprodeck.com/images/cards/"
+var CARDSCENE = preload("res://Card/card.tscn")
 
-# Fetch the image live and assign it to a TextureRect immediately
-func load_card_image_to_ui(card: CardData, tex_rect: TextureRect) -> void:
+func create_card(card_data: CardData) -> Card:
+	var card = CARDSCENE.instantiate()
+	card.card_data = card_data
+
+	load_card_image_to_ui(card_data, card)
+
+	return card
+
+# Fetch the image live and assign it to a card immediately
+func load_card_image_to_ui(card: CardData, CardObject: Card) -> void:
 	var http := HTTPRequest.new()
 	add_child(http)
 
@@ -28,10 +37,15 @@ func load_card_image_to_ui(card: CardData, tex_rect: TextureRect) -> void:
 
 			var tex := ImageTexture.create_from_image(img)
 			card.texture = tex
-			tex_rect.texture = tex
+			CardObject.texture = tex
 
 			http.queue_free()
 	)
 
 	var url := IMAGE_BASE_URL + str(card.id) + ".jpg"
 	http.request(url)
+
+
+func _input(event):
+	if event.is_action_pressed("exit"):
+		get_tree().quit()

@@ -4,7 +4,7 @@ var cards
 var cube: Array[CardData] = []
 @onready var RaceLabel = $RaceLabel
 @onready var RollRaceButton = $RollRaceButton
-@onready var PackContainer = get_parent().get_node('PackContainer')
+@onready var PackContainer = get_parent().get_node('PackPanel/PackContainer')
 var race: String
 var min_race_size := 100	
 
@@ -51,22 +51,15 @@ func add_staples_to_cube():
 func show_pack(pack: Array[CardData]):
 	# Clear old children
 	for child in PackContainer.get_children():
+		print(child.name)
 		child.queue_free()
 
-	for card in pack:
-		var tex_rect := TextureRect.new()
-		tex_rect.custom_minimum_size = Vector2(200, 290)
-		tex_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		tex_rect.expand = true
-		tex_rect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		tex_rect.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		PackContainer.add_child(tex_rect)
-
-
-		# Load the image live, auto-update TextureRect
-		Globals.load_card_image_to_ui(card, tex_rect)
+	for card_data in pack:
+		var card = Globals.create_card(card_data)
+		PackContainer.add_child(card)
 
 
 
 func _on_roll_race_button_pressed() -> void:
 	create_cube()
+	roll_pack()
