@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="YGO Spice"
+config/name="YugiBoy"
 run/main_scene="uid://bt4kc8oa72in2"
 config/features=PackedStringArray("4.5", "Forward Plus")
 boot_splash/bg_color=Color(0.09884725, 0.10664228, 0.32211593, 1)

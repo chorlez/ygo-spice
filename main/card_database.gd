@@ -95,6 +95,9 @@ func normalize_card(raw: Dictionary) -> CardData:
 		Globals.race_counts[card.race] += 1
 	else:
 		Globals.race_counts[card.race] = 1
+	
+	if card.name == "General Raiho of the Ice Barrier":
+		print(card.id)
 
 	return card
 
