@@ -2,12 +2,14 @@ extends Node
 
 var cards
 var cube: Array[CardData] = []
-@onready var RaceLabel = $RaceLabel
-@onready var RollRaceButton = $RollRaceButton
-@onready var PackContainer = get_parent().get_node('PackPanel/PackContainer')
-@onready var MainDeckContainer = get_parent().get_node('MainDeckPanel/MainDeckContainer')
-@onready var ExtraDeckContainer = get_parent().get_node('ExtraDeckPanel/ExtraDeckContainer')
-@onready var TooltipArea = get_parent().get_node('ToolTipPanel/TooltipArea')
+@onready var game = get_parent()
+@onready var RaceLabel = game.get_node('UIPanel/UIlayer/RaceLabel')
+@onready var RollRaceButton = game.get_node('UIPanel/UIlayer/RollRaceButton')
+@onready var PlayerLabel = game.get_node('UIPanel/UIlayer/PlayerLabel')
+@onready var PackContainer = game.get_node('PackPanel/PackContainer')
+@onready var MainDeckContainer = game.get_node('MainDeckPanel/MainDeckContainer')
+@onready var ExtraDeckContainer = game.get_node('ExtraDeckPanel/ExtraDeckContainer')
+@onready var TooltipArea = game.get_node('ToolTipPanel/TooltipArea')
 var race: String
 var min_race_size := 100	
 
@@ -15,6 +17,7 @@ func _ready():
 	EventBus.start_civil_war.connect(initialize)
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
+	EventBus.player_connected.connect(_on_player_connected)
 
 func initialize():
 	cards = Globals.cards
@@ -83,3 +86,7 @@ func card_pressed(card):
 func _on_roll_race_button_pressed() -> void:
 	create_cube()
 	roll_pack()
+
+func _on_player_connected(peer_id:int, steam_id:int, player_name:String) -> void:
+	print("Player connected: %s" % player_name)
+	PlayerLabel.text = player_name

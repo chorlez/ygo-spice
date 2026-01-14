@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://bt4kc8oa72in2"]
+[gd_scene load_steps=6 format=3 uid="uid://bt4kc8oa72in2"]
 
 [ext_resource type="Script" uid="uid://c7gyykqfnu0wl" path="res://main/card_database.gd" id="1_ynwbq"]
 [ext_resource type="Script" uid="uid://bss7gssxhkutk" path="res://CivilWar/civil_war.gd" id="2_ro6sk"]
 [ext_resource type="PackedScene" uid="uid://62xo4wcay34u" path="res://Card/card.tscn" id="3_ro6sk"]
+[ext_resource type="Script" uid="uid://e1py4etghvgy" path="res://Steam/Steam.gd" id="4_jhidu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1t8k8"]
 bg_color = Color(0.6167221, 0.59608734, 0.8305756, 1)
@@ -23,22 +24,6 @@ script = ExtResource("1_ynwbq")
 
 [node name="CivilWar" type="Node" parent="."]
 script = ExtResource("2_ro6sk")
-
-[node name="RaceLabel" type="Label" parent="CivilWar"]
-offset_right = 179.0
-offset_bottom = 62.0
-theme_override_font_sizes/font_size = 24
-
-[node name="RollRaceButton" type="Button" parent="CivilWar"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -4.0
-offset_right = 110.0
-offset_bottom = 26.0
-grow_horizontal = 2
-theme_override_font_sizes/font_size = 24
-text = "Reroll race"
 
 [node name="ToolTipPanel" type="Panel" parent="."]
 layout_mode = 0
@@ -69,6 +54,20 @@ custom_minimum_size = Vector2(1600, 50)
 layout_mode = 0
 offset_right = 1600.0
 offset_bottom = 50.0
+
+[node name="PlayerLabel" type="Label" parent="UIPanel/UIlayer"]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_vertical = 1
+
+[node name="RaceLabel" type="Label" parent="UIPanel/UIlayer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+
+[node name="RollRaceButton" type="Button" parent="UIPanel/UIlayer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Reroll race"
 
 [node name="PackPanel" type="Panel" parent="."]
 layout_mode = 0
@@ -119,5 +118,11 @@ offset_right = 1200.0
 offset_bottom = 170.0
 columns = 10
 
+[node name="Steam" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("4_jhidu")
+
 [connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_completed"]
-[connection signal="pressed" from="CivilWar/RollRaceButton" to="CivilWar" method="_on_roll_race_button_pressed"]
+[connection signal="pressed" from="UIPanel/UIlayer/RollRaceButton" to="CivilWar" method="_on_roll_race_button_pressed"]
