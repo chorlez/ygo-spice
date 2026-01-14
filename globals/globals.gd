@@ -3,6 +3,7 @@ extends Node
 var cards: Array[CardData] = []
 var staples: Array[CardData] = []
 var race_counts = {}
+var race_archetypes = {}
 
 const IMAGE_BASE_URL := "https://images.ygoprodeck.com/images/cards/"
 var CARDSCENE = preload("res://Card/card.tscn")

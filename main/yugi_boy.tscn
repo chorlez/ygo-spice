@@ -69,6 +69,10 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Reroll race"
 
+[node name="RollPackButton" type="Button" parent="UIPanel/UIlayer"]
+layout_mode = 2
+text = "Roll Pack"
+
 [node name="PackPanel" type="Panel" parent="."]
 layout_mode = 0
 offset_left = 400.0
@@ -126,3 +130,4 @@ script = ExtResource("4_jhidu")
 
 [connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_completed"]
 [connection signal="pressed" from="UIPanel/UIlayer/RollRaceButton" to="CivilWar" method="_on_roll_race_button_pressed"]
+[connection signal="pressed" from="UIPanel/UIlayer/RollPackButton" to="CivilWar" method="_on_roll_pack_button_pressed"]

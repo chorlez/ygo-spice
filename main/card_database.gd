@@ -1,6 +1,6 @@
 extends Node
 
-const API_URL := "https://db.ygoprodeck.com/api/v7/cardinfo.php"
+const API_URL := "https://db.ygoprodeck.com/api/v7/cardinfo.php?format=tcg"
 const STAPLE_API_URL := "https://db.ygoprodeck.com/api/v7/cardinfo.php?staple=yes"
 const CACHE_PATH := "res://data/cards.json"
 
@@ -85,15 +85,18 @@ func normalize_card(raw: Dictionary) -> CardData:
 	card.def = get_int_or_zero(raw, "def")
 	card.extra_deck = is_extra
 	card.is_staple = card.id in staple_ids
+	card.description = raw.desc
 	if card.is_staple:
 		Globals.staples.append(card)
-
+	
 	# Count races
-	if card.race in Globals.race_counts:
-		Globals.race_counts[card.race] += 1
-	else:
-		Globals.race_counts[card.race] = 1
-
+	if card.type.contains("Monster"):
+		#Keep count of race
+		if card.race in Globals.race_counts:
+			Globals.race_counts[card.race] += 1
+		else:
+			Globals.race_counts[card.race] = 1
+		
 	return card
 
 func get_int_or_zero(dict: Dictionary, key: String) -> int:

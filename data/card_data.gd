@@ -11,6 +11,7 @@ class_name CardData
 @export var def: int
 @export var extra_deck: bool
 @export var is_staple: bool = false
+@export var description: String
 
 var texture: Texture2D = null
 

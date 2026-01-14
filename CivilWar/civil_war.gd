@@ -1,14 +1,14 @@
 extends Node
 
 
-@onready var game = get_parent()
-@onready var RaceLabel = game.get_node('UIPanel/UIlayer/RaceLabel')
-@onready var RollRaceButton = game.get_node('UIPanel/UIlayer/RollRaceButton')
-@onready var PlayerLabel = game.get_node('UIPanel/UIlayer/PlayerLabel')
-@onready var PackContainer = game.get_node('PackPanel/PackContainer')
-@onready var MainDeckContainer = game.get_node('MainDeckPanel/MainDeckContainer')
-@onready var ExtraDeckContainer = game.get_node('ExtraDeckPanel/ExtraDeckContainer')
-@onready var TooltipArea = game.get_node('ToolTipPanel/TooltipArea')
+@onready var game: Node = get_parent()
+@onready var RaceLabel: Node = game.get_node('UIPanel/UIlayer/RaceLabel')
+@onready var RollRaceButton: Node = game.get_node('UIPanel/UIlayer/RollRaceButton')
+@onready var PlayerLabel: Node = game.get_node('UIPanel/UIlayer/PlayerLabel')
+@onready var PackContainer: Node = game.get_node('PackPanel/PackContainer')
+@onready var MainDeckContainer: Node = game.get_node('MainDeckPanel/MainDeckContainer')
+@onready var ExtraDeckContainer: Node = game.get_node('ExtraDeckPanel/ExtraDeckContainer')
+@onready var TooltipArea: Node = game.get_node('ToolTipPanel/TooltipArea')
 
 var cards
 var cube: Array[CardData] = []
@@ -31,7 +31,8 @@ func create_cube():
 	roll_race()
 	cube.clear()
 	add_race_cards_to_cube()
-	add_staples_to_cube()
+	add_support_cards_to_cube()
+#	add_staples_to_cube()
 
 
 func roll_race():
@@ -55,6 +56,69 @@ func add_race_cards_to_cube():
 		if card.race == race:
 			cube.append(card)
 
+func add_support_cards_to_cube():
+	var archetype_counts := get_archetypes_for_race()
+	var archetypes := filter_archetypes(archetype_counts)
+	for card in cards:
+		if not card.type.contains("Monster"):
+			if card_mentions_exact_race(card):
+				cube.append(card)
+				
+			for archetype in archetypes:
+				if card_mentions_archetype(card, archetype):
+					cube.append(card)
+					
+
+func card_mentions_exact_race(card: CardData) -> bool:
+	var text: String = card.description.to_lower()
+	var target := race.to_lower()
+
+	var pattern := "(^|[^a-zA-Z-])" + target + "([^a-zA-Z-]|$)"
+
+	var regex := RegEx.new()
+	regex.compile(pattern)
+
+	return regex.search(text) != null
+
+func get_archetypes_for_race() -> Dictionary:
+	var archetypes := {}
+
+	for card in cards:
+		if not card.type.contains("Monster"):
+			continue
+		if card.race != race:
+			continue
+		if card.archetype == "":
+			continue
+
+		if not archetypes.has(card.archetype):
+			archetypes[card.archetype] = 0
+		archetypes[card.archetype] += 1
+
+	return archetypes
+
+func filter_archetypes(archetypes: Dictionary, min_size := 5) -> Array:
+	var result := []
+
+	for archetype in archetypes.keys():
+		if archetypes[archetype] >= min_size:
+			result.append(archetype)
+
+	return result
+
+func card_mentions_archetype(card: CardData, archetype: String) -> bool:
+	if card.description == "":
+		return false
+
+	var text := card.description.to_lower()
+	var target := archetype.to_lower()
+
+	var regex := RegEx.new()
+	# Match whole archetype name, not inside other words or hyphenated races
+	regex.compile("(^|[^a-zA-Z-])" + target + "([^a-zA-Z-]|$)")
+
+	return regex.search(text) != null
+
 func add_staples_to_cube():
 	cube += Globals.staples
 
@@ -65,14 +129,14 @@ func show_pack(pack: Array[CardData]):
 		child.queue_free()
 
 	for card_data in pack:
-		var card = Globals.create_card(card_data)
+		var card: Card = Globals.create_card(card_data)
 		PackContainer.add_child(card)
 
 func show_tooltip(card_data: CardData):
 	for child in TooltipArea.get_children():
 		child.queue_free()
 	
-	var card = Globals.create_card(card_data)
+	var card: Card = Globals.create_card(card_data)
 	TooltipArea.add_child(card)
 
 func card_pressed(card):
@@ -90,9 +154,12 @@ func _on_roll_race_button_pressed() -> void:
 	create_cube()
 	roll_pack()
 
+func _on_roll_pack_button_pressed() -> void:
+	roll_pack()
+
 func _on_player_connected(peer_id:int, steam_id:int, player_name:String) -> void:
 	print("Player connected: %s" % player_name)
-	var new_player = Player.new()
+	var new_player: Player = Player.new()
 	new_player.peer_id = peer_id
 	new_player.steam_id = steam_id
 	new_player.player_name = player_name
