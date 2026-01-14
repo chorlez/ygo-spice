@@ -1,7 +1,6 @@
 extends Node
 
-var cards
-var cube: Array[CardData] = []
+
 @onready var game = get_parent()
 @onready var RaceLabel = game.get_node('UIPanel/UIlayer/RaceLabel')
 @onready var RollRaceButton = game.get_node('UIPanel/UIlayer/RollRaceButton')
@@ -10,8 +9,12 @@ var cube: Array[CardData] = []
 @onready var MainDeckContainer = game.get_node('MainDeckPanel/MainDeckContainer')
 @onready var ExtraDeckContainer = game.get_node('ExtraDeckPanel/ExtraDeckContainer')
 @onready var TooltipArea = game.get_node('ToolTipPanel/TooltipArea')
+
+var cards
+var cube: Array[CardData] = []
 var race: String
 var min_race_size := 100	
+var playerList : Array[Player] = []
 
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
@@ -89,4 +92,14 @@ func _on_roll_race_button_pressed() -> void:
 
 func _on_player_connected(peer_id:int, steam_id:int, player_name:String) -> void:
 	print("Player connected: %s" % player_name)
-	PlayerLabel.text = player_name
+	var new_player = Player.new()
+	new_player.peer_id = peer_id
+	new_player.steam_id = steam_id
+	new_player.player_name = player_name
+	playerList.append(new_player)
+
+	var player_names: Array = []
+	for player in playerList:
+		player_names.append(player.player_name)
+
+	PlayerLabel.text = '\n'.join(player_names)

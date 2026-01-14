@@ -16,13 +16,10 @@ func _ready():
 	Steam.lobby_match_list.connect(_on_lobby_match_list)
 	Steam.lobby_joined.connect(_on_lobby_joined)
 	open_lobby_list()
-	# Check for players joining
-	if is_multiplayer_authority():
-		multiplayer.connect("peer_connected", _on_player_connected)
+
 
 func _process(_delta: float) -> void:
 	Steam.run_callbacks()
-
 
 func open_lobby_list():
 	Steam.addRequestLobbyListDistanceFilter(Steam.LOBBY_DISTANCE_FILTER_WORLDWIDE)
@@ -56,6 +53,8 @@ func _on_lobby_created(result, id):
 		peer = SteamMultiplayerPeer.new()
 		peer.create_host(0)
 		multiplayer.multiplayer_peer = peer
+
+		multiplayer.connect("peer_connected", _on_player_connected)
 		print("Lobby created successfully with ID %d" % lobby_id)
 	else:
 		print("Failed to create lobby! oh")

@@ -20,7 +20,6 @@ func fetch_staples():
 
 func _on_http_request_completed(_result, response_code, _headers, body):
 	if response_code != 200:
-		print(body.get_string_from_utf8())
 		push_error("Failed to fetch card data")
 		return
 
@@ -34,7 +33,6 @@ func _on_http_request_completed(_result, response_code, _headers, body):
 		staples_fetched = true
 		for raw_card in json["data"]:
 			staple_ids.append(int(raw_card.get("id")))
-		print(staple_ids)
 
 		# Now fetch all cards
 		$HTTPRequest.request(API_URL)
@@ -95,9 +93,6 @@ func normalize_card(raw: Dictionary) -> CardData:
 		Globals.race_counts[card.race] += 1
 	else:
 		Globals.race_counts[card.race] = 1
-	
-	if card.name == "General Raiho of the Ice Barrier":
-		print(card.id)
 
 	return card
 
