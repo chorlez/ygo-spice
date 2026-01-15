@@ -16,6 +16,7 @@ var race: String
 var min_race_size := 100	
 var playerList : Array[Player] = []
 
+
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
 	EventBus.card_hovered.connect(show_tooltip)
@@ -141,6 +142,8 @@ func show_tooltip(card_data: CardData):
 
 func card_pressed(card):
 	if card.state == 0:
+		var card_index = card.get_index()
+		rpc('rpc_remove_card_from_pack', card_index)
 		card.get_parent().remove_child(card)
 		if card.card_data.extra_deck:
 			ExtraDeckContainer.add_child(card)
@@ -192,6 +195,10 @@ func rpc_sync_pack(new_pack):
 		pack.append(Globals.cards_by_id[card_id])
 	show_pack(pack)
 
+@rpc("call_remote")
+func rpc_remove_card_from_pack(card_index: int):
+	PackContainer.get_child(card_index).queue_free()
+	
 func _on_player_connected(peer_id:int, steam_id:int, player_name:String) -> void:
 	var new_player = Player.new()
 	new_player.peer_id = peer_id
