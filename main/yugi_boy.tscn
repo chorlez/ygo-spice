@@ -73,6 +73,10 @@ text = "Reroll race"
 layout_mode = 2
 text = "Roll Pack"
 
+[node name="SaveDeck" type="Button" parent="UIPanel/UIlayer"]
+layout_mode = 2
+text = "Save Deck"
+
 [node name="PackPanel" type="Panel" parent="."]
 layout_mode = 0
 offset_left = 400.0
@@ -128,6 +132,11 @@ offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("4_jhidu")
 
+[node name="SaveDeckDialog" type="FileDialog" parent="."]
+access = 2
+
 [connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_completed"]
 [connection signal="pressed" from="UIPanel/UIlayer/RollRaceButton" to="CivilWar" method="_on_roll_race_button_pressed"]
 [connection signal="pressed" from="UIPanel/UIlayer/RollPackButton" to="CivilWar" method="_on_roll_pack_button_pressed"]
+[connection signal="pressed" from="UIPanel/UIlayer/SaveDeck" to="CivilWar" method="_on_save_deck_pressed"]
+[connection signal="file_selected" from="SaveDeckDialog" to="CivilWar" method="_on_save_deck_dialog_file_selected"]

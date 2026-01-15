@@ -9,6 +9,7 @@ extends Node
 @onready var MainDeckContainer: Node = game.get_node('MainDeckPanel/MainDeckContainer')
 @onready var ExtraDeckContainer: Node = game.get_node('ExtraDeckPanel/ExtraDeckContainer')
 @onready var TooltipArea: Node = game.get_node('ToolTipPanel/TooltipArea')
+@onready var SaveDeckDialog: Node = game.get_node('SaveDeckDialog')
 
 var cards
 var cube: Array[CardData] = []
@@ -212,4 +213,41 @@ func _on_player_connected(peer_id:int, steam_id:int, player_name:String) -> void
 
 	PlayerLabel.text = '\n'.join(player_names)
 
+func build_ydk_string() -> String:
+	var lines := []
 
+	lines.append("#created by My Cube Draft App YuGiBoy")
+	lines.append("#main")
+
+	for card_node in MainDeckContainer.get_children():
+		if card_node.card_data:
+			lines.append(str(card_node.card_data.id))
+
+	lines.append("#extra")
+
+	for card_node in ExtraDeckContainer.get_children():
+		if card_node.card_data:
+			lines.append(str(card_node.card_data.id))
+
+	lines.append("!side")
+
+	return "\n".join(lines)
+
+
+func _on_save_deck_pressed():
+	print('save deck pressed')
+	SaveDeckDialog.current_file = "[YuGiBoy]" + race + ".ydk"
+	SaveDeckDialog.popup_centered()
+
+func _on_save_deck_dialog_file_selected(path: String):
+	var ydk_text := build_ydk_string()
+
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		push_error("Failed to save deck")
+		return
+
+	file.store_string(ydk_text)
+	file.close()
+
+	print("Deck saved to:", path)
