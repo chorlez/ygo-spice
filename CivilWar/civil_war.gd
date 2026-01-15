@@ -45,10 +45,10 @@ func roll_race():
 	rpc("rpc_sync_race", race)
 
 func roll_pack(n=10):
-	var pack: Array[CardData] = []
+	var pack: Array[int] = []
 	while pack.size() < n:
 		var card : CardData = cube.pick_random()
-		pack.append(card)
+		pack.append(card.id)
 	rpc("rpc_sync_pack", pack)
 	
 func add_race_cards_to_cube():
@@ -187,7 +187,10 @@ func rpc_sync_race(new_race: String):
 
 @rpc("call_local")
 func rpc_sync_pack(new_pack):
-	show_pack(new_pack)
+	var pack: Array[CardData] = []
+	for card_id in new_pack:
+		pack.append(Globals.cards_by_id[card_id])
+	show_pack(pack)
 
 func _on_player_connected(peer_id:int, steam_id:int, player_name:String) -> void:
 	var new_player = Player.new()

@@ -96,7 +96,8 @@ func normalize_card(raw: Dictionary) -> CardData:
 			Globals.race_counts[card.race] += 1
 		else:
 			Globals.race_counts[card.race] = 1
-		
+	# Index by ID
+	Globals.cards_by_id[card.id] = card
 	return card
 
 func get_int_or_zero(dict: Dictionary, key: String) -> int:
