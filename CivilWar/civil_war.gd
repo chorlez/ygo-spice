@@ -168,7 +168,7 @@ func _on_roll_pack_button_pressed():
 
 
 
-@rpc("call_remote")
+@rpc("any_peer","call_remote")
 func rpc_request_new_cube():
 	if not multiplayer.is_server():
 		return
@@ -176,29 +176,29 @@ func rpc_request_new_cube():
 	create_cube()
 	roll_pack()
 
-@rpc("call_remote")
+@rpc("any_peer","call_remote")
 func rpc_request_new_pack():
 	if not multiplayer.is_server():
 		return
 
 	roll_pack()
 
-@rpc("call_local")
+@rpc("any_peer","call_local")
 func rpc_sync_race(new_race: String):
 	race = new_race
 	RaceLabel.text = 'Race: ' + race
 
-@rpc("call_local")
+@rpc("any_peer","call_local")
 func rpc_sync_pack(new_pack):
 	var pack: Array[CardData] = []
 	for card_id in new_pack:
 		pack.append(Globals.cards_by_id[card_id])
 	show_pack(pack)
 
-@rpc("call_remote")
+@rpc("any_peer","call_remote")
 func rpc_remove_card_from_pack(card_index: int):
 	PackContainer.get_child(card_index).queue_free()
-	
+
 func _on_player_connected(peer_id:int, steam_id:int, player_name:String) -> void:
 	var new_player = Player.new()
 	new_player.peer_id = peer_id
