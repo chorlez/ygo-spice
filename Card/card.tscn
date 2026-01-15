@@ -1,7 +1,12 @@
-[gd_scene load_steps=3 format=3 uid="uid://62xo4wcay34u"]
+[gd_scene load_steps=5 format=3 uid="uid://62xo4wcay34u"]
 
 [ext_resource type="Texture2D" uid="uid://hniebny1nhcs" path="res://Card/General Raiho.jpg" id="1_kikvd"]
 [ext_resource type="Script" uid="uid://chhdn28bfpjpd" path="res://Card/card.gd" id="2_etl2p"]
+[ext_resource type="Script" uid="uid://bw6jsna83p8my" path="res://data/card_data.gd" id="3_yitjk"]
+
+[sub_resource type="Resource" id="Resource_pcsc4"]
+script = ExtResource("3_yitjk")
+metadata/_custom_type_script = "uid://bw6jsna83p8my"
 
 [node name="CardImage" type="TextureRect"]
 offset_right = 813.0
@@ -12,6 +17,7 @@ texture = ExtResource("1_kikvd")
 expand_mode = 5
 stretch_mode = 5
 script = ExtResource("2_etl2p")
+card_data = SubResource("Resource_pcsc4")
 
 [connection signal="gui_input" from="." to="." method="_on_gui_input"]
 [connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]

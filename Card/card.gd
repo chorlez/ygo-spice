@@ -1,7 +1,7 @@
 extends TextureRect
 class_name Card
 
-var card_data:CardData
+@export var card_data:CardData
 enum {PACK,TOOLTIP,MAINDECK, EXTRADECK}
 var state = PACK
 

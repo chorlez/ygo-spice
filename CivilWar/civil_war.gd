@@ -32,7 +32,7 @@ func create_cube():
 	cube.clear()
 	add_race_cards_to_cube()
 	add_support_cards_to_cube()
-#	add_staples_to_cube()
+	# add_staples_to_cube()
 
 
 func roll_race():
@@ -42,14 +42,14 @@ func roll_race():
 		if count >= min_race_size:
 			eligible_races.append(race_name)
 	race = eligible_races.pick_random()
-	RaceLabel.text = 'Race: ' + race
+	rpc("rpc_sync_race", race)
 
 func roll_pack(n=10):
 	var pack: Array[CardData] = []
 	while pack.size() < n:
 		var card : CardData = cube.pick_random()
 		pack.append(card)
-	show_pack(pack)
+	rpc("rpc_sync_pack", pack)
 	
 func add_race_cards_to_cube():
 	for card in cards:
@@ -151,15 +151,46 @@ func card_pressed(card):
 			
 
 func _on_roll_race_button_pressed() -> void:
+	if multiplayer.is_server():
+		create_cube()
+		roll_pack()
+	else:
+		rpc_id(1, "rpc_request_new_cube") # host is peer 1
+
+func _on_roll_pack_button_pressed():
+	if multiplayer.is_server():
+		roll_pack()
+	else:
+		rpc_id(1, "rpc_request_new_pack") # host is peer 1
+
+
+
+@rpc("call_remote")
+func rpc_request_new_cube():
+	if not multiplayer.is_server():
+		return
+
 	create_cube()
 	roll_pack()
 
-func _on_roll_pack_button_pressed() -> void:
+@rpc("call_remote")
+func rpc_request_new_pack():
+	if not multiplayer.is_server():
+		return
+
 	roll_pack()
 
+@rpc("call_local")
+func rpc_sync_race(new_race: String):
+	race = new_race
+	RaceLabel.text = 'Race: ' + race
+
+@rpc("call_local")
+func rpc_sync_pack(new_pack):
+	show_pack(new_pack)
+
 func _on_player_connected(peer_id:int, steam_id:int, player_name:String) -> void:
-	print("Player connected: %s" % player_name)
-	var new_player: Player = Player.new()
+	var new_player = Player.new()
 	new_player.peer_id = peer_id
 	new_player.steam_id = steam_id
 	new_player.player_name = player_name
@@ -170,3 +201,5 @@ func _on_player_connected(peer_id:int, steam_id:int, player_name:String) -> void
 		player_names.append(player.player_name)
 
 	PlayerLabel.text = '\n'.join(player_names)
+
+

@@ -19,12 +19,15 @@ func create_card(card_data: CardData) -> Card:
 
 # Fetch the image live and assign it to a card immediately
 func load_card_image_to_ui(card: CardData, CardObject: Card) -> void:
+
 	var http := HTTPRequest.new()
 	add_child(http)
 
 	# Callback when HTTP request finishes
 	http.request_completed.connect(
-		func(result, response_code, headers, body):
+		func(_result, response_code, _on_lobby_match_listheaders, body):
+			if not card or not CardObject:
+				return
 			if response_code != 200:
 				push_error("Failed to download image for card %d" % card.id)
 				http.queue_free()

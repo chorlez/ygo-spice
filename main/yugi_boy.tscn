@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://e1py4etghvgy" path="res://Steam/Steam.gd" id="4_jhidu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1t8k8"]
-bg_color = Color(0.6167221, 0.59608734, 0.8305756, 1)
+bg_color = Color(0.018140132, 0.20371577, 0.24650532, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
