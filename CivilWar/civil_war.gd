@@ -266,7 +266,7 @@ func _on_save_deck_pressed():
 
 func _on_save_deck_dialog_file_selected(path: String):
 	var ydk_text := build_ydk_string()
-
+	print(ydk_text)
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		push_error("Failed to save deck")
