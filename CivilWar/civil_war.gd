@@ -6,17 +6,30 @@ extends Node
 @onready var RollRaceButton: Node = game.get_node('UIPanel/UIlayer/RollRaceButton')
 @onready var PlayerLabel: Node = game.get_node('UIPanel/UIlayer/PlayerLabel')
 @onready var PackContainer: Node = game.get_node('PackPanel/PackContainer')
-@onready var MainDeckContainer: Node = game.get_node('MainDeckPanel/MainDeckContainer')
+@onready var MainDeckContainer: Node = game.get_node('MainDeckPanel/ScrollContainer/MainDeckContainer')
 @onready var ExtraDeckContainer: Node = game.get_node('ExtraDeckPanel/ExtraDeckContainer')
 @onready var TooltipArea: Node = game.get_node('ToolTipPanel/TooltipArea')
 @onready var SaveDeckDialog: Node = game.get_node('SaveDeckDialog')
 
-var cards
-var cube: Array[CardData] = []
+var cards:= {
+	'Monsters': [],
+	'Spells': [],
+	'Extra': []
+}
+var cube := {
+	'Monsters': [],
+	'Spells': [],
+	'Extra': []
+}
 var race: String
 var min_race_size := 100	
 var playerList : Array[Player] = []
 
+var type_weights := {
+	"Monsters": 0.45,
+	"Spells": 0.4,
+	"Extra": 0.15
+}
 
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
@@ -31,7 +44,11 @@ func initialize():
 
 func create_cube():
 	roll_race()
-	cube.clear()
+	cube = {
+	'Monsters': [],
+	'Spells': [],
+	'Extra': []
+}
 	add_race_cards_to_cube()
 	add_support_cards_to_cube()
 	# add_staples_to_cube()
@@ -49,26 +66,35 @@ func roll_race():
 func roll_pack(n=10):
 	var pack: Array[int] = []
 	while pack.size() < n:
-		var card : CardData = cube.pick_random()
+		var roll := randf() # 0.0 – 1.0
+		var cumulative := 0.0
+		var typ := ''
+		for t in ["Monsters", "Spells", "Extra"]:
+			if roll >= cumulative:
+				typ = t
+			cumulative += type_weights[t]
+		var card : CardData = cube[typ].pick_random()
 		pack.append(card.id)
 	rpc("rpc_sync_pack", pack)
 	
 func add_race_cards_to_cube():
-	for card in cards:
+	for card in cards['Monsters'] + cards['Extra']:
 		if card.race == race:
-			cube.append(card)
+			if not card.extra_deck:
+				cube['Monsters'].append(card)
+			else:
+				cube['Extra'].append(card)
 
 func add_support_cards_to_cube():
 	var archetype_counts := get_archetypes_for_race()
 	var archetypes := filter_archetypes(archetype_counts)
-	for card in cards:
-		if not card.type.contains("Monster"):
-			if card_mentions_exact_race(card):
-				cube.append(card)
-				
-			for archetype in archetypes:
-				if card_mentions_archetype(card, archetype):
-					cube.append(card)
+	for card in cards['Spells']:
+		if card_mentions_exact_race(card):
+			cube['Spells'].append(card)
+			
+		for archetype in archetypes:
+			if card_mentions_archetype(card, archetype):
+				cube['Spells'].append(card)
 					
 
 func card_mentions_exact_race(card: CardData) -> bool:
@@ -85,9 +111,7 @@ func card_mentions_exact_race(card: CardData) -> bool:
 func get_archetypes_for_race() -> Dictionary:
 	var archetypes := {}
 
-	for card in cards:
-		if not card.type.contains("Monster"):
-			continue
+	for card in cards['Monsters'] + cards['Extra']:
 		if card.race != race:
 			continue
 		if card.archetype == "":
@@ -122,7 +146,8 @@ func card_mentions_archetype(card: CardData, archetype: String) -> bool:
 	return regex.search(text) != null
 
 func add_staples_to_cube():
-	cube += Globals.staples
+	#cube += Globals.staples
+	pass
 
 
 func show_pack(pack: Array[CardData]):
@@ -211,7 +236,7 @@ func _on_player_connected(peer_id:int, steam_id:int, player_name:String) -> void
 	for player in playerList:
 		player_names.append(player.player_name)
 
-	PlayerLabel.text = '\n'.join(player_names)
+	PlayerLabel.text = '\t'.join(player_names)
 
 func build_ydk_string() -> String:
 	var lines := []
