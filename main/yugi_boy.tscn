@@ -75,6 +75,10 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="ReconnectButton" type="Button" parent="UIPanel/UIlayer"]
+layout_mode = 2
+text = "Reconnect"
+
 [node name="PlayerLabel" type="Label" parent="UIPanel/UIlayer"]
 layout_mode = 2
 size_flags_vertical = 1
@@ -148,4 +152,5 @@ access = 2
 [connection signal="pressed" from="UIPanel/UIlayer/RollRaceButton" to="CivilWar" method="_on_roll_race_button_pressed"]
 [connection signal="pressed" from="UIPanel/UIlayer/RollPackButton" to="CivilWar" method="_on_roll_pack_button_pressed"]
 [connection signal="item_selected" from="UIPanel/UIlayer/RaceMenu" to="CivilWar" method="_on_race_menu_item_selected"]
+[connection signal="pressed" from="UIPanel/UIlayer/ReconnectButton" to="Steam" method="_on_reconnect_pressed"]
 [connection signal="file_selected" from="SaveDeckDialog" to="CivilWar" method="_on_save_deck_dialog_file_selected"]

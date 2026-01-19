@@ -3,9 +3,11 @@ extends Control
 # THIS VERSION WILL ONLY HAVE ONE LOBBY AND AUTO CREATE / AUTO JOIN
 var lobby_id := 0
 var peer = SteamMultiplayerPeer.new()
-var player_names: Array = []
 var game_name:= "YugiBoy"
 
+@onready var Game:= get_parent()
+@onready var ReconnectButton := Game.get_node('UIPanel/UIlayer/ReconnectButton')
+@onready var PlayerLabel := Game.get_node('UIPanel/UIlayer/PlayerLabel')
 
 func _ready():
 	OS.set_environment("SteamAppID", str(480))
@@ -15,13 +17,18 @@ func _ready():
 	Steam.lobby_created.connect(_on_lobby_created)
 	Steam.lobby_match_list.connect(_on_lobby_match_list)
 	Steam.lobby_joined.connect(_on_lobby_joined)
-	open_lobby_list()
+	find_or_create_lobby()
 
+	multiplayer.connect("peer_connected", _on_player_connected)
+	multiplayer.connect("peer_disconnected", _on_peer_disconnected)
+	multiplayer.connect("connection_failed", _on_connection_failed)
+	multiplayer.connect("server_disconnected",_on_server_disconnected)
+	
 
 func _process(_delta: float) -> void:
 	Steam.run_callbacks()
 
-func open_lobby_list():
+func find_or_create_lobby():
 	Steam.addRequestLobbyListDistanceFilter(Steam.LOBBY_DISTANCE_FILTER_WORLDWIDE)
 	Steam.addRequestLobbyListStringFilter("game_tag", game_name, Steam.LOBBY_COMPARISON_EQUAL)
 	Steam.requestLobbyList()
@@ -53,8 +60,7 @@ func _on_lobby_created(result, id):
 		peer = SteamMultiplayerPeer.new()
 		peer.create_host(0)
 		multiplayer.multiplayer_peer = peer
-
-		multiplayer.connect("peer_connected", _on_player_connected)
+		
 		print("Lobby created successfully with ID %d" % lobby_id)
 	else:
 		print("Failed to create lobby! oh")
@@ -65,6 +71,7 @@ func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 		return
 
 	var lobby_owner = Steam.getLobbyOwner(slct_lobby_id)
+	ReconnectButton.visible = false
 	if lobby_owner == Steam.getSteamID():
 		EventBus.player_connected.emit(1, lobby_owner, Steam.getPersonaName())
 		return
@@ -75,8 +82,35 @@ func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 	peer = SteamMultiplayerPeer.new()
 	peer.create_client(lobby_owner)
 	multiplayer.multiplayer_peer = peer
+
+func get_lobby_player_names(lobby_id: int):
+	var names: Array[String] = []
+	var member_count := Steam.getNumLobbyMembers(lobby_id)
+
+	for i in range(member_count):
+		var steam_id := Steam.getLobbyMemberByIndex(lobby_id, i)
+		var steam_name := Steam.getFriendPersonaName(steam_id)
+		names.append(steam_name)
+	
+	PlayerLabel.text = '\n'.join(names)	
 	
 func _on_player_connected(id):
 	var steam_id = peer.get_steam_id_for_peer_id(id)
+	get_lobby_player_names(lobby_id)
 	print("Player connected: %s" % Steam.getFriendPersonaName(steam_id))
 	EventBus.player_connected.emit(id, steam_id, Steam.getFriendPersonaName(steam_id))
+	
+
+func _on_peer_disconnected():
+	get_lobby_player_names(lobby_id)
+	
+func _on_connection_failed():
+	get_lobby_player_names(lobby_id)
+	ReconnectButton.visible = true
+
+func _on_server_disconnected():
+	get_lobby_player_names(lobby_id)
+	ReconnectButton.visible = true
+
+func _on_reconnect_pressed():
+	find_or_create_lobby()
