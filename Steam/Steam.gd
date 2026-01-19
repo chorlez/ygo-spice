@@ -72,6 +72,7 @@ func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 
 	var lobby_owner = Steam.getLobbyOwner(slct_lobby_id)
 	ReconnectButton.visible = false
+	get_lobby_player_names()
 	if lobby_owner == Steam.getSteamID():
 		EventBus.player_connected.emit(1, lobby_owner, Steam.getPersonaName())
 		return
@@ -93,6 +94,7 @@ func get_lobby_player_names():
 		names += steam_name + ' | '
 	
 	PlayerLabel.text = names
+	print('I fetched player names: ', names)
 
 func _on_player_connected(id):
 	var steam_id = peer.get_steam_id_for_peer_id(id)
@@ -102,14 +104,17 @@ func _on_player_connected(id):
 
 func _on_peer_disconnected(id: int):
 	get_lobby_player_names()
+	print("Player diconnected: %s" % Steam.getFriendPersonaName(id))
 	
 func _on_connection_failed():
 	get_lobby_player_names()
 	ReconnectButton.visible = true
+	print('Connection Failed')
 
 func _on_server_disconnected():
 	get_lobby_player_names()
 	ReconnectButton.visible = true
+	print('server disconnected')
 
 func _on_reconnect_pressed():
 	find_or_create_lobby()
