@@ -1,22 +1,21 @@
 extends Node
 
 const API_URL := "https://db.ygoprodeck.com/api/v7/cardinfo.php?format=tcg"
-const STAPLE_API_URL := "https://db.ygoprodeck.com/api/v7/cardinfo.php?staple=yes"
 const CACHE_PATH := "res://data/cards.json"
 
-var cards: Array[CardData] = []
-var staple_ids : Array[int] = []
-var staples_fetched := false
-
+var cards:= {
+	'Monsters': [],
+	'Spells': [],
+	'Extra': [],
+	'Staples': []
+}
 
 func _ready():
-	fetch_staples()
+	fetch_from_api()
 	
 func fetch_from_api():
 	$HTTPRequest.request(API_URL)
 
-func fetch_staples():
-	$HTTPRequest.request(STAPLE_API_URL)
 
 func _on_http_request_completed(_result, response_code, _headers, body):
 	if response_code != 200:
@@ -28,43 +27,33 @@ func _on_http_request_completed(_result, response_code, _headers, body):
 		push_error("Invalid JSON response")
 		return
 
-	# If this is the staple request
-	if staples_fetched == false:
-		staples_fetched = true
-		for raw_card in json["data"]:
-			staple_ids.append(int(raw_card.get("id")))
-
-		# Now fetch all cards
-		$HTTPRequest.request(API_URL)
-		return
 
 	for raw_card in json["data"]:
-		cards.append(normalize_card(raw_card))
+		normalize_card(raw_card)
 
-
-	save_cache()
+	#save_cache()
 	print("Loaded %d cards from API" % cards.size())
 
 	Globals.cards = cards
 	EventBus.start_civil_war.emit()
 
-func save_cache():
-	var file := FileAccess.open(CACHE_PATH, FileAccess.WRITE)
-	file.store_string(JSON.stringify(cards, "\t"))
-	file.close()
+#func save_cache():
+#	var file := FileAccess.open(CACHE_PATH, FileAccess.WRITE)
+#	file.store_string(JSON.stringify(cards, "\t"))
+#	file.close()
+#
+#func load_from_cache():
+#	var file := FileAccess.open(CACHE_PATH, FileAccess.READ)
+#	var json = JSON.parse_string(file.get_as_text())
+#	file.close()
+#
+#	cards.clear()
+#	for card in json:
+#		cards.append(card)
+#
+#	print("Loaded %d cards from cache" % cards.size())
 
-func load_from_cache():
-	var file := FileAccess.open(CACHE_PATH, FileAccess.READ)
-	var json = JSON.parse_string(file.get_as_text())
-	file.close()
-
-	cards.clear()
-	for card in json:
-		cards.append(card)
-
-	print("Loaded %d cards from cache" % cards.size())
-
-func normalize_card(raw: Dictionary) -> CardData:
+func normalize_card(raw: Dictionary) -> void:
 	var card := CardData.new()
 
 	var card_type : String= raw.get("type", "")
@@ -74,7 +63,6 @@ func normalize_card(raw: Dictionary) -> CardData:
 		or card_type.contains("XYZ")
 		or card_type.contains("Link")
 	)
-
 	card.id = raw.get("id", 0)
 	card.name = raw.get("name", "")
 	card.type = card_type
@@ -84,22 +72,124 @@ func normalize_card(raw: Dictionary) -> CardData:
 	card.atk = get_int_or_zero(raw, "atk")
 	card.def = get_int_or_zero(raw, "def")
 	card.extra_deck = is_extra
-	card.is_staple = card.id in staple_ids
 	card.description = raw.desc
-	if card.is_staple:
-		Globals.staples.append(card)
-	
-	# Count races
-	if card.type.contains("Monster"):
+
+	### DISTRIBUTE CARDS TO PROPER LOCATIONS
+	if card.name in juicy_staples():
+		card.is_staple = true
+		cards["Staples"].append(card)
+		
+	elif card.type.contains("Monster"):
+		if not is_extra:
+			cards['Monsters'].append(card)
+		else:
+			cards['Extra'].append(card)
 		#Keep count of race
 		if card.race in Globals.race_counts:
 			Globals.race_counts[card.race] += 1
 		else:
 			Globals.race_counts[card.race] = 1
+	else:
+		cards['Spells'].append(card)
 	# Index by ID
 	Globals.cards_by_id[card.id] = card
-	return card
-
+	
 func get_int_or_zero(dict: Dictionary, key: String) -> int:
 	var value = dict.get(key)
 	return value if value != null else 0
+
+
+func juicy_staples():
+	const STAPLE_CARDS := [
+	# === MONSTERS ===
+	"Effect Veiler",
+	"D.D. Crow",
+	"Ash Blossom & Joyous Spring",
+	"Ghost Ogre & Snow Rabbit",
+	"Maxx \"C\"",
+	"Battle Fader",
+	"Tragoedia",
+	"Gorz the Emissary of Darkness",
+	"Honest",
+	"Dark Armed Dragon",
+	"Chaos Sorcerer",
+	"Black Luster Soldier - Envoy of the Beginning",
+	"Breaker the Magical Warrior",
+	"Spirit Reaper",
+	"Thunder King Rai-Oh",
+	"Card Trooper",
+	"Kuriboh",
+	"Treeborn Frog",
+	"Glow-Up Bulb",
+	
+	# === SPELLS ===
+	"Monster Reborn",
+	"Pot of Greed",
+	"Graceful Charity",
+	"Raigeki",
+	"Dark Hole",
+	"Heavy Storm",
+	"Mystical Space Typhoon",
+	"Twin Twisters",
+	"Cosmic Cyclone",
+	"Book of Moon",
+	"Enemy Controller",
+	"Snatch Steal",
+	"Mind Control",
+	"Foolish Burial",
+	"Lightning Vortex",
+	"Forbidden Chalice",
+	"Forbidden Lance",
+	"Allure of Darkness",
+	"Pot of Duality",
+	"Upstart Goblin",
+	"Called by the Grave",
+	
+	# === TRAPS ===
+	"Mirror Force",
+	"Torrential Tribute",
+	"Solemn Judgment",
+	"Solemn Warning",
+	"Solemn Strike",
+	"Bottomless Trap Hole",
+	"Compulsory Evacuation Device",
+	"Dimensional Prison",
+	"Call of the Haunted",
+	"Magic Cilinder",
+	"Trap Dustshoot",
+	"Mind Crush",
+	"Phoenix Wing Wind Blast",
+	"Ring of Destruction",
+	"Fiendish Chain",
+	"Lost Wind",
+	"Ice Dragon's Prison",
+	
+	# === EXTRA DECK – XYZ ===
+	"Number 101: Silent Honor ARK",
+	"Castel, the Skyblaster Musketeer",
+	"Tornado Dragon",
+	"Evilswarm Exciton Knight",
+	"Abyss Dweller",
+	"Number 39: Utopia",
+	"Number 41: Bagooska the Terribly Tired Tapir",
+	"Leviair the Sea Dragon",
+	
+	# === EXTRA DECK – SYNCHRO ===
+	"Black Rose Dragon",
+	"Brionac, Dragon of the Ice Barrier",
+	"Stardust Dragon",
+	"Scrap Dragon",
+	"Trishula, Dragon of the Ice Barrier",
+	"Armory Arm",
+	"Formula Synchron",
+	
+	# === EXTRA DECK – LINK ===
+	"Knightmare Phoenix",
+	"Knightmare Cerberus",
+	"Knightmare Unicorn",
+	"Linkuriboh",
+	"Relinquished Anima",
+	"Accesscode Talker",
+	"Borrelsword Dragon"
+	]
+	return STAPLE_CARDS
