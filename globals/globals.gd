@@ -3,7 +3,8 @@ extends Node
 var cards:= {
 	'Monsters': [],
 	'Spells': [],
-	'Extra': []
+	'Extra': [],
+	'Staples': []
 }
 var staples: Array[CardData] = []
 var race_counts := {}

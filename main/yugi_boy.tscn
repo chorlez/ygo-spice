@@ -68,7 +68,7 @@ text = "Reroll race"
 layout_mode = 2
 text = "Roll Pack"
 
-[node name="RaceLabel" type="Label" parent="UIPanel/UIlayer"]
+[node name="RaceMenu" type="OptionButton" parent="UIPanel/UIlayer"]
 layout_mode = 2
 
 [node name="Spacer" type="Control" parent="UIPanel/UIlayer"]
@@ -147,4 +147,5 @@ access = 2
 [connection signal="pressed" from="UIPanel/UIlayer/SaveDeck" to="CivilWar" method="_on_save_deck_pressed"]
 [connection signal="pressed" from="UIPanel/UIlayer/RollRaceButton" to="CivilWar" method="_on_roll_race_button_pressed"]
 [connection signal="pressed" from="UIPanel/UIlayer/RollPackButton" to="CivilWar" method="_on_roll_pack_button_pressed"]
+[connection signal="item_selected" from="UIPanel/UIlayer/RaceMenu" to="CivilWar" method="_on_race_menu_item_selected"]
 [connection signal="file_selected" from="SaveDeckDialog" to="CivilWar" method="_on_save_deck_dialog_file_selected"]
