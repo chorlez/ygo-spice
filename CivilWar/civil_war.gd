@@ -38,7 +38,6 @@ func _ready():
 	EventBus.start_civil_war.connect(initialize)
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
-	EventBus.player_connected.connect(_on_player_connected)
 
 func initialize():
 	cards = Globals.cards
@@ -244,18 +243,6 @@ func rpc_sync_pack(new_pack):
 func rpc_remove_card_from_pack(card_index: int):
 	PackContainer.get_child(card_index).queue_free()
 
-func _on_player_connected(peer_id:int, steam_id:int, player_name:String) -> void:
-	var new_player = Player.new()
-	new_player.peer_id = peer_id
-	new_player.steam_id = steam_id
-	new_player.player_name = player_name
-	playerList.append(new_player)
-
-	var player_names: Array = []
-	for player in playerList:
-		player_names.append(player.player_name)
-
-	PlayerLabel.text = '\t'.join(player_names)
 
 func build_ydk_string() -> String:
 	var lines := []
