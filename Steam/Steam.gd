@@ -103,6 +103,7 @@ func get_lobby_players():
 func _on_player_connected(id):
 	var steam_id = peer.get_steam_id_for_peer_id(id)
 	print("Player connected: %s" % Steam.getFriendPersonaName(steam_id))
+	EventBus.player_connected.emit()
 	get_lobby_players()
 
 func _on_peer_disconnected(id: int):

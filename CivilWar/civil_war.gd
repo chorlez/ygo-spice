@@ -216,7 +216,6 @@ func _on_roll_pack_button_pressed():
 func rpc_request_new_cube():
 	if not multiplayer.is_server():
 		return
-
 	roll_race()
 	
 
@@ -236,10 +235,10 @@ func rpc_sync_race(new_race: String):
 
 @rpc("any_peer","call_local")
 func rpc_sync_pack(new_pack):
-	var pack: Array[CardData] = []
+	var pack_to_unpack: Array[CardData] = []
 	for card_id in new_pack:
-		pack.append(Globals.cards_by_id[card_id])
-	show_pack(pack)
+		pack_to_unpack.append(Globals.cards_by_id[card_id])
+	show_pack(pack_to_unpack)
 
 @rpc("any_peer","call_remote")
 func rpc_remove_card_from_pack(card_index: int):
@@ -290,5 +289,6 @@ func _on_race_menu_item_selected(index: int) -> void:
 		create_cube()
 
 func sync_state():
+	print('this syncs')
 	rpc("rpc_sync_race", race)
 	rpc("rpc_sync_pack", pack)
