@@ -24,6 +24,7 @@ var cube := {
 	'Staples':[]
 }
 var race: String
+var pack: Array
 var min_race_size := 100	
 var playerList : Array[Player] = []
 
@@ -38,6 +39,7 @@ func _ready():
 	EventBus.start_civil_war.connect(initialize)
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
+	EventBus.player_connected.connect(sync_state)
 
 func initialize():
 	cards = Globals.cards
@@ -70,7 +72,7 @@ func roll_race():
 	create_cube()
 
 func roll_pack(n=10):
-	var pack: Array[int] = []
+	pack = []
 	while pack.size() < n:
 		var roll := randf() # 0.0 – 1.0
 		var cumulative := 0.0
@@ -286,3 +288,7 @@ func _on_race_menu_item_selected(index: int) -> void:
 	if multiplayer.is_server():
 		race = RaceMenu.get_item_text(index)
 		create_cube()
+
+func sync_state():
+	rpc("rpc_sync_race", race)
+	rpc("rpc_sync_pack", pack)
