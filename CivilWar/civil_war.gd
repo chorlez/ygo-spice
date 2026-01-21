@@ -243,7 +243,6 @@ func rpc_sync_pack(new_pack):
 func rpc_remove_card_from_pack(card_index: int):
 	PackContainer.get_child(card_index).queue_free()
 
-
 func build_ydk_string() -> String:
 	var lines := []
 

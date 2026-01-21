@@ -3,10 +3,8 @@ extends Control
 # THIS VERSION WILL ONLY HAVE ONE LOBBY AND AUTO CREATE / AUTO JOIN
 var lobby_id := 0
 var peer = SteamMultiplayerPeer.new()
+var lobby_died := false
 
-var own_peer_id:int
-var own_steam_id:int
-var own_steam_name: String
 var game_name:= "YugiBoy"
 var player_list = []
 
@@ -40,8 +38,9 @@ func find_or_create_lobby():
 
 func _on_lobby_match_list(lobbies):
 	print("Found %d lobbies" % lobbies.size())
-	if lobbies.size() == 0:
+	if lobbies.size() == 0 or lobby_died:
 		host_lobby()
+		lobby_died = false
 	else:
 		print("Joining lobby %s" % Steam.getLobbyData(lobbies[0], 'name'))
 		join_lobby(lobbies[0])
@@ -74,14 +73,15 @@ func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 	if response != Steam.RESULT_OK:
 		print("Failed to join lobby!")
 		return
+	lobby_id = slct_lobby_id
 
 	var lobby_owner = Steam.getLobbyOwner(slct_lobby_id)
-	
+
 	ReconnectButton.visible = false
 	if lobby_owner == Steam.getSteamID():
 		get_lobby_players()
 		return
-	lobby_id = slct_lobby_id
+
 	print("Joined lobby %d successfully" % lobby_id)
 
 	# Create multiplayer peer as CLIENT
@@ -116,6 +116,8 @@ func _on_connection_failed():
 	print('Connection Failed')
 
 func _on_server_disconnected():
+	lobby_died = true
+	lobby_id = 0
 	get_lobby_players()
 	ReconnectButton.visible = true
 	print('server disconnected')
