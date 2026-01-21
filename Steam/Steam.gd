@@ -3,7 +3,12 @@ extends Control
 # THIS VERSION WILL ONLY HAVE ONE LOBBY AND AUTO CREATE / AUTO JOIN
 var lobby_id := 0
 var peer = SteamMultiplayerPeer.new()
+
+var own_peer_id:int
+var own_steam_id:int
+var own_steam_name: String
 var game_name:= "YugiBoy"
+var player_list = []
 
 @onready var Game:= get_parent()
 @onready var ReconnectButton := Game.get_node('UIPanel/UIlayer/ReconnectButton')
@@ -71,10 +76,10 @@ func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 		return
 
 	var lobby_owner = Steam.getLobbyOwner(slct_lobby_id)
+	
 	ReconnectButton.visible = false
-	get_lobby_player_names()
 	if lobby_owner == Steam.getSteamID():
-		EventBus.player_connected.emit(1, lobby_owner, Steam.getPersonaName())
+		get_lobby_players()
 		return
 	lobby_id = slct_lobby_id
 	print("Joined lobby %d successfully" % lobby_id)
@@ -84,35 +89,34 @@ func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 	peer.create_client(lobby_owner)
 	multiplayer.multiplayer_peer = peer
 
-func get_lobby_player_names():
-	var names:= ''
-	var member_count := Steam.getNumLobbyMembers(lobby_id)
-
-	for i in range(member_count):
-		var steam_id := Steam.getLobbyMemberByIndex(lobby_id, i)
-		var steam_name := Steam.getFriendPersonaName(steam_id)
+func get_lobby_players():
+	player_list = [{'peer_id':get_tree().get_multiplayer().get_unique_id(), 'steam_id':Steam.getSteamID(), 'steam_name':Steam.getPersonaName()}]
+	var names:= Steam.getPersonaName() + ' | '
+	for peer_id in multiplayer.get_peers():
+		var steam_id = peer.get_steam_id_for_peer_id(peer_id)
+		var steam_name = Steam.getFriendPersonaName(steam_id)
+		player_list.append({'peer_id':peer_id, 'steam_id':steam_id, 'steam_name':steam_name})
 		names += steam_name + ' | '
-	
 	PlayerLabel.text = names
 	print('I fetched player names: ', names)
 
 func _on_player_connected(id):
 	var steam_id = peer.get_steam_id_for_peer_id(id)
-	get_lobby_player_names()
 	print("Player connected: %s" % Steam.getFriendPersonaName(steam_id))
-	
+	get_lobby_players()
 
 func _on_peer_disconnected(id: int):
-	get_lobby_player_names()
-	print("Player diconnected: %s" % Steam.getFriendPersonaName(id))
+	get_lobby_players()
+	var steam_id = peer.get_steam_id_for_peer_id(id)
+	print("Player diconnected: %s" % Steam.getFriendPersonaName(steam_id))
 	
 func _on_connection_failed():
-	get_lobby_player_names()
+	get_lobby_players()
 	ReconnectButton.visible = true
 	print('Connection Failed')
 
 func _on_server_disconnected():
-	get_lobby_player_names()
+	get_lobby_players()
 	ReconnectButton.visible = true
 	print('server disconnected')
 
