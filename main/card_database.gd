@@ -144,6 +144,10 @@ func juicy_staples():
 	"Pot of Duality",
 	"Upstart Goblin",
 	"Called by the Grave",
+	"Polymerization",
+	"Super Polymerization",
+	"Instant Fusion",
+	"Terraforming",
 	
 	# === TRAPS ===
 	"Mirror Force",

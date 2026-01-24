@@ -17,23 +17,14 @@ var cards:= {
 	'Extra': [],
 	'Staples':[]
 }
-var cube := {
-	'Monsters': [],
-	'Spells': [],
-	'Extra': [],
-	'Staples':[]
-}
+var cube : Cube = Cube.new()
 var race: String
 var pack: Array
 var min_race_size := 100	
 var playerList : Array[Player] = []
+var playerDeck: Deck = Deck.new()
 
-var type_weights := {
-	"Monsters": 0.45,
-	"Spells": 0.35,
-	"Extra": 0.1,
-	'Staples':0.1
-}
+
 
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
@@ -45,21 +36,11 @@ func initialize():
 	cards = Globals.cards
 	put_races_in_race_menu()
 	roll_race()
+	create_cube_and_pack()
 	
-
-func create_cube():
-	cube = {
-		'Monsters': [],
-		'Spells': [],
-		'Extra': [],
-		'Staples':[]
-	}
-	add_race_cards_to_cube()
-	add_support_cards_to_cube()
-	add_staples_to_cube()
-	
-	roll_pack()
-
+func put_races_in_race_menu():
+	for r in Globals.race_counts.keys():
+		RaceMenu.add_item(r)
 
 func roll_race():
 	var eligible_races: Array = []
@@ -69,96 +50,28 @@ func roll_race():
 			eligible_races.append(race_name)
 	race = eligible_races.pick_random()
 	rpc("rpc_sync_race", race)
-	create_cube()
+	
+@rpc("any_peer","call_local")
+func rpc_sync_race(new_race: String):
+	race = new_race
+	for i in range(RaceMenu.item_count):
+		if RaceMenu.get_item_text(i) == race:
+			RaceMenu.select(i)
 
 func roll_pack(n=10):
 	pack = []
 	while pack.size() < n:
-		var roll := randf() # 0.0 – 1.0
-		var cumulative := 0.0
-		var typ := ''
-		for t in ["Monsters", "Spells", "Extra", "Staples"]:
-			if roll >= cumulative:
-				typ = t
-			cumulative += type_weights[t]
-		var card : CardData = cube[typ].pick_random()
-		pack.append(card.id)
+		pack.append(cube.get_weighted_card())
 	rpc("rpc_sync_pack", pack)
 	
-func add_race_cards_to_cube():
-	for card in cards['Monsters'] + cards['Extra']:
-		if card.race == race:
-			if not card.extra_deck:
-				cube['Monsters'].append(card)
-			else:
-				cube['Extra'].append(card)
-
-func add_support_cards_to_cube():
-	var archetype_counts := get_archetypes_for_race()
-	var archetypes := filter_archetypes(archetype_counts)
-	for card in cards['Spells']:
-		if card_mentions_exact_race(card):
-			cube['Spells'].append(card)
-			
-		for archetype in archetypes:
-			if card_mentions_archetype(card, archetype):
-				cube['Spells'].append(card)
-					
-
-func card_mentions_exact_race(card: CardData) -> bool:
-	var text: String = card.description.to_lower()
-	var target := race.to_lower()
-
-	var pattern := "(^|[^a-zA-Z-])" + target + "([^a-zA-Z-]|$)"
-
-	var regex := RegEx.new()
-	regex.compile(pattern)
-
-	return regex.search(text) != null
-
-func get_archetypes_for_race() -> Dictionary:
-	var archetypes := {}
-
-	for card in cards['Monsters'] + cards['Extra']:
-		if card.race != race:
-			continue
-		if card.archetype == "":
-			continue
-
-		if not archetypes.has(card.archetype):
-			archetypes[card.archetype] = 0
-		archetypes[card.archetype] += 1
-
-	return archetypes
-
-func filter_archetypes(archetypes: Dictionary, min_size := 5) -> Array:
-	var result := []
-
-	for archetype in archetypes.keys():
-		if archetypes[archetype] >= min_size:
-			result.append(archetype)
-
-	return result
-
-func card_mentions_archetype(card: CardData, archetype: String) -> bool:
-	if card.description == "":
-		return false
-
-	var text := card.description.to_lower()
-	var target := archetype.to_lower()
-
-	var regex := RegEx.new()
-	# Match whole archetype name, not inside other words or hyphenated races
-	regex.compile("(^|[^a-zA-Z-])" + target + "([^a-zA-Z-]|$)")
-
-	return regex.search(text) != null
-
-func add_staples_to_cube():
-	cube['Staples'] = cards['Staples']
+@rpc("any_peer","call_local")
+func rpc_sync_pack(new_pack):
+	pack = []
+	for card_id in new_pack:
+		pack.append(Globals.cards_by_id[card_id])
+	display_pack()
 	
-
-
-func show_pack(pack: Array[CardData]):
+func display_pack():
 	# Clear old children
 	for child in PackContainer.get_children():
 		child.queue_free()
@@ -166,6 +79,11 @@ func show_pack(pack: Array[CardData]):
 	for card_data in pack:
 		var card: Card = Globals.create_card(card_data)
 		PackContainer.add_child(card)
+
+func create_cube_and_pack():
+	cube.create(race)
+	roll_pack()
+	
 
 func show_tooltip(card_data: CardData):
 	for child in TooltipArea.get_children():
@@ -182,23 +100,41 @@ func show_tooltip(card_data: CardData):
 	descriptionLabel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	scrollContainer.add_child(descriptionLabel)
 	TooltipArea.add_child(scrollContainer)
-
-func put_races_in_race_menu():
-	for r in Globals.race_counts.keys():
-		RaceMenu.add_item(r)
 		
-func card_pressed(card):
-	if card.state == 0:
-		var card_index = card.get_index()
+func card_pressed(card:Card):
+	if card.state == card.PACK:
+		var card_index := card.get_index()
 		rpc('rpc_remove_card_from_pack', card_index)
-		card.get_parent().remove_child(card)
-		if card.card_data.extra_deck:
-			ExtraDeckContainer.add_child(card)
-			card.state = 3
-		else:
-			MainDeckContainer.add_child(card)
-			card.state = 2
-			
+		add_card_to_deck(card)
+
+@rpc("any_peer","call_remote")
+func rpc_remove_card_from_pack(card_index: int):
+	PackContainer.get_child(card_index).queue_free()
+		
+func add_card_to_deck(card: Card):
+	# Move the card
+	card.get_parent().remove_child(card)
+	if card.card_data.extra_deck:
+		playerDeck.extraDeck.append(card.card_data)
+		ExtraDeckContainer.add_child(card)
+		card.state = 3
+	else:
+		playerDeck.mainDeck.append(card.card_data)
+		MainDeckContainer.add_child(card)
+		card.state = 2
+	
+func add_card_data_to_deck(cardData:CardData):
+	# Move the card
+	var card: Card = Globals.create_card(cardData) 
+	if card.card_data.extra_deck:
+		playerDeck.extraDeck.append(card.card_data)
+		ExtraDeckContainer.add_child(card)
+		card.state = card.EXTRADECK
+		
+	else:
+		playerDeck.mainDeck.append(card.card_data)
+		MainDeckContainer.add_child(card)
+		card.state = card.MAINDECK
 
 func _on_roll_race_button_pressed() -> void:
 	if multiplayer.is_server():
@@ -223,26 +159,28 @@ func rpc_request_new_cube():
 func rpc_request_new_pack():
 	if not multiplayer.is_server():
 		return
-
 	roll_pack()
 
-@rpc("any_peer","call_local")
-func rpc_sync_race(new_race: String):
-	race = new_race
-	for i in range(RaceMenu.item_count):
-		if RaceMenu.get_item_text(i) == race:
-			RaceMenu.select(i)
 
-@rpc("any_peer","call_local")
-func rpc_sync_pack(new_pack):
-	var pack_to_unpack: Array[CardData] = []
-	for card_id in new_pack:
-		pack_to_unpack.append(Globals.cards_by_id[card_id])
-	show_pack(pack_to_unpack)
 
-@rpc("any_peer","call_remote")
-func rpc_remove_card_from_pack(card_index: int):
-	PackContainer.get_child(card_index).queue_free()
+
+
+func _on_save_deck_pressed():
+	print('save deck pressed')
+	SaveDeckDialog.current_file = "[YuGiBoy]" + race + ".ydk"
+	SaveDeckDialog.popup_centered()
+
+func _on_save_deck_dialog_file_selected(path: String):
+	var ydk_text := build_ydk_string()
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		push_error("Failed to save deck")
+		return
+
+	file.store_string(ydk_text)
+	file.close()
+
+	print("Deck saved to:", path)
 
 func build_ydk_string() -> String:
 	var lines := []
@@ -263,32 +201,32 @@ func build_ydk_string() -> String:
 	lines.append("!side")
 
 	return "\n".join(lines)
-
-
-func _on_save_deck_pressed():
-	print('save deck pressed')
-	SaveDeckDialog.current_file = "[YuGiBoy]" + race + ".ydk"
-	SaveDeckDialog.popup_centered()
-
-func _on_save_deck_dialog_file_selected(path: String):
-	var ydk_text := build_ydk_string()
-	var file := FileAccess.open(path, FileAccess.WRITE)
-	if file == null:
-		push_error("Failed to save deck")
-		return
-
-	file.store_string(ydk_text)
-	file.close()
-
-	print("Deck saved to:", path)
-
-
+	
 func _on_race_menu_item_selected(index: int) -> void:
 	if multiplayer.is_server():
 		race = RaceMenu.get_item_text(index)
-		create_cube()
+		create_cube_and_pack()
+
 
 func sync_state():
 	print('this syncs')
 	rpc("rpc_sync_race", race)
 	rpc("rpc_sync_pack", pack)
+
+func show_cube_cards(n=100):
+	var archetype = 'The Agent'
+	var archetype_set = []
+	playerDeck.clear()
+	if race != 'Illusion':
+		return
+	print(cube['Monsters'].size())
+	for cardtype in cube.keys():
+		for cardData in cube[cardtype]:
+			if cardData.archetype not in archetype_set:
+				archetype_set.append(cardData.archetype)
+			if n > 0:
+				n -= 1
+				add_card_data_to_deck(cardData)
+				print(cardData.archetype)
+	print(n)
+	print(archetype_set)
