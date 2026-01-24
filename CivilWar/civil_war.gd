@@ -59,15 +59,17 @@ func rpc_sync_race(new_race: String):
 			RaceMenu.select(i)
 
 func roll_pack(n=10):
-	pack = []
-	while pack.size() < n:
-		pack.append(cube.get_weighted_card())
-	rpc("rpc_sync_pack", pack)
+	var new_pack = []
+	
+	while new_pack.size() < n:
+		new_pack.append(int(cube.get_weighted_card()))
+	rpc("rpc_sync_pack", new_pack)
 	
 @rpc("any_peer","call_local")
 func rpc_sync_pack(new_pack):
+	print(new_pack)
 	pack = []
-	for card_id in new_pack:
+	for card_id in  new_pack:
 		pack.append(Globals.cards_by_id[card_id])
 	display_pack()
 	
@@ -161,10 +163,6 @@ func rpc_request_new_pack():
 		return
 	roll_pack()
 
-
-
-
-
 func _on_save_deck_pressed():
 	print('save deck pressed')
 	SaveDeckDialog.current_file = "[YuGiBoy]" + race + ".ydk"
@@ -211,7 +209,10 @@ func _on_race_menu_item_selected(index: int) -> void:
 func sync_state():
 	print('this syncs')
 	rpc("rpc_sync_race", race)
-	rpc("rpc_sync_pack", pack)
+	var sync_pack = []
+	for card in pack:
+		sync_pack.append(card.id)
+	rpc("rpc_sync_pack", sync_pack)
 
 func show_cube_cards(n=100):
 	var archetype = 'The Agent'
