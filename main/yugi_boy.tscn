@@ -82,7 +82,7 @@ text = "Create Pack"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="PlayerContainer" type="VBoxContainer" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="PlayerContainer" type="HBoxContainer" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
 
 [node name="Spacer2" type="Control" parent="UIPanel/MarginContainer/UIlayer"]
