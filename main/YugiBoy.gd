@@ -25,11 +25,14 @@ var race: String
 var min_race_size := 100	
 var playerList : Array[Player] = []
 
+var default_filename := ""
+
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
 	EventBus.player_connected.connect(sync_state)
+	
 
 func initialize():
 	cards = Globals.cards
@@ -143,9 +146,13 @@ func rpc_request_new_pack():
 	create_pack()
 
 func _on_save_deck_pressed():
-	print('save deck pressed')
-	SaveDeckDialog.current_file = "[YuGiBoy]" + race + ".ydk"
+	default_filename = "[YuGiBoy]" + race + ".ydk"
+	SaveDeckDialog.current_file = default_filename
 	SaveDeckDialog.popup_centered()
+
+func _on_save_deck_dialog_dir_selected(dir):
+	if SaveDeckDialog.current_file.is_empty():
+		SaveDeckDialog.current_file = default_filename
 
 func _on_save_deck_dialog_file_selected(path: String):
 	var ydk_text := build_ydk_string()
@@ -186,12 +193,8 @@ func _on_race_menu_item_selected(index: int) -> void:
 
 
 func sync_state():
-	print('this syncs')
 	rpc("rpc_sync_race", race)
-	var sync_pack = []
-	for card in pack:
-		sync_pack.append(card.id)
-	rpc("rpc_sync_pack", sync_pack)
+	rpc("rpc_display_pack", pack.cardIDs)
 
 func show_cube_cards(n=100):
 	var archetype = 'The Agent'
