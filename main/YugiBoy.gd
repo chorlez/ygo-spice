@@ -31,13 +31,13 @@ func _ready():
 	EventBus.start_civil_war.connect(initialize)
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
-	EventBus.player_connected.connect(sync_state)
 
 func initialize():
-	if not multiplayer.is_server():
-		return
 	cards = Globals.cards
 	put_races_in_race_menu()
+	if not multiplayer.is_server():
+		return
+	EventBus.player_connected.connect(sync_state)
 	roll_race_create_cube_create_pack()
 	
 func put_races_in_race_menu():
