@@ -9,7 +9,7 @@ var cards:= {
 var staples: Array[CardData] = []
 var race_counts := {}
 var race_archetypes: Dictionary[Variant, Variant] = {}
-var cards_by_id: Dictionary[Variant, Variant] = {}
+var cardData_by_id: Dictionary[Variant, Variant] = {}
 
 const IMAGE_BASE_URL := "https://images.ygoprodeck.com/images/cards/"
 var CARDSCENE: PackedScene = preload("res://Card/card.tscn")

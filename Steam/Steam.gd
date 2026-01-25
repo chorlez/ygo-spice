@@ -9,8 +9,8 @@ var game_name:= "YugiBoy"
 var player_list = []
 
 @onready var Game:= get_parent()
-@onready var ReconnectButton := Game.get_node('UIPanel/UIlayer/ReconnectButton')
-@onready var PlayerLabel := Game.get_node('UIPanel/UIlayer/PlayerLabel')
+@onready var ReconnectButton := Game.get_node('UIPanel/MarginContainer/UIlayer/ReconnectButton')
+@onready var PlayerLabel := Game.get_node('UIPanel/MarginContainer/UIlayer/PlayerLabel')
 
 func _ready():
 	OS.set_environment("SteamAppID", str(480))

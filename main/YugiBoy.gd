@@ -1,15 +1,14 @@
 extends Node
 
 
-@onready var game: Node = get_parent()
-@onready var RaceMenu: Node = game.get_node('UIPanel/UIlayer/RaceMenu')
-@onready var RollRaceButton: Node = game.get_node('UIPanel/UIlayer/RollRaceButton')
-@onready var PlayerLabel: Node = game.get_node('UIPanel/UIlayer/PlayerLabel')
-@onready var PackContainer: Node = game.get_node('PackPanel/PackContainer')
-@onready var MainDeckContainer: Node = game.get_node('MainDeckPanel/ScrollContainer/MainDeckContainer')
-@onready var ExtraDeckContainer: Node = game.get_node('ExtraDeckPanel/ExtraDeckContainer')
-@onready var TooltipArea: Node = game.get_node('ToolTipPanel/TooltipArea')
-@onready var SaveDeckDialog: Node = game.get_node('SaveDeckDialog')
+@onready var RaceMenu: Node = get_node('UIPanel/MarginContainer/UIlayer/RaceMenu')
+@onready var RollRaceButton: Node = get_node('UIPanel/MarginContainer/UIlayer/RollRaceButton')
+@onready var PlayerLabel: Node = get_node('UIPanel/MarginContainer/UIlayer/PlayerLabel')
+@onready var PackContainer: Node = get_node('PackPanel/PackContainer')
+@onready var MainDeckContainer: Node = get_node('MainDeckPanel/ScrollContainer/MainDeckContainer')
+@onready var ExtraDeckContainer: Node = get_node('ExtraDeckPanel/ExtraDeckContainer')
+@onready var TooltipArea: Node = get_node('ToolTipPanel/TooltipArea')
+@onready var SaveDeckDialog: Node = get_node('SaveDeckDialog')
 
 var cards:= {
 	'Monsters': [],
@@ -18,13 +17,13 @@ var cards:= {
 	'Staples':[]
 }
 var cube : Cube = Cube.new()
-var race: String
-var pack: Array
-var min_race_size := 100	
-var playerList : Array[Player] = []
+var pack: Pack =  Pack.new()
 var playerDeck: Deck = Deck.new()
 
+var race: String
 
+var min_race_size := 100	
+var playerList : Array[Player] = []
 
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
@@ -58,34 +57,21 @@ func rpc_sync_race(new_race: String):
 		if RaceMenu.get_item_text(i) == race:
 			RaceMenu.select(i)
 
-func roll_pack(n=10):
-	var new_pack = []
-	
-	while new_pack.size() < n:
-		new_pack.append(int(cube.get_weighted_card()))
-	rpc("rpc_sync_pack", new_pack)
-	
-@rpc("any_peer","call_local")
-func rpc_sync_pack(new_pack):
-	print(new_pack)
-	pack = []
-	for card_id in  new_pack:
-		pack.append(Globals.cards_by_id[card_id])
-	display_pack()
-	
-func display_pack():
-	# Clear old children
-	for child in PackContainer.get_children():
-		child.queue_free()
-
-	for card_data in pack:
-		var card: Card = Globals.create_card(card_data)
-		PackContainer.add_child(card)
-
 func create_cube_and_pack():
 	cube.create(race)
-	roll_pack()
-	
+	create_pack()
+
+func create_pack():
+	pack.create(cube)
+	rpc_display_pack(pack.cardIDs)
+
+@rpc("any_peer","call_local")
+func rpc_display_pack(syncPack: Array[int]):
+	for child in PackContainer.get_children():
+		child.queue_free()
+	for cardID in syncPack:
+		var card: Card = Globals.create_card(Globals.cardData_by_id[cardID])
+		PackContainer.add_child(card)
 
 func show_tooltip(card_data: CardData):
 	for child in TooltipArea.get_children():
@@ -119,11 +105,11 @@ func add_card_to_deck(card: Card):
 	if card.card_data.extra_deck:
 		playerDeck.extraDeck.append(card.card_data)
 		ExtraDeckContainer.add_child(card)
-		card.state = 3
+		card.state = card.EXTRADECK
 	else:
 		playerDeck.mainDeck.append(card.card_data)
 		MainDeckContainer.add_child(card)
-		card.state = 2
+		card.state = card.MAINDECK
 	
 func add_card_data_to_deck(cardData:CardData):
 	# Move the card
@@ -139,29 +125,22 @@ func add_card_data_to_deck(cardData:CardData):
 		card.state = card.MAINDECK
 
 func _on_roll_race_button_pressed() -> void:
-	if multiplayer.is_server():
-		roll_race()
-	else:
-		rpc_id(1, "rpc_request_new_cube") # host is peer 1
+	rpc("rpc_request_new_cube")
 
-func _on_roll_pack_button_pressed():
-	if multiplayer.is_server():
-		roll_pack()
-	else:
-		rpc_id(1, "rpc_request_new_pack") # host is peer 1
-
-@rpc("any_peer","call_remote")
+@rpc("any_peer","call_local")
 func rpc_request_new_cube():
 	if not multiplayer.is_server():
 		return
 	roll_race()
-	
 
-@rpc("any_peer","call_remote")
+func _on_roll_pack_button_pressed():
+	rpc( "rpc_request_new_pack")
+
+@rpc("any_peer","call_local")
 func rpc_request_new_pack():
 	if not multiplayer.is_server():
 		return
-	roll_pack()
+	create_pack()
 
 func _on_save_deck_pressed():
 	print('save deck pressed')

@@ -100,7 +100,7 @@ func add_staples_to_cube():
 		staples.clear()
 
 # Return an integer id for a randomly selected weighted card (by type)
-func get_weighted_card() -> int:
+func get_weighted_card() -> CardData:
 	var roll := randf() # 0.0 – 1.0
 	var cumulative := 0.0
 	var chosen_type := ""
@@ -136,9 +136,9 @@ func get_weighted_card() -> int:
 		if staples.size() > 0:
 			non_empty.append(staples)
 		if non_empty.size() == 0:
-			return -1 # no cards available
+			pass
 		pool = non_empty.pick_random()
 
 	var cardData: CardData = pool.pick_random()
 	# return id to match existing civil_war rpc_sync_pack expectations
-	return cardData.id
+	return cardData

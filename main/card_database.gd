@@ -92,7 +92,7 @@ func normalize_card(raw: Dictionary) -> void:
 	else:
 		cards['Spells'].append(card)
 	# Index by ID
-	Globals.cards_by_id[card.id] = card
+	Globals.cardData_by_id[card.id] = card
 	
 func get_int_or_zero(dict: Dictionary, key: String) -> int:
 	var value = dict.get(key)

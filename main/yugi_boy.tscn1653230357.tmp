@@ -47,50 +47,39 @@ offset_bottom = 30.0
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
-[node name="MarginContainer" type="MarginContainer" parent="UIPanel"]
+[node name="UIlayer" type="HBoxContainer" parent="UIPanel"]
+custom_minimum_size = Vector2(1600, 30)
 layout_mode = 0
 offset_right = 1600.0
-offset_bottom = 31.0
-theme_override_constants/margin_top = 1
-theme_override_constants/margin_bottom = 2
-
-[node name="UIlayer" type="HBoxContainer" parent="UIPanel/MarginContainer"]
-custom_minimum_size = Vector2(1600, 0)
-layout_mode = 2
+offset_bottom = 34.0
 theme_override_constants/separation = 10
 
-[node name="SaveDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="SaveDeck" type="Button" parent="UIPanel/UIlayer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
 text = "Save Deck"
 
-[node name="RollRaceButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="RollRaceButton" type="Button" parent="UIPanel/UIlayer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "Random Cube"
+text = "Reroll race"
 
-[node name="RaceMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="RollPackButton" type="Button" parent="UIPanel/UIlayer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+text = "Roll Pack"
 
-[node name="RollPackButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="RaceMenu" type="OptionButton" parent="UIPanel/UIlayer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "Create Pack"
 
-[node name="Spacer" type="Control" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="Spacer" type="Control" parent="UIPanel/UIlayer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ReconnectButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="ReconnectButton" type="Button" parent="UIPanel/UIlayer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
 text = "Reconnect"
 
-[node name="PlayerLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="PlayerLabel" type="Label" parent="UIPanel/UIlayer"]
 layout_mode = 2
 size_flags_vertical = 1
-theme_override_font_sizes/font_size = 14
 
 [node name="PackPanel" type="Panel" parent="."]
 layout_mode = 0
@@ -157,8 +146,4 @@ script = ExtResource("4_jhidu")
 access = 2
 
 [connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_completed"]
-[connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/SaveDeck" to="." method="_on_save_deck_pressed"]
-[connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/RollRaceButton" to="." method="_on_roll_race_button_pressed"]
-[connection signal="item_selected" from="UIPanel/MarginContainer/UIlayer/RaceMenu" to="." method="_on_race_menu_item_selected"]
-[connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/RollPackButton" to="." method="_on_roll_pack_button_pressed"]
-[connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/ReconnectButton" to="Steam" method="_on_reconnect_pressed"]
+[connection signal="pressed" from="UIPanel/UIlayer/ReconnectButton" to="Steam" method="_on_reconnect_pressed"]
