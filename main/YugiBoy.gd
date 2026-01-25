@@ -18,7 +18,6 @@ var cards:= {
 }
 var cube : Cube = Cube.new()
 var pack: Pack =  Pack.new()
-var playerDeck: Deck = Deck.new()
 
 var race: String
 
@@ -27,10 +26,18 @@ var playerList : Array[Player] = []
 
 var default_filename := ""
 
+# The player whose deck is currently being displayed in the UI
+var current_shown_player: Player = null
+
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
+	# When a player is selected in the lobby, show their deck
+	EventBus.player_selected.connect(on_player_selected)
+	# If we already know the local client player, show their deck by default
+	if Globals.client_player != null:
+		show_player_deck(Globals.client_player)
 
 func initialize():
 	cards = Globals.cards
@@ -95,38 +102,49 @@ func show_tooltip(card_data: CardData):
 		
 func card_pressed(card:Card):
 	if card.state == card.PACK:
-		var card_index := card.get_index()
-		rpc('rpc_remove_card_from_pack', card_index)
-		add_card_to_deck(card)
+		var card_index_in_pack := card.get_index()
+		rpc('rpc_add_card_from_pack_to_deck', card_index_in_pack, Globals.client_player.steam_id)
 
-@rpc("any_peer","call_remote")
-func rpc_remove_card_from_pack(card_index: int):
-	PackContainer.get_child(card_index).queue_free()
-		
-func add_card_to_deck(card: Card):
+@rpc("any_peer","call_local")
+func rpc_add_card_from_pack_to_deck(card_index: int, player_steam_id:int):
+	var card = PackContainer.get_child(card_index)
+	var player: Player = Globals.get_player_by_steam_id(player_steam_id)
+	add_card_to_deck(card, player)
+
+
+func add_card_to_deck(card: Card, player: Player):
 	# Move the card
 	card.get_parent().remove_child(card)
 	if card.card_data.extra_deck:
-		playerDeck.extraDeck.append(card.card_data)
-		ExtraDeckContainer.add_child(card)
-		card.state = card.EXTRADECK
+		player.deck.extraDeck.append(card.card_data)
+		if current_shown_player == player:
+			ExtraDeckContainer.add_child(card)
+			card.state = card.EXTRADECK
+		else:
+			# Not currently showing this player's deck; free the visual node (will be recreated when deck is shown)
+			card.queue_free()
 	else:
-		playerDeck.mainDeck.append(card.card_data)
-		MainDeckContainer.add_child(card)
-		card.state = card.MAINDECK
-	
-func add_card_data_to_deck(cardData:CardData):
-	# Move the card
-	var card: Card = Globals.create_card(cardData) 
-	if card.card_data.extra_deck:
-		playerDeck.extraDeck.append(card.card_data)
-		ExtraDeckContainer.add_child(card)
-		card.state = card.EXTRADECK
-		
+		player.deck.mainDeck.append(card.card_data)
+		if current_shown_player == player:
+			MainDeckContainer.add_child(card)
+			card.state = card.MAINDECK
+		else:
+			card.queue_free()
+
+func add_card_data_to_deck(cardData:CardData, player:Player):
+	if cardData.extra_deck:
+		player.deck.extraDeck.append(cardData)
+		if current_shown_player == player:
+			var card: Card = Globals.create_card(cardData)
+			card.state = card.EXTRADECK
+			ExtraDeckContainer.add_child(card)
 	else:
-		playerDeck.mainDeck.append(card.card_data)
-		MainDeckContainer.add_child(card)
-		card.state = card.MAINDECK
+		player.deck.mainDeck.append(cardData)
+		if current_shown_player == player:
+			var card: Card = Globals.create_card(cardData)
+			card.state = card.MAINDECK
+			MainDeckContainer.add_child(card)
+
 
 func _on_roll_race_button_pressed() -> void:
 	rpc("rpc_request_random_cube")
@@ -198,24 +216,39 @@ func _on_race_menu_item_selected(index: int) -> void:
 	rpc("rpc_sync_race", race_to_sync)
 	rpc("rpc_request_new_cube")
 
+func on_player_selected(steam_name: String) -> void:
+	# Find the Player instance by name and display their deck
+	var found: Player = null
+	found = Globals.get_player_by_steam_name(steam_name)
+	if found != null:
+		show_player_deck(found)
+
+func show_player_deck(player: Player) -> void:
+	# Clear current UI
+	for child in MainDeckContainer.get_children():
+		child.queue_free()
+	for child in ExtraDeckContainer.get_children():
+		child.queue_free()
+
+	# Ensure player and their deck exist
+	if player == null:
+		return
+
+	# Create visual nodes for main deck
+	for card_data in player.deck.mainDeck:
+		var card_node: Card = Globals.create_card(card_data)
+		card_node.state = card_node.MAINDECK
+		MainDeckContainer.add_child(card_node)
+
+	# Create visual nodes for extra deck
+	for card_data in player.deck.extraDeck:
+		var card_node: Card = Globals.create_card(card_data)
+		card_node.state = card_node.EXTRADECK
+		ExtraDeckContainer.add_child(card_node)
+
+	# Remember which player is currently shown
+	current_shown_player = player
+
 func sync_state():
 	rpc("rpc_sync_race", race)
 	rpc("rpc_display_pack", pack.cardIDs)
-
-func show_cube_cards(n=100):
-	var archetype = 'The Agent'
-	var archetype_set = []
-	playerDeck.clear()
-	if race != 'Illusion':
-		return
-	print(cube['Monsters'].size())
-	for cardtype in cube.keys():
-		for cardData in cube[cardtype]:
-			if cardData.archetype not in archetype_set:
-				archetype_set.append(cardData.archetype)
-			if n > 0:
-				n -= 1
-				add_card_data_to_deck(cardData)
-				print(cardData.archetype)
-	print(n)
-	print(archetype_set)

@@ -10,6 +10,10 @@ var staples: Array[CardData] = []
 var race_counts := {}
 var race_archetypes: Dictionary[Variant, Variant] = {}
 var cardData_by_id: Dictionary[Variant, Variant] = {}
+var playerList : Array[Player] = []
+
+# The currently selected player in the lobby UI (set by Steam.gd when a player button is pressed)
+var client_player: Player = null
 
 const IMAGE_BASE_URL := "https://images.ygoprodeck.com/images/cards/"
 var CARDSCENE: PackedScene = preload("res://Card/card.tscn")
@@ -56,6 +60,17 @@ func load_card_image_to_ui(card: CardData, CardObject: Card) -> void:
 	var url := IMAGE_BASE_URL + str(card.id) + ".jpg"
 	http.request(url)
 
+func get_player_by_steam_id(player_steam_id: int) -> Player:
+	for player in playerList:
+		if player.steam_id == player_steam_id:
+			return player
+	return null
+
+func get_player_by_steam_name(steam_name: String) -> Player:
+	for player in playerList:
+		if player.player_name == steam_name:
+			return player
+	return null
 
 func _input(event):
 	if event.is_action_pressed("exit"):

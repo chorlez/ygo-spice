@@ -99,6 +99,65 @@ func get_lobby_players():
 		names += steam_name + ' | '
 	PlayerLabel.text = names
 	print('I fetched player names: ', names)
+	
+	# Ensure Globals.playerList contains Player objects for every lobby player
+	for pinfo in player_list:
+		var found: Player = null
+		for existing in Globals.playerList:
+			if existing.steam_id == pinfo['steam_id']:
+				found = existing
+				break
+		if found != null:
+			# Update peer_id and name in case they changed
+			found.peer_id = pinfo['peer_id']
+			found.player_name = pinfo['steam_name']
+		else:
+			# Create new Player and initialize its Deck
+			var new_player: Player = Player.new()
+			new_player.steam_id = pinfo['steam_id']
+			new_player.player_name = pinfo['steam_name']
+			new_player.peer_id = pinfo['peer_id']
+			new_player.deck = Deck.new()
+			Globals.playerList.append(new_player)
+			if pinfo['steam_id'] == Steam.getSteamID():
+				Globals.client_player = new_player
+	
+	create_player_buttons()
+
+func create_player_buttons():
+	var player_container = Game.get_node('UIPanel/MarginContainer/UIlayer/PlayerContainer')
+	var existing_buttons = player_container.get_children()
+	for btn in existing_buttons:
+		btn.queue_free()
+	
+	# Create one toggle button per player, connect pressed to a handler that will emit EventBus.player_selected
+	for player in player_list:
+		var btn = Button.new()
+		btn.text = player['steam_name']
+		btn.toggle_mode = true
+		# Pass steam_name and the button as extra args to the handler by binding them to the callable
+		btn.connect("pressed", Callable(self, "_on_player_button_pressed").bind(player['steam_name'], btn))
+		btn.add_theme_font_size_override("font_size", 14)
+		player_container.add_child(btn)
+		
+		# If this button corresponds to the local player, press it and emit selection immediately
+		if player['steam_id'] == Steam.getSteamID():
+			btn.set_pressed(true)
+			# ensure UI and listeners react to this selection
+			_on_player_button_pressed(player['steam_name'], btn)
+	
+
+func _on_player_button_pressed(steam_name: String, btn: Button) -> void:
+	# Ensure only one button is pressed at a time
+	var player_container = Game.get_node('UIPanel/MarginContainer/UIlayer/PlayerContainer')
+	for child in player_container.get_children():
+		if child is Button and child != btn:
+			child.set_pressed(false)
+	# Ensure the pressed button stays pressed
+	btn.set_pressed(true)
+	# Emit the selection for other systems (e.g., to display that player's deck)
+	EventBus.player_selected.emit(steam_name)
+
 
 func _on_player_connected(id):
 	var steam_id = peer.get_steam_id_for_peer_id(id)
