@@ -73,7 +73,7 @@ func normalize_card(raw: Dictionary) -> void:
 	card.def = get_int_or_zero(raw, "def")
 	card.extra_deck = is_extra
 	card.description = raw.desc
-
+	
 	### DISTRIBUTE CARDS TO PROPER LOCATIONS
 	if card.name in juicy_staples():
 		card.is_staple = true
@@ -89,7 +89,7 @@ func normalize_card(raw: Dictionary) -> void:
 			Globals.race_counts[card.race] += 1
 		else:
 			Globals.race_counts[card.race] = 1
-	else:
+	elif card.type.contains("Spell") or card.type.contains("Trap"):
 		cards['Spells'].append(card)
 	# Index by ID
 	Globals.cardData_by_id[card.id] = card
@@ -148,6 +148,7 @@ func juicy_staples():
 	"Super Polymerization",
 	"Instant Fusion",
 	"Terraforming",
+	"Supply Squad",
 	
 	# === TRAPS ===
 	"Mirror Force",

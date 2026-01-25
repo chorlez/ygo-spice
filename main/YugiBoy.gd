@@ -37,14 +37,13 @@ func _ready():
 func initialize():
 	cards = Globals.cards
 	put_races_in_race_menu()
-	roll_race()
-	create_cube_and_pack()
+	roll_race_create_cube_create_pack()
 	
 func put_races_in_race_menu():
 	for r in Globals.race_counts.keys():
 		RaceMenu.add_item(r)
 
-func roll_race():
+func roll_race_create_cube_create_pack():
 	var eligible_races: Array = []
 	for race_name in Globals.race_counts.keys():
 		var count :int = Globals.race_counts[race_name]
@@ -52,6 +51,7 @@ func roll_race():
 			eligible_races.append(race_name)
 	race = eligible_races.pick_random()
 	rpc("rpc_sync_race", race)
+	create_cube_create_pack()
 	
 @rpc("any_peer","call_local")
 func rpc_sync_race(new_race: String):
@@ -60,7 +60,7 @@ func rpc_sync_race(new_race: String):
 		if RaceMenu.get_item_text(i) == race:
 			RaceMenu.select(i)
 
-func create_cube_and_pack():
+func create_cube_create_pack():
 	cube.create(race)
 	create_pack()
 
@@ -134,7 +134,7 @@ func _on_roll_race_button_pressed() -> void:
 func rpc_request_new_cube():
 	if not multiplayer.is_server():
 		return
-	roll_race()
+	roll_race_create_cube_create_pack()
 
 func _on_roll_pack_button_pressed():
 	rpc( "rpc_request_new_pack")
@@ -189,8 +189,7 @@ func build_ydk_string() -> String:
 func _on_race_menu_item_selected(index: int) -> void:
 	if multiplayer.is_server():
 		race = RaceMenu.get_item_text(index)
-		create_cube_and_pack()
-
+		create_cube_create_pack()
 
 func sync_state():
 	rpc("rpc_sync_race", race)
