@@ -32,9 +32,10 @@ func _ready():
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
 	EventBus.player_connected.connect(sync_state)
-	
 
 func initialize():
+	if not multiplayer.is_server():
+		return
 	cards = Globals.cards
 	put_races_in_race_menu()
 	roll_race_create_cube_create_pack()
@@ -66,7 +67,7 @@ func create_cube_create_pack():
 
 func create_pack():
 	pack.create(cube)
-	rpc_display_pack(pack.cardIDs)
+	rpc("rpc_display_pack", pack.cardIDs)
 
 @rpc("any_peer","call_local")
 func rpc_display_pack(syncPack: Array[int]):
