@@ -129,10 +129,16 @@ func add_card_data_to_deck(cardData:CardData):
 		card.state = card.MAINDECK
 
 func _on_roll_race_button_pressed() -> void:
-	rpc("rpc_request_new_cube")
+	rpc("rpc_request_random_cube")
 
 @rpc("any_peer","call_local")
 func rpc_request_new_cube():
+	if not multiplayer.is_server():
+		return
+	create_cube_create_pack()
+
+@rpc("any_peer","call_local")
+func rpc_request_random_cube():
 	if not multiplayer.is_server():
 		return
 	roll_race_create_cube_create_pack()
@@ -188,9 +194,9 @@ func build_ydk_string() -> String:
 	return "\n".join(lines)
 	
 func _on_race_menu_item_selected(index: int) -> void:
-	if multiplayer.is_server():
-		race = RaceMenu.get_item_text(index)
-		create_cube_create_pack()
+	var race_to_sync = RaceMenu.get_item_text(index)
+	rpc("rpc_sync_race", race_to_sync)
+	rpc("rpc_request_new_cube")
 
 func sync_state():
 	rpc("rpc_sync_race", race)
