@@ -3,12 +3,7 @@ extends Node
 const API_URL := "https://db.ygoprodeck.com/api/v7/cardinfo.php?format=tcg"
 const CACHE_PATH := "res://data/cards.json"
 
-var cards:= {
-	'Monsters': [],
-	'Spells': [],
-	'Extra': [],
-	'Staples': []
-}
+@onready var cube := Globals.masterCube
 
 func _ready():
 	fetch_from_api()
@@ -27,14 +22,10 @@ func _on_http_request_completed(_result, response_code, _headers, body):
 		push_error("Invalid JSON response")
 		return
 
-
 	for raw_card in json["data"]:
 		normalize_card(raw_card)
 
 	#save_cache()
-	print("Loaded %d cards from API" % cards.size())
-
-	Globals.cards = cards
 	EventBus.start_civil_war.emit()
 
 #func save_cache():
@@ -77,20 +68,22 @@ func normalize_card(raw: Dictionary) -> void:
 	### DISTRIBUTE CARDS TO PROPER LOCATIONS
 	if card.name in juicy_staples():
 		card.is_staple = true
-		cards["Staples"].append(card)
+		cube.staples.append(card)
 		
 	elif card.type.contains("Monster"):
 		if not is_extra:
-			cards['Monsters'].append(card)
+			cube.monsters.append(card)
 		else:
-			cards['Extra'].append(card)
+			cube.extras.append(card)
 		#Keep count of race
 		if card.race in Globals.race_counts:
 			Globals.race_counts[card.race] += 1
 		else:
 			Globals.race_counts[card.race] = 1
-	elif card.type.contains("Spell") or card.type.contains("Trap"):
-		cards['Spells'].append(card)
+	elif card.type.contains("Spell"):
+		cube.spells.append(card)
+	elif card.type.contains("Trap"):
+		cube.traps.append(card)
 	# Index by ID
 	Globals.cardData_by_id[card.id] = card
 	

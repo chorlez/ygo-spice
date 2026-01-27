@@ -1,12 +1,6 @@
 extends Node
 
-var cards:= {
-	'Monsters': [],
-	'Spells': [],
-	'Extra': [],
-	'Staples': []
-}
-var staples: Array[CardData] = []
+@onready var masterCube: Cube = Cube.new()
 var race_counts := {}
 var race_archetypes: Dictionary[Variant, Variant] = {}
 var cardData_by_id: Dictionary[Variant, Variant] = {}

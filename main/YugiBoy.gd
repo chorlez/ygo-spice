@@ -9,13 +9,9 @@ extends Node
 @onready var ExtraDeckContainer: Node = get_node('ExtraDeckPanel/ExtraDeckContainer')
 @onready var TooltipArea: Node = get_node('ToolTipPanel/TooltipArea')
 @onready var SaveDeckDialog: Node = get_node('SaveDeckDialog')
+# optional sort-mode button (use get_node_or_null so it's safe if the scene doesn't have it yet)
+@onready var SortModeButton: Button = get_node_or_null('UIPanel/MarginContainer/UIlayer/SortModeButton')
 
-var cards:= {
-	'Monsters': [],
-	'Spells': [],
-	'Extra': [],
-	'Staples':[]
-}
 var cube : Cube = Cube.new()
 var pack: Pack =  Pack.new()
 
@@ -29,18 +25,25 @@ var default_filename := ""
 # The player whose deck is currently being displayed in the UI
 var current_shown_player: Player = null
 
+# Deck sorting state: ADDED keeps insertion order, YUGI_ORDER shows monsters first (highest level), then spells, then others
+enum DeckSort { ADDED, YUGI_ORDER }
+var deck_sort_mode := DeckSort.ADDED
+
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
 	# When a player is selected in the lobby, show their deck
 	EventBus.player_selected.connect(on_player_selected)
+	# Hook up sort button if present
+	if SortModeButton:
+		SortModeButton.pressed.connect(_on_sort_mode_button_pressed)
+		update_sort_button_text()
 	# If we already know the local client player, show their deck by default
 	if Globals.client_player != null:
-		show_player_deck(Globals.client_player)
+		show_player_deck()
 
 func initialize():
-	cards = Globals.cards
 	put_races_in_race_menu()
 	if not multiplayer.is_server():
 		return
@@ -114,36 +117,20 @@ func rpc_add_card_from_pack_to_deck(card_index: int, player_steam_id:int):
 
 func add_card_to_deck(card: Card, player: Player):
 	# Move the card
-	card.get_parent().remove_child(card)
 	if card.card_data.extra_deck:
 		player.deck.extraDeck.append(card.card_data)
-		if current_shown_player == player:
-			ExtraDeckContainer.add_child(card)
-			card.state = card.EXTRADECK
-		else:
-			# Not currently showing this player's deck; free the visual node (will be recreated when deck is shown)
-			card.queue_free()
 	else:
 		player.deck.mainDeck.append(card.card_data)
-		if current_shown_player == player:
-			MainDeckContainer.add_child(card)
-			card.state = card.MAINDECK
-		else:
-			card.queue_free()
+	card.queue_free()
+	show_player_deck()
 
 func add_card_data_to_deck(cardData:CardData, player:Player):
 	if cardData.extra_deck:
 		player.deck.extraDeck.append(cardData)
-		if current_shown_player == player:
-			var card: Card = Globals.create_card(cardData)
-			card.state = card.EXTRADECK
-			ExtraDeckContainer.add_child(card)
 	else:
 		player.deck.mainDeck.append(cardData)
-		if current_shown_player == player:
-			var card: Card = Globals.create_card(cardData)
-			card.state = card.MAINDECK
-			MainDeckContainer.add_child(card)
+	show_player_deck()
+
 
 
 func _on_roll_race_button_pressed() -> void:
@@ -218,36 +205,43 @@ func _on_race_menu_item_selected(index: int) -> void:
 
 func on_player_selected(steam_name: String) -> void:
 	# Find the Player instance by name and display their deck
-	var found: Player = null
-	found = Globals.get_player_by_steam_name(steam_name)
-	if found != null:
-		show_player_deck(found)
+	current_shown_player = Globals.get_player_by_steam_name(steam_name)
+	show_player_deck()
 
-func show_player_deck(player: Player) -> void:
+func show_player_deck() -> void:
 	# Clear current UI
 	for child in MainDeckContainer.get_children():
 		child.queue_free()
 	for child in ExtraDeckContainer.get_children():
 		child.queue_free()
 
-	# Ensure player and their deck exist
-	if player == null:
-		return
 
-	# Create visual nodes for main deck
-	for card_data in player.deck.mainDeck:
+	# Create visual nodes for main deck (use sorted display order so we don't mutate player's deck)
+	for card_data in current_shown_player.deck.sort_main_for_display(deck_sort_mode):
 		var card_node: Card = Globals.create_card(card_data)
 		card_node.state = card_node.MAINDECK
 		MainDeckContainer.add_child(card_node)
 
 	# Create visual nodes for extra deck
-	for card_data in player.deck.extraDeck:
+	for card_data in current_shown_player.deck.sort_extra_for_display(deck_sort_mode):
 		var card_node: Card = Globals.create_card(card_data)
 		card_node.state = card_node.EXTRADECK
 		ExtraDeckContainer.add_child(card_node)
 
-	# Remember which player is currently shown
-	current_shown_player = player
+
+
+func _on_sort_mode_button_pressed() -> void:
+	deck_sort_mode = (deck_sort_mode + 1) % 2
+	update_sort_button_text()
+	show_player_deck()
+
+func update_sort_button_text() -> void:
+	if not SortModeButton:
+		return
+	if deck_sort_mode == DeckSort.ADDED:
+		SortModeButton.text = "Sort: Added"
+	else:
+		SortModeButton.text = "Sort: YGO"
 
 func sync_state():
 	rpc("rpc_sync_race", race)

@@ -89,6 +89,9 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="SortModeButton" type="CheckButton" parent="UIPanel/MarginContainer/UIlayer"]
+layout_mode = 2
+
 [node name="ReconnectButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
