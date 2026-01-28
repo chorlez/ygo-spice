@@ -137,7 +137,7 @@ func create_player_buttons():
 		btn.toggle_mode = true
 		# Pass steam_name and the button as extra args to the handler by binding them to the callable
 		btn.connect("pressed", Callable(self, "_on_player_button_pressed").bind(player['steam_name'], btn))
-		btn.add_theme_font_size_override("font_size", 14)
+		btn.add_theme_font_size_override("font_size", 40)
 		player_container.add_child(btn)
 		
 		# If this button corresponds to the local player, press it and emit selection immediately

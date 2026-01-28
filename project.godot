@@ -23,8 +23,8 @@ Globals="*res://globals/globals.gd"
 
 [display]
 
-window/size/viewport_width=1600
-window/size/viewport_height=900
+window/size/viewport_width=3840
+window/size/viewport_height=2160
 window/stretch/mode="viewport"
 
 [input]

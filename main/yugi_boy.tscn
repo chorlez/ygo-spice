@@ -13,9 +13,11 @@ border_width_right = 1
 border_width_bottom = 1
 
 [node name="YugiBoy" type="Control"]
-custom_minimum_size = Vector2(1600, 900)
+custom_minimum_size = Vector2(3840, 2160)
 layout_mode = 3
 anchors_preset = 0
+offset_right = 2073.0
+offset_bottom = 1166.0
 script = ExtResource("1_jhidu")
 
 [node name="CardDatabase" type="Node" parent="."]
@@ -25,15 +27,15 @@ script = ExtResource("1_ynwbq")
 
 [node name="ToolTipPanel" type="Panel" parent="."]
 layout_mode = 0
-offset_top = 30.0
-offset_right = 400.0
-offset_bottom = 900.0
+offset_top = 72.0
+offset_right = 960.0
+offset_bottom = 2160.0
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
 [node name="TooltipArea" type="VBoxContainer" parent="ToolTipPanel"]
 layout_mode = 1
-offset_right = 400.0
+offset_right = 960.0
 offset_bottom = 850.0
 
 [node name="CardImage" parent="ToolTipPanel/TooltipArea" instance=ExtResource("3_ro6sk")]
@@ -42,17 +44,19 @@ size_flags_vertical = 0
 
 [node name="UIPanel" type="Panel" parent="."]
 layout_mode = 0
-offset_right = 1600.0
-offset_bottom = 30.0
+offset_right = 3840.0
+offset_bottom = 72.0
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
 [node name="MarginContainer" type="MarginContainer" parent="UIPanel"]
 layout_mode = 0
-offset_right = 1600.0
-offset_bottom = 31.0
-theme_override_constants/margin_top = 1
-theme_override_constants/margin_bottom = 2
+offset_right = 3840.0
+offset_bottom = 74.4
+theme_override_constants/margin_left = 3
+theme_override_constants/margin_top = 3
+theme_override_constants/margin_right = 3
+theme_override_constants/margin_bottom = 3
 
 [node name="UIlayer" type="HBoxContainer" parent="UIPanel/MarginContainer"]
 custom_minimum_size = Vector2(1600, 0)
@@ -61,21 +65,21 @@ theme_override_constants/separation = 10
 
 [node name="SaveDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 40
 text = "Save Deck"
 
 [node name="RollRaceButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 40
 text = "Random Cube"
 
 [node name="RaceMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 40
 
 [node name="RollPackButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 40
 text = "Create Pack"
 
 [node name="Spacer" type="Control" parent="UIPanel/MarginContainer/UIlayer"]
@@ -91,23 +95,24 @@ size_flags_horizontal = 3
 
 [node name="SortModeButton" type="CheckButton" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 40
 
 [node name="ReconnectButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 40
 text = "Reconnect"
 
 [node name="PlayerLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
 size_flags_vertical = 1
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 40
 
 [node name="PackPanel" type="Panel" parent="."]
 layout_mode = 0
-offset_left = 400.0
-offset_top = 30.0
-offset_right = 1600.0
-offset_bottom = 210.0
+offset_left = 960.0
+offset_top = 72.0
+offset_right = 3840.0
+offset_bottom = 504.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
@@ -115,18 +120,18 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 [node name="PackContainer" type="GridContainer" parent="PackPanel"]
 custom_minimum_size = Vector2(1200, 180)
 layout_mode = 0
-offset_right = 1200.0
-offset_bottom = 180.0
+offset_right = 2880.0
+offset_bottom = 432.0
 pivot_offset = Vector2(10, 10)
 theme_override_constants/h_separation = 0
 columns = 10
 
 [node name="MainDeckPanel" type="Panel" parent="."]
 layout_mode = 0
-offset_left = 400.0
-offset_top = 210.0
-offset_right = 1600.0
-offset_bottom = 730.0
+offset_left = 960.0
+offset_top = 504.0
+offset_right = 3840.0
+offset_bottom = 1752.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
@@ -134,21 +139,21 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 [node name="ScrollContainer" type="ScrollContainer" parent="MainDeckPanel"]
 custom_minimum_size = Vector2(1200, 520)
 layout_mode = 0
-offset_right = 1200.0
-offset_bottom = 400.0
+offset_right = 2880.0
+offset_bottom = 1248.0
 horizontal_scroll_mode = 0
 
 [node name="MainDeckContainer" type="GridContainer" parent="MainDeckPanel/ScrollContainer"]
-custom_minimum_size = Vector2(1200, 0)
+custom_minimum_size = Vector2(2880, 0)
 layout_mode = 2
 columns = 10
 
 [node name="ExtraDeckPanel" type="Panel" parent="."]
 layout_mode = 0
-offset_left = 400.0
-offset_top = 730.0
-offset_right = 1600.0
-offset_bottom = 900.0
+offset_left = 960.0
+offset_top = 1752.0
+offset_right = 3840.0
+offset_bottom = 2160.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
 [node name="ExtraDeckContainer" type="GridContainer" parent="ExtraDeckPanel"]
