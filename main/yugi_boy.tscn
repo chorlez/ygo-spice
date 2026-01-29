@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://bt4kc8oa72in2"]
+[gd_scene load_steps=9 format=3 uid="uid://bt4kc8oa72in2"]
 
 [ext_resource type="Script" uid="uid://bss7gssxhkutk" path="res://main/YugiBoy.gd" id="1_jhidu"]
 [ext_resource type="Script" uid="uid://c7gyykqfnu0wl" path="res://main/card_database.gd" id="1_ynwbq"]
@@ -11,6 +11,19 @@ border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
+
+[sub_resource type="Theme" id="Theme_jhidu"]
+default_font_size = 40
+
+[sub_resource type="DPITexture" id="DPITexture_jhidu"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#fff\" fill-opacity=\".75\" rx=\"7\"/><circle cx=\"24\" cy=\"8\" r=\"5\" fill=\"#1a1a1a\"/></svg>
+"
+base_scale = 3.0
+
+[sub_resource type="DPITexture" id="DPITexture_bod78"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><g fill-opacity=\".5\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#1a1a1a\" rx=\"7\"/><circle cx=\"8\" cy=\"8\" r=\"5\" fill=\"#fff\"/></g></svg>
+"
+base_scale = 3.0
 
 [node name="YugiBoy" type="Control"]
 custom_minimum_size = Vector2(3840, 2160)
@@ -75,7 +88,11 @@ text = "Random Cube"
 
 [node name="RaceMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
+theme = SubResource("Theme_jhidu")
 theme_override_font_sizes/font_size = 40
+item_count = 1
+popup/item_0/text = "hallo"
+popup/item_0/id = 0
 
 [node name="RollPackButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
@@ -96,6 +113,8 @@ size_flags_horizontal = 3
 [node name="SortModeButton" type="CheckButton" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
+theme_override_icons/checked = SubResource("DPITexture_jhidu")
+theme_override_icons/unchecked = SubResource("DPITexture_bod78")
 
 [node name="ReconnectButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
