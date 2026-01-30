@@ -13,6 +13,12 @@ func create(cube: Cube):
 		cards.append(cardData)
 		cardIDs.append(cardData.id)
 
+func add_card_by_id(card_id:int):
+	var cardData:CardData = Globals.cardData_by_id.get(card_id)
+	if cardData:
+		cards.append(cardData)
+		cardIDs.append(cardData.id)
+
 func clear():
 	cards = []
 	cardIDs = []

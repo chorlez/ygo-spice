@@ -93,6 +93,7 @@ func show_tooltip(card_data: CardData):
 
 	var card: Card = Globals.create_card(card_data)
 	card.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	card.state = card.TOOLTIP
 	TooltipArea.add_child(card)
 	var scrollContainer = ScrollContainer.new()
 	scrollContainer.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -100,6 +101,7 @@ func show_tooltip(card_data: CardData):
 	descriptionLabel.text = card_data.description
 	descriptionLabel.autowrap_mode = 3
 	descriptionLabel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	descriptionLabel.add_theme_font_size_override('font_size',40)
 	scrollContainer.add_child(descriptionLabel)
 	TooltipArea.add_child(scrollContainer)
 		
@@ -108,11 +110,13 @@ func card_pressed(card:Card):
 		var card_index_in_pack := card.get_index()
 		rpc('rpc_add_card_from_pack_to_deck', card_index_in_pack, Globals.client_player.steam_id)
 
+
 @rpc("any_peer","call_local")
 func rpc_add_card_from_pack_to_deck(card_index: int, player_steam_id:int):
 	var card = PackContainer.get_child(card_index)
 	var player: Player = Globals.get_player_by_steam_id(player_steam_id)
 	add_card_to_deck(card, player)
+
 
 
 func add_card_to_deck(card: Card, player: Player):

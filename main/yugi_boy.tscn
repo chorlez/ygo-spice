@@ -48,8 +48,11 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
 [node name="TooltipArea" type="VBoxContainer" parent="ToolTipPanel"]
 layout_mode = 1
-offset_right = 960.0
-offset_bottom = 850.0
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="CardImage" parent="ToolTipPanel/TooltipArea" instance=ExtResource("3_ro6sk")]
 layout_mode = 2
