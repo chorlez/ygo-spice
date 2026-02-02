@@ -3,10 +3,11 @@ extends Node
 
 @onready var RaceMenu: Node = get_node('UIPanel/MarginContainer/UIlayer/RaceMenu')
 @onready var RollRaceButton: Node = get_node('UIPanel/MarginContainer/UIlayer/RollRaceButton')
-@onready var PlayerLabel: Node = get_node('UIPanel/MarginContainer/UIlayer/PlayerLabel')
+@onready var DeckCountLabel: Node = get_node('UIPanel/MarginContainer/UIlayer/DeckCountLabel')
+@onready var LastAddedLabel: Node = get_node('UIPanel/MarginContainer/UIlayer/LastAddedLabel')
 @onready var PackContainer: Node = get_node('PackPanel/PackContainer')
 @onready var MainDeckContainer: Node = get_node('MainDeckPanel/ScrollContainer/MainDeckContainer')
-@onready var ExtraDeckContainer: Node = get_node('ExtraDeckPanel/ExtraDeckContainer')
+@onready var ExtraDeckContainer: Node = get_node('ExtraDeckPanel/ScrollContainer/ExtraDeckContainer')
 @onready var TooltipArea: Node = get_node('ToolTipPanel/TooltipArea')
 @onready var SaveDeckDialog: Node = get_node('SaveDeckDialog')
 # optional sort-mode button (use get_node_or_null so it's safe if the scene doesn't have it yet)
@@ -25,10 +26,6 @@ var default_filename := ""
 # The player whose deck is currently being displayed in the UI
 var current_shown_player: Player = null
 
-# Deck sorting state: ADDED keeps insertion order, YUGI_ORDER shows monsters first (highest level), then spells, then others
-enum DeckSort { ADDED, YUGI_ORDER }
-var deck_sort_mode := DeckSort.ADDED
-
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
 	EventBus.card_hovered.connect(show_tooltip)
@@ -38,7 +35,6 @@ func _ready():
 	# Hook up sort button if present
 	if SortModeButton:
 		SortModeButton.pressed.connect(_on_sort_mode_button_pressed)
-		update_sort_button_text()
 	# If we already know the local client player, show their deck by default
 	if Globals.client_player != null:
 		show_player_deck()
@@ -116,6 +112,7 @@ func rpc_add_card_from_pack_to_deck(card_index: int, player_steam_id:int):
 	var card = PackContainer.get_child(card_index)
 	var player: Player = Globals.get_player_by_steam_id(player_steam_id)
 	add_card_to_deck(card, player)
+	update_last_added_card(card, player)
 
 
 
@@ -134,8 +131,6 @@ func add_card_data_to_deck(cardData:CardData, player:Player):
 	else:
 		player.deck.mainDeck.append(cardData)
 	show_player_deck()
-
-
 
 func _on_roll_race_button_pressed() -> void:
 	rpc("rpc_request_random_cube")
@@ -221,31 +216,34 @@ func show_player_deck() -> void:
 
 
 	# Create visual nodes for main deck (use sorted display order so we don't mutate player's deck)
-	for card_data in current_shown_player.deck.sort_main_for_display(deck_sort_mode):
+	for card_data in current_shown_player.deck.sort_main_for_display():
 		var card_node: Card = Globals.create_card(card_data)
 		card_node.state = card_node.MAINDECK
 		MainDeckContainer.add_child(card_node)
 
 	# Create visual nodes for extra deck
-	for card_data in current_shown_player.deck.sort_extra_for_display(deck_sort_mode):
+	for card_data in current_shown_player.deck.sort_extra_for_display():
 		var card_node: Card = Globals.create_card(card_data)
 		card_node.state = card_node.EXTRADECK
 		ExtraDeckContainer.add_child(card_node)
+	
+	update_deck_count_label()
 
 
 
 func _on_sort_mode_button_pressed() -> void:
-	deck_sort_mode = (deck_sort_mode + 1) % 2
-	update_sort_button_text()
+	var mode = current_shown_player.deck.change_sort()
+	SortModeButton.text = "Sort: " + mode
 	show_player_deck()
 
-func update_sort_button_text() -> void:
-	if not SortModeButton:
-		return
-	if deck_sort_mode == DeckSort.ADDED:
-		SortModeButton.text = "Sort: Added"
-	else:
-		SortModeButton.text = "Sort: YGO"
+
+func update_deck_count_label():
+	var main_count := current_shown_player.deck.mainDeck.size()
+	var extra_count := current_shown_player.deck.extraDeck.size()
+	DeckCountLabel.text = "Deck: %d | Main: %d | Extra: %d" % [main_count + extra_count, main_count, extra_count]
+	
+func update_last_added_card(card: Card, player:Player):
+	LastAddedLabel.text = "%s added: %s" % [player.player_name, card.card_data.name]
 
 func sync_state():
 	rpc("rpc_sync_race", race)

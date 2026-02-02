@@ -97,7 +97,11 @@ theme_override_font_sizes/font_size = 40
 [node name="RollPackButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "Create Pack"
+text = "Roll Pack"
+
+[node name="DeckCountLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
 
 [node name="Spacer" type="Control" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
@@ -115,16 +119,16 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 40
 theme_override_icons/checked = SubResource("DPITexture_jhidu")
 theme_override_icons/unchecked = SubResource("DPITexture_bod78")
+text = "SORT: ADDED"
+
+[node name="LastAddedLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
 
 [node name="ReconnectButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Reconnect"
-
-[node name="PlayerLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer"]
-layout_mode = 2
-size_flags_vertical = 1
-theme_override_font_sizes/font_size = 40
 
 [node name="PackPanel" type="Panel" parent="."]
 layout_mode = 0
@@ -175,10 +179,18 @@ offset_right = 3840.0
 offset_bottom = 2160.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
-[node name="ExtraDeckContainer" type="GridContainer" parent="ExtraDeckPanel"]
-layout_mode = 0
-offset_right = 1200.0
-offset_bottom = 170.0
+[node name="ScrollContainer" type="ScrollContainer" parent="ExtraDeckPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ExtraDeckContainer" type="GridContainer" parent="ExtraDeckPanel/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 columns = 10
 
 [node name="Steam" type="Control" parent="."]
@@ -197,3 +209,4 @@ access = 2
 [connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/RollPackButton" to="." method="_on_roll_pack_button_pressed"]
 [connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/ReconnectButton" to="Steam" method="_on_reconnect_pressed"]
 [connection signal="dir_selected" from="SaveDeckDialog" to="." method="_on_save_deck_dialog_dir_selected"]
+[connection signal="file_selected" from="SaveDeckDialog" to="." method="_on_save_deck_dialog_file_selected"]

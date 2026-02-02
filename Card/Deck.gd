@@ -3,19 +3,32 @@ class_name Deck
 
 var mainDeck: Array[CardData]
 var extraDeck: Array[CardData]
+# Deck sorting state: ADDED keeps insertion order, YUGI_ORDER shows monsters first (highest level), then spells, then others
+enum DeckSort { ADDED, YUGI_ORDER }
+var deck_sort_mode := DeckSort.ADDED
+
 
 func clear():
 	mainDeck = []
 	extraDeck = []
 
+func change_sort():
+	deck_sort_mode = (deck_sort_mode + 1) % 2
+	if deck_sort_mode == DeckSort.ADDED:
+		return "ADDED"
+	else:
+		return "YUGI"
+
 # Sorting helpers - non-destructive, return a new array for display
-func sort_main_for_display(DeckSort) -> Array:
+func sort_main_for_display() -> Array:
 	# DeckSort is expected to be an int/enum value (0 == ADDED)
 	if mainDeck == null:
 		return []
 	
-	if DeckSort == 0: # ADDED
-		return mainDeck.duplicate()
+	if deck_sort_mode == 0: # ADDED
+		var deck_copy := mainDeck.duplicate()
+		deck_copy.reverse()
+		return deck_copy
 
 	var monsters := []
 	var spells := []
@@ -64,9 +77,11 @@ func sort_main_for_display(DeckSort) -> Array:
 
 	return monsters + spells + traps + staples + others
 
-func sort_extra_for_display(DeckSort) -> Array:
-	if DeckSort == 0: # ADDED
-		return extraDeck.duplicate()
+func sort_extra_for_display() -> Array:
+	if deck_sort_mode == 0: # ADDED
+		var extraCopy := extraDeck.duplicate()
+		extraCopy.reverse()
+		return extraCopy
 	var extra := []
 	var extra_cmp := Callable(self, "_sort_extra")
 	extra = extraDeck.duplicate()

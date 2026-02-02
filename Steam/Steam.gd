@@ -10,7 +10,6 @@ var player_list = []
 
 @onready var Game:= get_parent()
 @onready var ReconnectButton := Game.get_node('UIPanel/MarginContainer/UIlayer/ReconnectButton')
-@onready var PlayerLabel := Game.get_node('UIPanel/MarginContainer/UIlayer/PlayerLabel')
 
 func _ready():
 	OS.set_environment("SteamAppID", str(480))
@@ -97,7 +96,6 @@ func get_lobby_players():
 		var steam_name = Steam.getFriendPersonaName(steam_id)
 		player_list.append({'peer_id':peer_id, 'steam_id':steam_id, 'steam_name':steam_name})
 		names += steam_name + ' | '
-	PlayerLabel.text = names
 	print('I fetched player names: ', names)
 	
 	# Ensure Globals.playerList contains Player objects for every lobby player
