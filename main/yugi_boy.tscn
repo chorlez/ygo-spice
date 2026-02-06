@@ -39,6 +39,7 @@ script = ExtResource("1_ynwbq")
 [node name="HTTPRequest" type="HTTPRequest" parent="CardDatabase"]
 
 [node name="ToolTipPanel" type="Panel" parent="."]
+visible = false
 layout_mode = 0
 offset_top = 72.0
 offset_right = 960.0
@@ -98,6 +99,48 @@ theme_override_font_sizes/font_size = 40
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Roll Pack"
+
+[node name="SearchContainer" type="VBoxContainer" parent="UIPanel/MarginContainer/UIlayer"]
+layout_mode = 2
+
+[node name="SearchInput" type="LineEdit" parent="UIPanel/MarginContainer/UIlayer/SearchContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+placeholder_text = "Search Cube"
+
+[node name="SearchScrollContainer" type="ScrollContainer" parent="UIPanel/MarginContainer/UIlayer/SearchContainer"]
+clip_contents = false
+custom_minimum_size = Vector2(0, 300)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UIPanel/MarginContainer/UIlayer/SearchContainer/SearchScrollContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UIPanel/MarginContainer/UIlayer/SearchContainer/SearchScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "dafeafe;aoisej;f"
+
+[node name="Label2" type="Label" parent="UIPanel/MarginContainer/UIlayer/SearchContainer/SearchScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "dafeafe;aoisej;f"
+
+[node name="Label3" type="Label" parent="UIPanel/MarginContainer/UIlayer/SearchContainer/SearchScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "dafeafe;aoisej;f"
+
+[node name="Label4" type="Label" parent="UIPanel/MarginContainer/UIlayer/SearchContainer/SearchScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "dafeafe;aoisej;f"
+
+[node name="Label5" type="Label" parent="UIPanel/MarginContainer/UIlayer/SearchContainer/SearchScrollContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "dafeafe;aoisej;f"
 
 [node name="DeckCountLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer"]
 layout_mode = 2
@@ -200,6 +243,10 @@ offset_bottom = 40.0
 script = ExtResource("4_jhidu")
 
 [node name="SaveDeckDialog" type="FileDialog" parent="."]
+size = Vector2i(1920, 1080)
+content_scale_mode = 2
+content_scale_aspect = 4
+content_scale_factor = 2.0
 access = 2
 
 [connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_completed"]

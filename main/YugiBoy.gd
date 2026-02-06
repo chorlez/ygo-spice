@@ -13,6 +13,9 @@ extends Node
 # optional sort-mode button (use get_node_or_null so it's safe if the scene doesn't have it yet)
 @onready var SortModeButton: Button = get_node_or_null('UIPanel/MarginContainer/UIlayer/SortModeButton')
 
+@onready var search_input: LineEdit = get_node_or_null('UIPanel/MarginContainer/UIlayer/SearchContainer/SearchInput')
+@onready var results_container: VBoxContainer = get_node_or_null('UIPanel/MarginContainer/UIlayer/SearchContainer/SearchScrollContainer/VBoxContainer')
+
 var cube : Cube = Cube.new()
 var pack: Pack =  Pack.new()
 
@@ -68,7 +71,7 @@ func rpc_sync_race(new_race: String):
 			RaceMenu.select(i)
 
 func create_cube_create_pack():
-	cube.create(race)
+	cube.create(race, search_input, results_container)
 	create_pack()
 
 func create_pack():
@@ -101,10 +104,14 @@ func show_tooltip(card_data: CardData):
 	scrollContainer.add_child(descriptionLabel)
 	TooltipArea.add_child(scrollContainer)
 		
-func card_pressed(card:Card):
-	if card.state == card.PACK:
-		var card_index_in_pack := card.get_index()
-		rpc('rpc_add_card_from_pack_to_deck', card_index_in_pack, Globals.client_player.steam_id)
+func card_pressed(card:Card, index: int):
+	if index == 0: # left click
+		if card.state == card.PACK:
+			var card_index_in_pack := card.get_index()
+			rpc('rpc_add_card_from_pack_to_deck', card_index_in_pack, Globals.client_player.steam_id)
+	elif index == 1: # right click
+		print("Right clicked on card: %s" % card.card_data.name)
+		card.card_data.print_card_details()
 
 
 @rpc("any_peer","call_local")
@@ -113,7 +120,6 @@ func rpc_add_card_from_pack_to_deck(card_index: int, player_steam_id:int):
 	var player: Player = Globals.get_player_by_steam_id(player_steam_id)
 	add_card_to_deck(card, player)
 	update_last_added_card(card, player)
-
 
 
 func add_card_to_deck(card: Card, player: Player):

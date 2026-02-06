@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 class_name Cube
 
 var monsters: Array[CardData]
@@ -6,6 +6,8 @@ var spells: Array[CardData]
 var traps: Array[CardData]
 var extras: Array[CardData]
 var staples: Array[CardData]
+
+var cube: Array[CardData] # Combined array for searching
 
 var type_weights := {
 	"Monsters": 0.45,
@@ -19,14 +21,28 @@ var type_weights := {
 var masterCube: Cube
 var race: String = ""
 
+# Cube searcher 
+@export var search_input: LineEdit
+@export var results_container: VBoxContainer
+
+var max_results := 50
+	
+
+
 # Replace create to accept cards and race and build cube internally
-func create(new_race: String):
+func create(new_race: String, n_search_input: LineEdit, n_results_container: VBoxContainer):
 	masterCube = Globals.masterCube
 	race = new_race
+	search_input = n_search_input
+	search_input.text_changed.connect(_on_search_text_changed)
+	results_container = n_results_container
 	clear()
 	add_race_cards_to_cube()
 	add_support_cards_to_cube()
 	add_staples_to_cube()
+	# Build combined cube for searching
+	cube = monsters + spells + traps + extras + staples
+	
 
 func clear():
 	monsters.clear()
@@ -146,3 +162,33 @@ func get_weighted_card() -> CardData:
 	var cardData: CardData = pool.pick_random()
 	# return id to match existing civil_war rpc_sync_pack expectations
 	return cardData
+
+func _on_search_text_changed(text):
+	var query = text.strip_edges().to_lower()
+	
+	_clear_results()
+	
+	if query.is_empty():
+		return
+	
+	var shown := 0
+	
+	for card in cube:
+		if card.name.to_lower().contains(query):
+			_add_result(card)
+			shown += 1
+			if shown >= max_results:
+				break
+
+func _clear_results():
+	for child in results_container.get_children():
+		child.queue_free()
+
+func _add_result(card: CardData):
+	var label := Label.new()
+	label.text = card.name
+	label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+
+	results_container.add_child(label)

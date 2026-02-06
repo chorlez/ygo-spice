@@ -4,7 +4,8 @@ signal start_civil_war
 
 signal card_hovered(card_data:CardData)
 # Include the Player who clicked the card so handlers know who acted
-signal card_pressed(card:Card)
+# 0: left click, 1: right click
+signal card_pressed(card:Card, button_index:int)
 
 signal player_connected()
 

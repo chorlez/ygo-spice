@@ -2,6 +2,7 @@ extends Node
 
 const API_URL := "https://db.ygoprodeck.com/api/v7/cardinfo.php?format=tcg"
 const CACHE_PATH := "res://data/cards.json"
+var use_pendulum :bool = false
 
 @onready var cube := Globals.masterCube
 
@@ -48,6 +49,9 @@ func normalize_card(raw: Dictionary) -> void:
 	var card := CardData.new()
 
 	var card_type : String= raw.get("type", "")
+	# Check pendulum filter
+	if 'pendulum' in card_type.to_lower() and not use_pendulum:
+		return
 	var is_extra :bool = (
 		card_type.contains("Fusion")
 		or card_type.contains("Synchro")
