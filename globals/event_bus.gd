@@ -11,3 +11,5 @@ signal player_connected()
 
 # Emitted when a player is selected in the lobby UI. Payload is the Steam display name (String).
 signal player_selected(steam_name: String)
+
+signal mouse_clicked(event_position: Vector2)

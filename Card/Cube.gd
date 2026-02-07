@@ -24,18 +24,18 @@ var race: String = ""
 # Cube searcher 
 @export var search_input: LineEdit
 @export var results_container: VBoxContainer
+@export var results_panel: Panel
 
 var max_results := 50
-	
-
 
 # Replace create to accept cards and race and build cube internally
-func create(new_race: String, n_search_input: LineEdit, n_results_container: VBoxContainer):
+func create(new_race: String, n_search_input: LineEdit):
 	masterCube = Globals.masterCube
 	race = new_race
 	search_input = n_search_input
 	search_input.text_changed.connect(_on_search_text_changed)
-	results_container = n_results_container
+	search_input.editing_toggled.connect(_on_editing_toggled)
+	EventBus.mouse_clicked.connect(_on_search_focus_exited)
 	clear()
 	add_race_cards_to_cube()
 	add_support_cards_to_cube()
@@ -175,20 +175,109 @@ func _on_search_text_changed(text):
 	
 	for card in cube:
 		if card.name.to_lower().contains(query):
-			_add_result(card)
+			_add_result_to_search(card)
 			shown += 1
 			if shown >= max_results:
 				break
 
 func _clear_results():
-	for child in results_container.get_children():
-		child.queue_free()
+	if results_container:
+		for child in results_container.get_children():
+			child.queue_free()
 
-func _add_result(card: CardData):
-	var label := Label.new()
-	label.text = card.name
-	label.autowrap_mode = TextServer.AUTOWRAP_OFF
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+func hide_results():
+	if results_panel:
+		results_panel.queue_free()
+		results_panel = null
+		results_container = null
 
-	results_container.add_child(label)
+# Helper: spawn a ScrollContainer + VBoxContainer directly under the LineEdit
+func _spawn_inline_results_container_below_lineedit() -> void:
+	# If already created, reuse
+	if results_container and results_container.is_inside_tree():
+		return
+
+	# Find a parent to host Controls (prefer the LineEdit parent)
+	var host := search_input.get_tree().get_root()
+
+	# Create the scroll container and inner vbox
+	var sc := ScrollContainer.new()
+	sc.name = "SearchResultsScroll"
+	var vbox := VBoxContainer.new()
+	vbox.name = "SearchResultsVBox"
+	var panel := Panel.new()
+	panel.name = "SearchResultsPanel"
+	
+	# Create a flat style for the panel (grey background with rounded corners and border)
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color.DARK_SLATE_GRAY
+	sb.border_color = Color(0, 0, 0, 0.6)
+	sb.border_width_top = 1
+	sb.border_width_bottom = 1
+	sb.border_width_left = 1
+	sb.border_width_right = 1
+	sb.corner_radius_top_left = 6
+	sb.corner_radius_top_right = 6
+	sb.corner_radius_bottom_left = 6
+	sb.corner_radius_bottom_right = 6
+	panel.add_theme_stylebox_override("panel", sb)
+
+	host.add_child(panel)
+	sc.add_child(vbox)
+	# Add to host so it shares the same canvas/control hierarchy as the LineEdit
+	panel.add_child(sc)
+
+
+	# Try to position the scroll container below the LineEdit.
+	# Use rect_position/rect_size when available (Control), fallback to global_position.
+	var margin := 10
+	panel.global_position = search_input.global_position + Vector2(0, search_input.size.y + margin)
+	# match width of the LineEdit and give a reasonable height
+	panel.size = Vector2(1000, 400)
+	
+	sc.set_offsets_preset(Control.PRESET_FULL_RECT)
+	sc.set_anchors_preset(Control.PRESET_FULL_RECT)
+	sc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	sc.size_flags_vertical = Control.SIZE_EXPAND_FILL
+
+	# Expose the inner vbox as results_container for the rest of the code
+	results_container = vbox
+	results_panel = panel
+
+	# Optional: style/behaviour adjustments
+	if sc is ScrollContainer:
+		sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+
+func _on_editing_toggled(toggledOn:bool):
+	# If the user presses down arrow, focus the first result if it exists
+	if toggledOn:
+		_spawn_inline_results_container_below_lineedit()
+		for card in cube:
+			_add_result_to_search(card)
+#	else:
+#		_clear_results()
+				
+func _on_search_focus_exited(even_position: Vector2):	
+	# Clear results when the search box loses focus
+	if not results_panel:
+		return
+	if results_panel.get_global_rect().has_point(even_position):
+		# Click was inside the panel → do nothing
+		return
+	_clear_results()
+	hide_results()
+	search_input.release_focus()
+
+func _add_result_to_search(card: CardData):
+	var button := Button.new()
+	button.text = card.name
+	button.autowrap_mode = TextServer.AUTOWRAP_OFF
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.set_text_alignment(HORIZONTAL_ALIGNMENT_LEFT)
+	button.add_theme_font_size_override('font_size', 40)
+	button.mouse_filter = Control.MOUSE_FILTER_STOP
+	button.pressed.connect(func():
+		EventBus.card_hovered.emit(card)
+		)
+
+	results_container.add_child(button)

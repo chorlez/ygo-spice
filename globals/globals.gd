@@ -69,3 +69,7 @@ func get_player_by_steam_name(steam_name: String) -> Player:
 func _input(event):
 	if event.is_action_pressed("exit"):
 		get_tree().quit()
+	elif event is InputEventMouseButton \
+		and event.pressed \
+		and event.button_index == MOUSE_BUTTON_LEFT:
+		EventBus.mouse_clicked.emit(event.position)

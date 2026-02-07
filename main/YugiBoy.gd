@@ -13,8 +13,7 @@ extends Node
 # optional sort-mode button (use get_node_or_null so it's safe if the scene doesn't have it yet)
 @onready var SortModeButton: Button = get_node_or_null('UIPanel/MarginContainer/UIlayer/SortModeButton')
 
-@onready var search_input: LineEdit = get_node_or_null('UIPanel/MarginContainer/UIlayer/SearchContainer/SearchInput')
-@onready var results_container: VBoxContainer = get_node_or_null('UIPanel/MarginContainer/UIlayer/SearchContainer/SearchScrollContainer/VBoxContainer')
+@onready var search_input: LineEdit = get_node_or_null('UIPanel/MarginContainer/UIlayer/SearchInput')
 
 var cube : Cube = Cube.new()
 var pack: Pack =  Pack.new()
@@ -71,7 +70,7 @@ func rpc_sync_race(new_race: String):
 			RaceMenu.select(i)
 
 func create_cube_create_pack():
-	cube.create(race, search_input, results_container)
+	cube.create(race, search_input)
 	create_pack()
 
 func create_pack():
