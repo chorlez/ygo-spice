@@ -28,6 +28,7 @@ var default_filename := ""
 # The player whose deck is currently being displayed in the UI
 var current_shown_player: Player = null
 var current_added_card: CardData = null
+var backup_file_path: String = './[YugiBoy]Backup.ydk'
 
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
@@ -130,6 +131,8 @@ func add_card_to_deck(card: Card, player: Player):
 		player.deck.mainDeck.append(card.card_data)
 	card.queue_free()
 	show_player_deck()
+	if player == Globals.client_player:
+		_on_save_deck_dialog_file_selected(backup_file_path)
 
 func add_card_data_to_deck(cardData:CardData, player:Player):
 	if cardData.extra_deck:
@@ -175,23 +178,19 @@ func _on_save_deck_dialog_file_selected(path: String):
 	file.store_string(ydk_text)
 	file.close()
 
-	print("Deck saved to:", path)
-
 func build_ydk_string() -> String:
 	var lines := []
 
 	lines.append("#created by My Cube Draft App YuGiBoy")
 	lines.append("#main")
 
-	for card_node in MainDeckContainer.get_children():
-		if card_node.card_data:
-			lines.append(str(card_node.card_data.id))
+	for card_node in Globals.client_player.deck.mainDeck:
+		lines.append(str(card_node.id))
 
 	lines.append("#extra")
 
-	for card_node in ExtraDeckContainer.get_children():
-		if card_node.card_data:
-			lines.append(str(card_node.card_data.id))
+	for card_node in Globals.client_player.deck.extraDeck:
+		lines.append(str(card_node.id))
 
 	lines.append("!side")
 
@@ -227,8 +226,6 @@ func show_player_deck() -> void:
 		ExtraDeckContainer.add_child(card_node)
 	
 	update_deck_count_label()
-
-
 
 func _on_sort_mode_button_pressed() -> void:
 	var mode = current_shown_player.deck.change_sort()
