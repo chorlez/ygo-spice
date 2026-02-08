@@ -27,11 +27,13 @@ var default_filename := ""
 
 # The player whose deck is currently being displayed in the UI
 var current_shown_player: Player = null
+var current_added_card: CardData = null
 
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
+	LastAddedLabel.mouse_entered.connect(_on_last_added_hovered)
 	# When a player is selected in the lobby, show their deck
 	EventBus.player_selected.connect(on_player_selected)
 	# Hook up sort button if present
@@ -59,19 +61,18 @@ func roll_race_create_cube_create_pack():
 		if count >= min_race_size:
 			eligible_races.append(race_name)
 	race = eligible_races.pick_random()
-	rpc("rpc_sync_race", race)
-	create_cube_create_pack()
+	rpc("rpc_sync_create_cube", race)
+	
 	
 @rpc("any_peer","call_local")
-func rpc_sync_race(new_race: String):
+func rpc_sync_create_cube(new_race: String):
 	race = new_race
 	for i in range(RaceMenu.item_count):
 		if RaceMenu.get_item_text(i) == race:
 			RaceMenu.select(i)
-
-func create_cube_create_pack():
 	cube.create(race, search_input)
-	create_pack()
+	if multiplayer.is_server():
+		create_pack()
 
 func create_pack():
 	pack.create(cube)
@@ -141,12 +142,6 @@ func _on_roll_race_button_pressed() -> void:
 	rpc("rpc_request_random_cube")
 
 @rpc("any_peer","call_local")
-func rpc_request_new_cube():
-	if not multiplayer.is_server():
-		return
-	create_cube_create_pack()
-
-@rpc("any_peer","call_local")
 func rpc_request_random_cube():
 	if not multiplayer.is_server():
 		return
@@ -204,8 +199,7 @@ func build_ydk_string() -> String:
 	
 func _on_race_menu_item_selected(index: int) -> void:
 	var race_to_sync = RaceMenu.get_item_text(index)
-	rpc("rpc_sync_race", race_to_sync)
-	rpc("rpc_request_new_cube")
+	rpc("rpc_sync_create_cube", race_to_sync)
 
 func on_player_selected(steam_name: String) -> void:
 	# Find the Player instance by name and display their deck
@@ -249,7 +243,11 @@ func update_deck_count_label():
 	
 func update_last_added_card(card: Card, player:Player):
 	LastAddedLabel.text = "%s added: %s" % [player.player_name, card.card_data.name]
-
+	current_added_card = card.card_data
+	
+func _on_last_added_hovered():
+	EventBus.card_hovered.emit(current_added_card)
+	
 func sync_state():
 	rpc("rpc_sync_race", race)
 	rpc("rpc_display_pack", pack.cardIDs)

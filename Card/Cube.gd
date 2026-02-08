@@ -30,12 +30,10 @@ var max_results := 50
 
 # Replace create to accept cards and race and build cube internally
 func create(new_race: String, n_search_input: LineEdit):
-	masterCube = Globals.masterCube
+	if not masterCube:
+		init(n_search_input)
 	race = new_race
-	search_input = n_search_input
-	search_input.text_changed.connect(_on_search_text_changed)
-	search_input.editing_toggled.connect(_on_editing_toggled)
-	EventBus.mouse_clicked.connect(_on_search_focus_exited)
+
 	clear()
 	add_race_cards_to_cube()
 	add_support_cards_to_cube()
@@ -43,7 +41,13 @@ func create(new_race: String, n_search_input: LineEdit):
 	# Build combined cube for searching
 	cube = monsters + spells + traps + extras + staples
 	
-
+func init(n_search_input: LineEdit):
+	masterCube = Globals.masterCube
+	search_input = n_search_input
+	search_input.text_changed.connect(_on_search_text_changed)
+	search_input.editing_toggled.connect(_on_editing_toggled)
+	EventBus.mouse_clicked.connect(_on_search_focus_exited)
+	
 func clear():
 	monsters.clear()
 	spells.clear()

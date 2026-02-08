@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bt4kc8oa72in2"]
+[gd_scene format=3 uid="uid://bt4kc8oa72in2"]
 
 [ext_resource type="Script" uid="uid://bss7gssxhkutk" path="res://main/YugiBoy.gd" id="1_jhidu"]
 [ext_resource type="Script" uid="uid://c7gyykqfnu0wl" path="res://main/card_database.gd" id="1_ynwbq"]
@@ -25,7 +25,7 @@ _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\">
 "
 base_scale = 3.0
 
-[node name="YugiBoy" type="Control"]
+[node name="YugiBoy" type="Control" unique_id=1140980557]
 custom_minimum_size = Vector2(3840, 2160)
 layout_mode = 3
 anchors_preset = 0
@@ -33,12 +33,12 @@ offset_right = 2073.0
 offset_bottom = 1166.0
 script = ExtResource("1_jhidu")
 
-[node name="CardDatabase" type="Node" parent="."]
+[node name="CardDatabase" type="Node" parent="." unique_id=35667800]
 script = ExtResource("1_ynwbq")
 
-[node name="HTTPRequest" type="HTTPRequest" parent="CardDatabase"]
+[node name="HTTPRequest" type="HTTPRequest" parent="CardDatabase" unique_id=1040544210]
 
-[node name="ToolTipPanel" type="Panel" parent="."]
+[node name="ToolTipPanel" type="Panel" parent="." unique_id=558124]
 layout_mode = 0
 offset_top = 72.0
 offset_right = 960.0
@@ -46,7 +46,7 @@ offset_bottom = 2160.0
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
-[node name="TooltipArea" type="VBoxContainer" parent="ToolTipPanel"]
+[node name="TooltipArea" type="VBoxContainer" parent="ToolTipPanel" unique_id=1792674749]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -54,18 +54,18 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CardImage" parent="ToolTipPanel/TooltipArea" instance=ExtResource("3_ro6sk")]
+[node name="CardImage" parent="ToolTipPanel/TooltipArea" unique_id=602510552 instance=ExtResource("3_ro6sk")]
 layout_mode = 2
 size_flags_vertical = 0
 
-[node name="UIPanel" type="Panel" parent="."]
+[node name="UIPanel" type="Panel" parent="." unique_id=689442470]
 layout_mode = 0
 offset_right = 3840.0
 offset_bottom = 72.0
 size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
-[node name="MarginContainer" type="MarginContainer" parent="UIPanel"]
+[node name="MarginContainer" type="MarginContainer" parent="UIPanel" unique_id=1102746348]
 layout_mode = 0
 offset_right = 3840.0
 offset_bottom = 74.4
@@ -74,72 +74,73 @@ theme_override_constants/margin_top = 3
 theme_override_constants/margin_right = 3
 theme_override_constants/margin_bottom = 3
 
-[node name="UIlayer" type="HBoxContainer" parent="UIPanel/MarginContainer"]
+[node name="UIlayer" type="HBoxContainer" parent="UIPanel/MarginContainer" unique_id=1157266717]
 custom_minimum_size = Vector2(1600, 0)
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="SaveDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="SaveDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=649807316]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Save Deck"
 
-[node name="RollRaceButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="RollRaceButton" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=914896887]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Random Cube"
 
-[node name="RaceMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="RaceMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer" unique_id=1266203913]
 layout_mode = 2
 theme = SubResource("Theme_jhidu")
 theme_override_font_sizes/font_size = 40
 
-[node name="RollPackButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="RollPackButton" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=124531509]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Roll Pack"
 
-[node name="SearchContainer" type="VBoxContainer" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="SearchContainer" type="VBoxContainer" parent="UIPanel/MarginContainer/UIlayer" unique_id=462219083]
 layout_mode = 2
 
-[node name="DeckCountLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="DeckCountLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer" unique_id=773330472]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 
-[node name="Spacer" type="Control" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="Spacer" type="Control" parent="UIPanel/MarginContainer/UIlayer" unique_id=1556526084]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="PlayerContainer" type="HBoxContainer" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="PlayerContainer" type="HBoxContainer" parent="UIPanel/MarginContainer/UIlayer" unique_id=938247576]
 layout_mode = 2
 
-[node name="Spacer2" type="Control" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="Spacer2" type="Control" parent="UIPanel/MarginContainer/UIlayer" unique_id=1981291748]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SearchInput" type="LineEdit" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="SearchInput" type="LineEdit" parent="UIPanel/MarginContainer/UIlayer" unique_id=971204107]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 30
 placeholder_text = "Search Cube"
 
-[node name="SortModeButton" type="CheckButton" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="SortModeButton" type="CheckButton" parent="UIPanel/MarginContainer/UIlayer" unique_id=1112692839]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 theme_override_icons/checked = SubResource("DPITexture_jhidu")
 theme_override_icons/unchecked = SubResource("DPITexture_bod78")
 text = "SORT: ADDED"
 
-[node name="LastAddedLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="LastAddedLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer" unique_id=1824143048]
 layout_mode = 2
+mouse_filter = 0
 theme_override_font_sizes/font_size = 30
 
-[node name="ReconnectButton" type="Button" parent="UIPanel/MarginContainer/UIlayer"]
+[node name="ReconnectButton" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=1323034806]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Reconnect"
 
-[node name="PackPanel" type="Panel" parent="."]
+[node name="PackPanel" type="Panel" parent="." unique_id=1127568318]
 layout_mode = 0
 offset_left = 960.0
 offset_top = 72.0
@@ -149,7 +150,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
-[node name="PackContainer" type="GridContainer" parent="PackPanel"]
+[node name="PackContainer" type="GridContainer" parent="PackPanel" unique_id=493914726]
 custom_minimum_size = Vector2(1200, 180)
 layout_mode = 0
 offset_right = 2880.0
@@ -158,7 +159,7 @@ pivot_offset = Vector2(10, 10)
 theme_override_constants/h_separation = 0
 columns = 10
 
-[node name="MainDeckPanel" type="Panel" parent="."]
+[node name="MainDeckPanel" type="Panel" parent="." unique_id=131120404]
 layout_mode = 0
 offset_left = 960.0
 offset_top = 504.0
@@ -168,19 +169,19 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="MainDeckPanel"]
+[node name="ScrollContainer" type="ScrollContainer" parent="MainDeckPanel" unique_id=768154061]
 custom_minimum_size = Vector2(1200, 520)
 layout_mode = 0
 offset_right = 2880.0
 offset_bottom = 1248.0
 horizontal_scroll_mode = 0
 
-[node name="MainDeckContainer" type="GridContainer" parent="MainDeckPanel/ScrollContainer"]
+[node name="MainDeckContainer" type="GridContainer" parent="MainDeckPanel/ScrollContainer" unique_id=533736835]
 custom_minimum_size = Vector2(2880, 0)
 layout_mode = 2
 columns = 10
 
-[node name="ExtraDeckPanel" type="Panel" parent="."]
+[node name="ExtraDeckPanel" type="Panel" parent="." unique_id=962543018]
 layout_mode = 0
 offset_left = 960.0
 offset_top = 1752.0
@@ -188,7 +189,7 @@ offset_right = 3840.0
 offset_bottom = 2160.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="ExtraDeckPanel"]
+[node name="ScrollContainer" type="ScrollContainer" parent="ExtraDeckPanel" unique_id=338328833]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -196,19 +197,19 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ExtraDeckContainer" type="GridContainer" parent="ExtraDeckPanel/ScrollContainer"]
+[node name="ExtraDeckContainer" type="GridContainer" parent="ExtraDeckPanel/ScrollContainer" unique_id=1389378595]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 columns = 10
 
-[node name="Steam" type="Control" parent="."]
+[node name="Steam" type="Control" parent="." unique_id=581489316]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("4_jhidu")
 
-[node name="SaveDeckDialog" type="FileDialog" parent="."]
+[node name="SaveDeckDialog" type="FileDialog" parent="." unique_id=95948914]
 size = Vector2i(1920, 1080)
 content_scale_mode = 2
 content_scale_aspect = 4
