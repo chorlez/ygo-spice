@@ -115,10 +115,10 @@ func get_lobby_players():
 			new_player.steam_id = pinfo['steam_id']
 			new_player.player_name = pinfo['steam_name']
 			new_player.peer_id = pinfo['peer_id']
-			new_player.deck = Deck.new()
 			Globals.playerList.append(new_player)
 			if pinfo['steam_id'] == Steam.getSteamID():
 				Globals.client_player = new_player
+			new_player.deck = Deck.new(new_player)
 	
 	create_player_buttons()
 

@@ -28,30 +28,12 @@ func _on_http_request_completed(_result, response_code, _headers, body):
 
 	#save_cache()
 	EventBus.start_civil_war.emit()
-
-#func save_cache():
-#	var file := FileAccess.open(CACHE_PATH, FileAccess.WRITE)
-#	file.store_string(JSON.stringify(cards, "\t"))
-#	file.close()
-#
-#func load_from_cache():
-#	var file := FileAccess.open(CACHE_PATH, FileAccess.READ)
-#	var json = JSON.parse_string(file.get_as_text())
-#	file.close()
-#
-#	cards.clear()
-#	for card in json:
-#		cards.append(card)
-#
-#	print("Loaded %d cards from cache" % cards.size())
+	print(Globals.cardData_by_archetype.keys())
 
 func normalize_card(raw: Dictionary) -> void:
 	var card := CardData.new()
 
 	var card_type : String= raw.get("type", "")
-	# Check pendulum filter
-	if 'pendulum' in card_type.to_lower() and not use_pendulum:
-		return
 	var is_extra :bool = (
 		card_type.contains("Fusion")
 		or card_type.contains("Synchro")
@@ -69,6 +51,10 @@ func normalize_card(raw: Dictionary) -> void:
 	card.extra_deck = is_extra
 	card.description = raw.desc
 	
+	# Check pendulum filter
+	if not use_pendulum:
+		if 'pendulum' in card_type.to_lower()  or card.description.to_lower().find("pendulum") != -1:
+			return
 	### DISTRIBUTE CARDS TO PROPER LOCATIONS
 	if card.name in juicy_staples():
 		card.is_staple = true
@@ -84,12 +70,15 @@ func normalize_card(raw: Dictionary) -> void:
 			Globals.race_counts[card.race] += 1
 		else:
 			Globals.race_counts[card.race] = 1
+		card.is_monster = true
 	elif card.type.contains("Spell"):
 		cube.spells.append(card)
 	elif card.type.contains("Trap"):
 		cube.traps.append(card)
 	# Index by ID
 	Globals.cardData_by_id[card.id] = card
+	if card.archetype != "":
+		Globals.cardData_by_archetype[card.archetype] = [card] if not Globals.cardData_by_archetype.has(card.archetype) else Globals.cardData_by_archetype[card.archetype] + [card]
 	
 func get_int_or_zero(dict: Dictionary, key: String) -> int:
 	var value = dict.get(key)
@@ -184,6 +173,7 @@ func juicy_staples():
 	"Trishula, Dragon of the Ice Barrier",
 	"Armory Arm",
 	"Formula Synchron",
+	"Ally of Justice Catastor",
 	
 	# === EXTRA DECK – LINK ===
 	"Knightmare Phoenix",
@@ -192,6 +182,7 @@ func juicy_staples():
 	"Linkuriboh",
 	"Relinquished Anima",
 	"Accesscode Talker",
-	"Borrelsword Dragon"
+	"Borrelsword Dragon",
+	"Apollousa, Bow of the Goddess",
 	]
 	return STAPLE_CARDS

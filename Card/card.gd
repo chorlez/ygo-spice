@@ -3,7 +3,7 @@ class_name Card
 
 @export var card_data:CardData
 enum {PACK,TOOLTIP,MAINDECK, EXTRADECK}
-var state := PACK
+@export var state := PACK
 
 func _on_mouse_entered() -> void:
 	EventBus.card_hovered.emit(card_data)

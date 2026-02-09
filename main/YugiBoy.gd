@@ -3,16 +3,19 @@ extends Node
 
 @onready var RaceMenu: Node = get_node('UIPanel/MarginContainer/UIlayer/RaceMenu')
 @onready var RollRaceButton: Node = get_node('UIPanel/MarginContainer/UIlayer/RollRaceButton')
-@onready var DeckCountLabel: Node = get_node('UIPanel/MarginContainer/UIlayer/DeckCountLabel')
+@onready var DeckCountLabel: Node = $ToolTipPanel/TooltipArea/StatsBox/DeckCountLabel
+@onready var LevelLabel: Node = $ToolTipPanel/TooltipArea/StatsBox/LevelLabel
+@onready var CardDescriptionLabel: Node = $ToolTipPanel/TooltipArea/ScrollContainer/CardDescriptionLabel
 @onready var LastAddedLabel: Node = get_node('UIPanel/MarginContainer/UIlayer/LastAddedLabel')
 @onready var PackContainer: Node = get_node('PackPanel/PackContainer')
 @onready var MainDeckContainer: Node = get_node('MainDeckPanel/ScrollContainer/MainDeckContainer')
 @onready var ExtraDeckContainer: Node = get_node('ExtraDeckPanel/ScrollContainer/ExtraDeckContainer')
-@onready var TooltipArea: Node = get_node('ToolTipPanel/TooltipArea')
+@onready var TooltipCard: Node = $ToolTipPanel/TooltipArea/TooltipCard
 @onready var SaveDeckDialog: Node = get_node('SaveDeckDialog')
 # optional sort-mode button (use get_node_or_null so it's safe if the scene doesn't have it yet)
 @onready var SortModeButton: Button = get_node_or_null('UIPanel/MarginContainer/UIlayer/SortModeButton')
-
+@onready var ClearDeckButton: Button = get_node('UIPanel/MarginContainer/UIlayer/ClearDeck')
+@onready var LoadDeckButton: Button = get_node('UIPanel/MarginContainer/UIlayer/LoadDeck')
 @onready var search_input: LineEdit = get_node_or_null('UIPanel/MarginContainer/UIlayer/SearchInput')
 
 var cube : Cube = Cube.new()
@@ -28,27 +31,28 @@ var default_filename := ""
 # The player whose deck is currently being displayed in the UI
 var current_shown_player: Player = null
 var current_added_card: CardData = null
-var backup_file_path: String = './[YugiBoy]Backup.ydk'
 
 func _ready():
 	EventBus.start_civil_war.connect(initialize)
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
 	LastAddedLabel.mouse_entered.connect(_on_last_added_hovered)
+	ClearDeckButton.pressed.connect(clear_deck)
+	LoadDeckButton.pressed.connect(load_deck)
 	# When a player is selected in the lobby, show their deck
 	EventBus.player_selected.connect(on_player_selected)
 	# Hook up sort button if present
 	if SortModeButton:
 		SortModeButton.pressed.connect(_on_sort_mode_button_pressed)
 	# If we already know the local client player, show their deck by default
-	if Globals.client_player != null:
-		show_player_deck()
 
 func initialize():
 	put_races_in_race_menu()
+
 	if not multiplayer.is_server():
 		return
 	EventBus.player_connected.connect(sync_state)
+	
 	roll_race_create_cube_create_pack()
 	
 func put_races_in_race_menu():
@@ -88,22 +92,12 @@ func rpc_display_pack(syncPack: Array[int]):
 		PackContainer.add_child(card)
 
 func show_tooltip(card_data: CardData):
-	for child in TooltipArea.get_children():
-		child.queue_free()
+	TooltipCard.card_data = card_data
+	TooltipCard.texture = card_data.texture
+	TooltipCard.state = Card.TOOLTIP
+	CardDescriptionLabel.text = card_data.description
+	LevelLabel.text = "Lvl: " + str(card_data.level) if card_data.is_monster else ""
 
-	var card: Card = Globals.create_card(card_data)
-	card.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
-	card.state = card.TOOLTIP
-	TooltipArea.add_child(card)
-	var scrollContainer = ScrollContainer.new()
-	scrollContainer.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	var descriptionLabel = Label.new()
-	descriptionLabel.text = card_data.description
-	descriptionLabel.autowrap_mode = 3
-	descriptionLabel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	descriptionLabel.add_theme_font_size_override('font_size',40)
-	scrollContainer.add_child(descriptionLabel)
-	TooltipArea.add_child(scrollContainer)
 		
 func card_pressed(card:Card, index: int):
 	if index == 0: # left click
@@ -125,14 +119,9 @@ func rpc_add_card_from_pack_to_deck(card_index: int, player_steam_id:int):
 
 func add_card_to_deck(card: Card, player: Player):
 	# Move the card
-	if card.card_data.extra_deck:
-		player.deck.extraDeck.append(card.card_data)
-	else:
-		player.deck.mainDeck.append(card.card_data)
+	player.deck.add(card.card_data)
 	card.queue_free()
 	show_player_deck()
-	if player == Globals.client_player:
-		_on_save_deck_dialog_file_selected(backup_file_path)
 
 func add_card_data_to_deck(cardData:CardData, player:Player):
 	if cardData.extra_deck:
@@ -169,32 +158,8 @@ func _on_save_deck_dialog_dir_selected(dir):
 		SaveDeckDialog.current_file = default_filename
 
 func _on_save_deck_dialog_file_selected(path: String):
-	var ydk_text := build_ydk_string()
-	var file := FileAccess.open(path, FileAccess.WRITE)
-	if file == null:
-		push_error("Failed to save deck")
-		return
+	current_shown_player.deck.save(path)
 
-	file.store_string(ydk_text)
-	file.close()
-
-func build_ydk_string() -> String:
-	var lines := []
-
-	lines.append("#created by My Cube Draft App YuGiBoy")
-	lines.append("#main")
-
-	for card_node in Globals.client_player.deck.mainDeck:
-		lines.append(str(card_node.id))
-
-	lines.append("#extra")
-
-	for card_node in Globals.client_player.deck.extraDeck:
-		lines.append(str(card_node.id))
-
-	lines.append("!side")
-
-	return "\n".join(lines)
 	
 func _on_race_menu_item_selected(index: int) -> void:
 	var race_to_sync = RaceMenu.get_item_text(index)
@@ -227,6 +192,10 @@ func show_player_deck() -> void:
 	
 	update_deck_count_label()
 
+func clear_deck():
+	current_shown_player.deck.clear()
+	show_player_deck()
+
 func _on_sort_mode_button_pressed() -> void:
 	var mode = current_shown_player.deck.change_sort()
 	SortModeButton.text = "Sort: " + mode
@@ -248,3 +217,7 @@ func _on_last_added_hovered():
 func sync_state():
 	rpc("rpc_sync_race", race)
 	rpc("rpc_display_pack", pack.cardIDs)
+
+func load_deck():
+	Globals.client_player.deck.load_deck()
+	show_player_deck()

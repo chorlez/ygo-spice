@@ -1,4 +1,4 @@
-﻿extends Node
+extends Node
 class_name Deck
 
 var mainDeck: Array[CardData]
@@ -6,8 +6,20 @@ var extraDeck: Array[CardData]
 # Deck sorting state: ADDED keeps insertion order, YUGI_ORDER shows monsters first (highest level), then spells, then others
 enum DeckSort { ADDED, YUGI_ORDER }
 var deck_sort_mode := DeckSort.ADDED
+var player: Player
+var backup_file_path: String = './[YugiBoy]Backup.ydk'
 
 
+func _init(deckplayer:Player):
+	player = deckplayer
+
+func add(card: CardData):
+	if card.extra_deck:
+		player.deck.extraDeck.append(card)
+	else:
+		player.deck.mainDeck.append(card)
+	save(backup_file_path)
+	
 func clear():
 	mainDeck = []
 	extraDeck = []
@@ -40,13 +52,7 @@ func sort_main_for_display() -> Array:
 		if card_data == null:
 			continue
 		# Determine if it's a monster: prefer 'level' > 0, fall back to type string check
-		var is_monster := false
-		if typeof(card_data.level) == TYPE_INT and int(card_data.level) > 0:
-			is_monster = true
-		elif String(card_data.type).to_lower().find("monster") != -1:
-			is_monster = true
-
-		if is_monster:
+		if card_data.is_monster:
 			monsters.append(card_data)
 			continue
 
@@ -132,3 +138,83 @@ func _extra_type_order(card: CardData) -> int:
 	if card.type.contains("Link"):
 		return 3
 	return 99
+
+func load_deck(path:String = backup_file_path):
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_error("Failed to load deck")
+		return
+
+	var current_section := ""
+	while not file.eof_reached():
+		var line := file.get_line().strip_edges()
+		if line == "":
+			continue
+		if line.begins_with("#"):
+			current_section = line.to_lower()
+			continue
+		if line.begins_with("!side"):
+			current_section = "!side"
+			continue
+		
+		var card_id := int(line)
+		if not Globals.cardData_by_id.has(card_id):
+			print("Warning: Card ID %d not found in database, skipping" % card_id)
+			continue
+		
+		var card_data = Globals.cardData_by_id[card_id]
+		
+		match current_section:
+			"#main":
+				mainDeck.append(card_data)
+			"#extra":
+				extraDeck.append(card_data)
+			"!side":
+				mainDeck.append(card_data)
+
+	file.close()
+
+func save(path:String = backup_file_path):
+	var ydk_text := build_ydk_string()
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		push_error("Failed to save deck")
+		return
+
+	file.store_string(ydk_text)
+	file.close()
+
+	
+func build_ydk_string() -> String:
+	var lines := []
+	
+	lines.append("#created by My Cube Draft App YuGiBoy")
+	lines.append("#main")
+	
+	var side_cards := []
+	
+	# MAIN DECK (max 60)
+	for i in Globals.client_player.deck.mainDeck.size():
+		var card_node = Globals.client_player.deck.mainDeck[i]
+		if i < 60:
+			lines.append(str(card_node.id))
+		else:
+			side_cards.append(card_node)
+	
+	lines.append("#extra")
+	
+	# EXTRA DECK (max 15)
+	for i in Globals.client_player.deck.extraDeck.size():
+		var card_node = Globals.client_player.deck.extraDeck[i]
+		if i < 15:
+			lines.append(str(card_node.id))
+		else:
+			side_cards.append(card_node)
+	
+	lines.append("!side")
+	
+	# SIDE DECK (overflow)
+	for card_node in side_cards:
+		lines.append(str(card_node.id))
+	
+	return "\n".join(lines)

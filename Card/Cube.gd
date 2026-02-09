@@ -68,13 +68,21 @@ func add_race_cards_to_cube():
 func add_support_cards_to_cube():
 	var archetype_counts := get_archetypes_for_race()
 	var archetypes := filter_archetypes(archetype_counts)
-	for card in masterCube.spells + masterCube.traps:
+	for card in masterCube.spells:
 		if card_mentions_exact_race(card):
 			spells.append(card)
 		else:
 			for archetype in archetypes:
 				if card_mentions_archetype(card, archetype):
 					spells.append(card)
+					break
+	for card in masterCube.traps:
+		if card_mentions_exact_race(card):
+			traps.append(card)
+		else:
+			for archetype in archetypes:
+				if card_mentions_archetype(card, archetype):
+					traps.append(card)
 					break
 
 func card_mentions_exact_race(card: CardData) -> bool:

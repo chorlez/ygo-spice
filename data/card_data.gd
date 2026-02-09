@@ -10,8 +10,9 @@ class_name CardData
 @export var atk: int
 @export var def: int
 @export var extra_deck: bool
-@export var is_staple: bool = false
 @export var description: String
+@export var is_staple: bool = false
+@export var is_monster: bool = false
 
 var texture: Texture2D = null
 

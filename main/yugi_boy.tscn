@@ -54,9 +54,34 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="CardImage" parent="ToolTipPanel/TooltipArea" unique_id=602510552 instance=ExtResource("3_ro6sk")]
+[node name="StatsBox" type="HBoxContainer" parent="ToolTipPanel/TooltipArea" unique_id=154900566]
+layout_mode = 2
+
+[node name="DeckCountLabel" type="Label" parent="ToolTipPanel/TooltipArea/StatsBox" unique_id=773330472]
+layout_mode = 2
+size_flags_horizontal = 2
+theme_override_font_sizes/font_size = 30
+
+[node name="LevelLabel" type="Label" parent="ToolTipPanel/TooltipArea/StatsBox" unique_id=962498464]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_font_sizes/font_size = 40
+
+[node name="TooltipCard" parent="ToolTipPanel/TooltipArea" unique_id=602510552 instance=ExtResource("3_ro6sk")]
 layout_mode = 2
 size_flags_vertical = 0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="ToolTipPanel/TooltipArea" unique_id=617717268]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CardDescriptionLabel" type="Label" parent="ToolTipPanel/TooltipArea/ScrollContainer" unique_id=264909246]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 2
+theme_override_font_sizes/font_size = 40
+autowrap_mode = 2
 
 [node name="UIPanel" type="Panel" parent="." unique_id=689442470]
 layout_mode = 0
@@ -78,6 +103,16 @@ theme_override_constants/margin_bottom = 3
 custom_minimum_size = Vector2(1600, 0)
 layout_mode = 2
 theme_override_constants/separation = 10
+
+[node name="ClearDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=2019469344]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Clear Deck"
+
+[node name="LoadDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=540335788]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Load Deck"
 
 [node name="SaveDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=649807316]
 layout_mode = 2
@@ -101,10 +136,6 @@ text = "Roll Pack"
 
 [node name="SearchContainer" type="VBoxContainer" parent="UIPanel/MarginContainer/UIlayer" unique_id=462219083]
 layout_mode = 2
-
-[node name="DeckCountLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer" unique_id=773330472]
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
 
 [node name="Spacer" type="Control" parent="UIPanel/MarginContainer/UIlayer" unique_id=1556526084]
 layout_mode = 2

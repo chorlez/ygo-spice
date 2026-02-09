@@ -4,6 +4,7 @@ extends Node
 var race_counts := {}
 var race_archetypes: Dictionary[Variant, Variant] = {}
 var cardData_by_id: Dictionary[Variant, Variant] = {}
+var cardData_by_archetype: Dictionary[String, Array] = {}
 var playerList : Array[Player] = []
 
 # The currently selected player in the lobby UI (set by Steam.gd when a player button is pressed)
