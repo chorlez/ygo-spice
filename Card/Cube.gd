@@ -1,13 +1,25 @@
 extends Node
 class_name Cube
 
+var cube: Array[CardData]
 var monsters: Array[CardData]
 var spells: Array[CardData]
 var traps: Array[CardData]
 var extras: Array[CardData]
 var staples: Array[CardData]
 
-var cube: Array[CardData] # Combined array for searching
+enum CubeType {
+	MasterCube,
+	Race,
+	Archetype,
+	Attribute,
+	}
+
+var cube_type: CubeType
+var game: Node
+var masterCube: Cube
+var race: String
+
 
 var type_weights := {
 	"Monsters": 0.45,
@@ -17,9 +29,6 @@ var type_weights := {
 	'Staples':0.1
 }
 
-# New properties to receive data from civil_war
-var masterCube: Cube
-var race: String = ""
 
 # Cube searcher 
 @export var search_input: LineEdit
@@ -29,21 +38,43 @@ var race: String = ""
 var max_results := 50
 
 # Replace create to accept cards and race and build cube internally
-func create(new_race: String, n_search_input: LineEdit):
-	if not masterCube:
-		init(n_search_input)
-	race = new_race
+func _init(cubeType: CubeType, n_game):
+	cube_type = cubeType
+	game = n_game
+	if not cube_type == CubeType.MasterCube:
+		init_cube()
+	
+	match cube_type:
+		CubeType.MasterCube:
+			create_master_cube()
+		CubeType.Race:
+			create_race_cube()
+		CubeType.Archetype:
+			create_archetype_cube()
+		CubeType.Attribute:
+			create_attribute_cube()
+			
 
-	clear()
+func create_master_cube():
+	pass
+
+func create_race_cube():
+	race = game.race
 	add_race_cards_to_cube()
-	add_support_cards_to_cube()
+	add_race_support_cards_to_cube()
 	add_staples_to_cube()
 	# Build combined cube for searching
 	cube = monsters + spells + traps + extras + staples
+
+func create_archetype_cube():
+	pass
 	
-func init(n_search_input: LineEdit):
+func create_attribute_cube():
+	pass
+
+func init_cube():
 	masterCube = Globals.masterCube
-	search_input = n_search_input
+	search_input = game.search_input
 	search_input.text_changed.connect(_on_search_text_changed)
 	search_input.editing_toggled.connect(_on_editing_toggled)
 	EventBus.mouse_clicked.connect(_on_search_focus_exited)
@@ -65,7 +96,7 @@ func add_race_cards_to_cube():
 				extras.append(card)
 
 # Populate spell/support pool by matching race mentions and significant archetypes
-func add_support_cards_to_cube():
+func add_race_support_cards_to_cube():
 	var archetype_counts := get_archetypes_for_race()
 	var archetypes := filter_archetypes(archetype_counts)
 	for card in masterCube.spells:

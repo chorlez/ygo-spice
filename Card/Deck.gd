@@ -7,7 +7,7 @@ var extraDeck: Array[CardData]
 enum DeckSort { ADDED, YUGI_ORDER }
 var deck_sort_mode := DeckSort.ADDED
 var player: Player
-var backup_file_path: String = './[YugiBoy]Backup.ydk'
+var backup_file_name: String = '[YugiBoy]Backup.ydk'
 
 
 func _init(deckplayer:Player):
@@ -18,7 +18,7 @@ func add(card: CardData):
 		player.deck.extraDeck.append(card)
 	else:
 		player.deck.mainDeck.append(card)
-	save(backup_file_path)
+	save(backup_file_name)
 	
 func clear():
 	mainDeck = []
@@ -139,13 +139,16 @@ func _extra_type_order(card: CardData) -> int:
 		return 3
 	return 99
 
-func load_deck(path:String = backup_file_path):
+func load_deck():
+	var path = Settings.get_last_deck_path() + '/' + backup_file_name
+	print(path)
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		push_error("Failed to load deck")
 		return
 
 	var current_section := ""
+	clear()
 	while not file.eof_reached():
 		var line := file.get_line().strip_edges()
 		if line == "":
@@ -174,7 +177,8 @@ func load_deck(path:String = backup_file_path):
 
 	file.close()
 
-func save(path:String = backup_file_path):
+func save(file_name: String):
+	var path := Settings.get_last_deck_path() + '/' + file_name
 	var ydk_text := build_ydk_string()
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:

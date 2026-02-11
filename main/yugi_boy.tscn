@@ -12,6 +12,9 @@ border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
 
+[sub_resource type="Theme" id="Theme_bod78"]
+default_font_size = 40
+
 [sub_resource type="Theme" id="Theme_jhidu"]
 default_font_size = 40
 
@@ -107,17 +110,22 @@ theme_override_constants/separation = 10
 [node name="ClearDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=2019469344]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "Clear Deck"
+text = " Clear "
 
 [node name="LoadDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=540335788]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "Load Deck"
+text = " Load "
 
 [node name="SaveDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=649807316]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "Save Deck"
+text = " Save "
+
+[node name="CubeTypeMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer" unique_id=2025556995]
+layout_mode = 2
+theme = SubResource("Theme_bod78")
+theme_override_font_sizes/font_size = 40
 
 [node name="RollRaceButton" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=914896887]
 layout_mode = 2

@@ -1,6 +1,6 @@
 extends Node
 
-@onready var masterCube: Cube = Cube.new()
+@onready var masterCube: Cube = Cube.new(Cube.CubeType.MasterCube, self)
 var race_counts := {}
 var race_archetypes: Dictionary[Variant, Variant] = {}
 var cardData_by_id: Dictionary[Variant, Variant] = {}

@@ -1,7 +1,7 @@
 extends Node
 
-
 @onready var RaceMenu: Node = get_node('UIPanel/MarginContainer/UIlayer/RaceMenu')
+@onready var CubeTypeMenu: Node = $UIPanel/MarginContainer/UIlayer/CubeTypeMenu
 @onready var RollRaceButton: Node = get_node('UIPanel/MarginContainer/UIlayer/RollRaceButton')
 @onready var DeckCountLabel: Node = $ToolTipPanel/TooltipArea/StatsBox/DeckCountLabel
 @onready var LevelLabel: Node = $ToolTipPanel/TooltipArea/StatsBox/LevelLabel
@@ -18,8 +18,8 @@ extends Node
 @onready var LoadDeckButton: Button = get_node('UIPanel/MarginContainer/UIlayer/LoadDeck')
 @onready var search_input: LineEdit = get_node_or_null('UIPanel/MarginContainer/UIlayer/SearchInput')
 
-var cube : Cube = Cube.new()
-var pack: Pack =  Pack.new()
+var cube : Cube
+var pack: Pack = Pack.new()
 
 var race: String
 
@@ -39,6 +39,7 @@ func _ready():
 	LastAddedLabel.mouse_entered.connect(_on_last_added_hovered)
 	ClearDeckButton.pressed.connect(clear_deck)
 	LoadDeckButton.pressed.connect(load_deck)
+	CubeTypeMenu.item_selected.connect(_on_cubetype_menu_item_selected)
 	# When a player is selected in the lobby, show their deck
 	EventBus.player_selected.connect(on_player_selected)
 	# Hook up sort button if present
@@ -47,7 +48,7 @@ func _ready():
 	# If we already know the local client player, show their deck by default
 
 func initialize():
-	put_races_in_race_menu()
+	populate_menus()
 
 	if not multiplayer.is_server():
 		return
@@ -55,9 +56,18 @@ func initialize():
 	
 	roll_race_create_cube_create_pack()
 	
-func put_races_in_race_menu():
+func populate_menus():
 	for r in Globals.race_counts.keys():
 		RaceMenu.add_item(r)
+	for c in Cube.CubeType:
+		if c != 'MasterCube':
+			CubeTypeMenu.add_item(c)
+
+func _on_cubetype_menu_item_selected(index: int) -> void:
+	var cubetype_to_sync = CubeTypeMenu.get_item_text(index)
+	rpc("rpc_sync_create_cube", cubetype_to_sync)
+
+		
 
 func roll_race_create_cube_create_pack():
 	var eligible_races: Array = []
@@ -66,16 +76,14 @@ func roll_race_create_cube_create_pack():
 		if count >= min_race_size:
 			eligible_races.append(race_name)
 	race = eligible_races.pick_random()
-	rpc("rpc_sync_create_cube", race)
-	
+	rpc("rpc_sync_create_cube", Cube.CubeType.Race)
+	print('but this does')
 	
 @rpc("any_peer","call_local")
-func rpc_sync_create_cube(new_race: String):
-	race = new_race
-	for i in range(RaceMenu.item_count):
-		if RaceMenu.get_item_text(i) == race:
-			RaceMenu.select(i)
-	cube.create(race, search_input)
+func rpc_sync_create_cube(cube_type: int):
+	CubeTypeMenu.select(cube_type)
+	cube = Cube.new(cube_type, self)
+	update_deck_count_label()
 	if multiplayer.is_server():
 		create_pack()
 
@@ -150,6 +158,7 @@ func rpc_request_new_pack():
 
 func _on_save_deck_pressed():
 	default_filename = "[YuGiBoy]" + race + ".ydk"
+	SaveDeckDialog.current_dir = Settings.get_last_deck_path()
 	SaveDeckDialog.current_file = default_filename
 	SaveDeckDialog.popup_centered()
 
@@ -158,8 +167,9 @@ func _on_save_deck_dialog_dir_selected(dir):
 		SaveDeckDialog.current_file = default_filename
 
 func _on_save_deck_dialog_file_selected(path: String):
+	var dir := path.get_base_dir()
+	Settings.set_last_deck_path(dir)
 	current_shown_player.deck.save(path)
-
 	
 func _on_race_menu_item_selected(index: int) -> void:
 	var race_to_sync = RaceMenu.get_item_text(index)
@@ -203,9 +213,10 @@ func _on_sort_mode_button_pressed() -> void:
 
 
 func update_deck_count_label():
+	var cube_count := cube.cube.size() if cube else 0
 	var main_count := current_shown_player.deck.mainDeck.size()
 	var extra_count := current_shown_player.deck.extraDeck.size()
-	DeckCountLabel.text = "Deck: %d | Main: %d | Extra: %d" % [main_count + extra_count, main_count, extra_count]
+	DeckCountLabel.text = "Cube: %d | Deck: %d | Main: %d | Extra: %d" % [cube_count, main_count + extra_count, main_count, extra_count]
 	
 func update_last_added_card(card: Card, player:Player):
 	LastAddedLabel.text = "%s added: %s" % [player.player_name, card.card_data.name]

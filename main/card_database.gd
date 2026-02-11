@@ -28,7 +28,6 @@ func _on_http_request_completed(_result, response_code, _headers, body):
 
 	#save_cache()
 	EventBus.start_civil_war.emit()
-	print(Globals.cardData_by_archetype.keys())
 
 func normalize_card(raw: Dictionary) -> void:
 	var card := CardData.new()

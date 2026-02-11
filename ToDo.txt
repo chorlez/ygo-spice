@@ -1,0 +1,12 @@
+-- BUGS --
+* Yu Gi OH sort label does not sync between decks
+* Level of links missing
+* Load deck does not clear deck
+
+
+-- Features -- 
+* Create new cubes 
+	- Per archetypes
+	- Per attribute
+	- Maybe build by setting
+
