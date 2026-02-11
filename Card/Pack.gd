@@ -19,6 +19,12 @@ func add_card_by_id(card_id:int):
 		cards.append(cardData)
 		cardIDs.append(cardData.id)
 
+func remove(card:CardData):
+	var index := cards.find(card)
+	if index != -1:
+		cards.remove_at(index)
+		cardIDs.remove_at(index)
+
 func clear():
 	cards = []
 	cardIDs = []

@@ -33,6 +33,16 @@ func normalize_card(raw: Dictionary) -> void:
 	var card := CardData.new()
 
 	var card_type : String= raw.get("type", "")
+	card.typename = card_type
+	card.type = CardData.MONSTER if card_type.contains("Monster") else \
+		CardData.SPELL if card_type.contains("Spell") else \
+		CardData.TRAP if card_type.contains("Trap") else \
+		CardData.EXTRA if (
+			card_type.contains("Fusion")
+			or card_type.contains("Synchro")
+			or card_type.contains("XYZ")
+			or card_type.contains("Link")) else 0
+		
 	var is_extra :bool = (
 		card_type.contains("Fusion")
 		or card_type.contains("Synchro")
@@ -41,13 +51,12 @@ func normalize_card(raw: Dictionary) -> void:
 	)
 	card.id = raw.get("id", 0)
 	card.name = raw.get("name", "")
-	card.type = card_type
+	
 	card.race = raw.get("race", "")
 	card.archetype = raw.get("archetype", "")
 	card.level = get_int_or_zero(raw, "level")
 	card.atk = get_int_or_zero(raw, "atk")
 	card.def = get_int_or_zero(raw, "def")
-	card.extra_deck = is_extra
 	card.description = raw.desc
 	
 	# Check pendulum filter
@@ -59,20 +68,23 @@ func normalize_card(raw: Dictionary) -> void:
 		card.is_staple = true
 		cube.staples.append(card)
 		
-	elif card.type.contains("Monster"):
-		if not is_extra:
-			cube.monsters.append(card)
+	elif card.type == CardData.MONSTER:
+		cube.monsters.append(card)
+		if card.race in Globals.race_counts:
+			Globals.race_counts[card.race] += 1
 		else:
-			cube.extras.append(card)
+			Globals.race_counts[card.race] = 1
+	elif card.type == CardData.EXTRA:
+		cube.extras.append(card)
 		#Keep count of race
 		if card.race in Globals.race_counts:
 			Globals.race_counts[card.race] += 1
 		else:
 			Globals.race_counts[card.race] = 1
 		card.is_monster = true
-	elif card.type.contains("Spell"):
+	elif card.type == CardData.SPELL:
 		cube.spells.append(card)
-	elif card.type.contains("Trap"):
+	elif card.type == CardData.TRAP:
 		cube.traps.append(card)
 	# Index by ID
 	Globals.cardData_by_id[card.id] = card

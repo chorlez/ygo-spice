@@ -3,7 +3,13 @@ class_name CardData
 
 @export var id: int
 @export var name: String
-@export var type: String
+@export var typename: String
+enum {
+	MONSTER,
+	SPELL,
+	TRAP,
+	EXTRA}
+@export var type: int
 @export var race: String
 @export var archetype: String
 @export var level: int

@@ -8,17 +8,26 @@ var traps: Array[CardData]
 var extras: Array[CardData]
 var staples: Array[CardData]
 
-enum CubeType {
-	MasterCube,
+static var cube_types: Array[String] = ["Race", "Archetype", "Attribute", "MasterCube"]
+
+enum {
 	Race,
 	Archetype,
 	Attribute,
+	MasterCube,
 	}
 
-var cube_type: CubeType
+
+var cube_type: int
 var game: Node
 var masterCube: Cube
+
+#Race cube
 var race: String
+
+# Archetype cube
+var number_of_archetypes := 4
+var archetypes := []
 
 
 var type_weights := {
@@ -38,20 +47,20 @@ var type_weights := {
 var max_results := 50
 
 # Replace create to accept cards and race and build cube internally
-func _init(cubeType: CubeType, n_game):
+func _init(cubeType: int, n_game):
 	cube_type = cubeType
 	game = n_game
-	if not cube_type == CubeType.MasterCube:
+	if not cube_type == MasterCube:
 		init_cube()
 	
 	match cube_type:
-		CubeType.MasterCube:
+		MasterCube:
 			create_master_cube()
-		CubeType.Race:
+		Race:
 			create_race_cube()
-		CubeType.Archetype:
+		Archetype:
 			create_archetype_cube()
-		CubeType.Attribute:
+		Attribute:
 			create_attribute_cube()
 			
 
@@ -59,15 +68,22 @@ func create_master_cube():
 	pass
 
 func create_race_cube():
+	game.race = game.race if game.race else roll_random_race()
 	race = game.race
 	add_race_cards_to_cube()
 	add_race_support_cards_to_cube()
 	add_staples_to_cube()
 	# Build combined cube for searching
-	cube = monsters + spells + traps + extras + staples
+	combine_cube()
 
 func create_archetype_cube():
-	pass
+	game.archetypes = game.archetypes if game.archetypes else roll_random_archetypes()
+	archetypes = game.archetypes
+	game.ArchetypesLabel.text = ", ".join(archetypes)
+	add_archetype_cards_to_cube()
+	add_staples_to_cube()
+	combine_cube()
+	
 	
 func create_attribute_cube():
 	pass
@@ -78,13 +94,39 @@ func init_cube():
 	search_input.text_changed.connect(_on_search_text_changed)
 	search_input.editing_toggled.connect(_on_editing_toggled)
 	EventBus.mouse_clicked.connect(_on_search_focus_exited)
-	
+
+func combine_cube():
+	cube = monsters + spells + traps + extras + staples
 func clear():
 	monsters.clear()
 	spells.clear()
 	traps.clear()
 	extras.clear()
 	staples.clear()
+
+func roll_random_race() -> String:
+	var eligible_races: Array = []
+	for race_name in Globals.race_counts.keys():
+		var count :int = Globals.race_counts[race_name]
+		if count >= 20:
+			eligible_races.append(race_name)
+	var new_race = eligible_races.pick_random()
+	game.change_selected_race(new_race)
+	return new_race
+
+func roll_random_archetypes() -> Array[String]:
+	var eligible_archetypes: Array[String] = []
+	for archetype_name in Globals.cardData_by_archetype.keys():
+		var count :int = Globals.cardData_by_archetype[archetype_name].size()
+		if count >= 15:
+			eligible_archetypes.append(archetype_name)
+	var new_archetypes : Array[String] = []
+	while new_archetypes.size() < number_of_archetypes and eligible_archetypes.size() > 0:
+		var archetype = eligible_archetypes.pick_random()
+		new_archetypes.append(archetype)
+		eligible_archetypes.erase(archetype)
+	game.change_selected_archetypes(new_archetypes)
+	return new_archetypes
 
 # Populate monster/extra pools from provided cards for the selected race
 func add_race_cards_to_cube():
@@ -95,6 +137,7 @@ func add_race_cards_to_cube():
 			else:
 				extras.append(card)
 
+				
 # Populate spell/support pool by matching race mentions and significant archetypes
 func add_race_support_cards_to_cube():
 	var archetype_counts := get_archetypes_for_race()
@@ -115,6 +158,19 @@ func add_race_support_cards_to_cube():
 				if card_mentions_archetype(card, archetype):
 					traps.append(card)
 					break
+
+func add_archetype_cards_to_cube():
+	for archetype in archetypes:
+		for card in Globals.cardData_by_archetype[archetype]:
+			match card.type:
+				CardData.MONSTER:
+					monsters.append(card)
+				CardData.EXTRA:
+					extras.append(card)
+				CardData.SPELL:
+					spells.append(card)
+				CardData.TRAP:
+					traps.append(card)
 
 func card_mentions_exact_race(card: CardData) -> bool:
 	if card.description == "":

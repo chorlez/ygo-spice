@@ -122,20 +122,24 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = " Save "
 
+[node name="RandomCubeButton" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=914896887]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Random Cube"
+
 [node name="CubeTypeMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer" unique_id=2025556995]
 layout_mode = 2
 theme = SubResource("Theme_bod78")
 theme_override_font_sizes/font_size = 40
 
-[node name="RollRaceButton" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=914896887]
-layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = "Random Cube"
-
 [node name="RaceMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer" unique_id=1266203913]
 layout_mode = 2
 theme = SubResource("Theme_jhidu")
 theme_override_font_sizes/font_size = 40
+
+[node name="ArchetypesLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer" unique_id=653490345]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
 
 [node name="RollPackButton" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=124531509]
 layout_mode = 2
@@ -257,7 +261,7 @@ access = 2
 
 [connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_completed"]
 [connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/SaveDeck" to="." method="_on_save_deck_pressed"]
-[connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/RollRaceButton" to="." method="_on_roll_race_button_pressed"]
+[connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/RandomCubeButton" to="." method="_on_roll_race_button_pressed"]
 [connection signal="item_selected" from="UIPanel/MarginContainer/UIlayer/RaceMenu" to="." method="_on_race_menu_item_selected"]
 [connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/RollPackButton" to="." method="_on_roll_pack_button_pressed"]
 [connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/ReconnectButton" to="Steam" method="_on_reconnect_pressed"]

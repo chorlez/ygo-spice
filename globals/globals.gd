@@ -1,6 +1,6 @@
 extends Node
 
-@onready var masterCube: Cube = Cube.new(Cube.CubeType.MasterCube, self)
+@onready var masterCube: Cube = Cube.new(Cube.MasterCube, self)
 var race_counts := {}
 var race_archetypes: Dictionary[Variant, Variant] = {}
 var cardData_by_id: Dictionary[Variant, Variant] = {}
@@ -24,6 +24,9 @@ func create_card(card_data: CardData) -> Card:
 
 # Fetch the image live and assign it to a card immediately
 func load_card_image_to_ui(card: CardData, CardObject: Card) -> void:
+	if card.texture:
+		CardObject.texture = card.texture
+		return
 
 	var http := HTTPRequest.new()
 	add_child(http)

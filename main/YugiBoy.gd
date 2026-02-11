@@ -1,8 +1,9 @@
 extends Node
 
 @onready var RaceMenu: Node = get_node('UIPanel/MarginContainer/UIlayer/RaceMenu')
+@onready var ArchetypesLabel: Node = $UIPanel/MarginContainer/UIlayer/ArchetypesLabel
 @onready var CubeTypeMenu: Node = $UIPanel/MarginContainer/UIlayer/CubeTypeMenu
-@onready var RollRaceButton: Node = get_node('UIPanel/MarginContainer/UIlayer/RollRaceButton')
+@onready var RandomCubeButton: Node = get_node('UIPanel/MarginContainer/UIlayer/RandomCubeButton')
 @onready var DeckCountLabel: Node = $ToolTipPanel/TooltipArea/StatsBox/DeckCountLabel
 @onready var LevelLabel: Node = $ToolTipPanel/TooltipArea/StatsBox/LevelLabel
 @onready var CardDescriptionLabel: Node = $ToolTipPanel/TooltipArea/ScrollContainer/CardDescriptionLabel
@@ -22,6 +23,7 @@ var cube : Cube
 var pack: Pack = Pack.new()
 
 var race: String
+var archetypes: Array[String] = []
 
 var min_race_size := 100	
 var playerList : Array[Player] = []
@@ -39,6 +41,7 @@ func _ready():
 	LastAddedLabel.mouse_entered.connect(_on_last_added_hovered)
 	ClearDeckButton.pressed.connect(clear_deck)
 	LoadDeckButton.pressed.connect(load_deck)
+	RandomCubeButton.pressed.connect(_on_random_cube_button_pressed)
 	CubeTypeMenu.item_selected.connect(_on_cubetype_menu_item_selected)
 	# When a player is selected in the lobby, show their deck
 	EventBus.player_selected.connect(on_player_selected)
@@ -54,75 +57,49 @@ func initialize():
 		return
 	EventBus.player_connected.connect(sync_state)
 	
-	roll_race_create_cube_create_pack()
-	
-func populate_menus():
-	for r in Globals.race_counts.keys():
-		RaceMenu.add_item(r)
-	for c in Cube.CubeType:
-		if c != 'MasterCube':
-			CubeTypeMenu.add_item(c)
+	create_cube.rpc()
 
-func _on_cubetype_menu_item_selected(index: int) -> void:
-	var cubetype_to_sync = CubeTypeMenu.get_item_text(index)
-	rpc("rpc_sync_create_cube", cubetype_to_sync)
-
-		
-
-func roll_race_create_cube_create_pack():
-	var eligible_races: Array = []
-	for race_name in Globals.race_counts.keys():
-		var count :int = Globals.race_counts[race_name]
-		if count >= min_race_size:
-			eligible_races.append(race_name)
-	race = eligible_races.pick_random()
-	rpc("rpc_sync_create_cube", Cube.CubeType.Race)
-	print('but this does')
-	
 @rpc("any_peer","call_local")
-func rpc_sync_create_cube(cube_type: int):
-	CubeTypeMenu.select(cube_type)
+func create_cube(cube_type: int = CubeTypeMenu.get_selected_id()):
+	RaceMenu.visible = cube_type == Cube.Race
+	ArchetypesLabel.visible = cube_type == Cube.Archetype
 	cube = Cube.new(cube_type, self)
 	update_deck_count_label()
 	if multiplayer.is_server():
 		create_pack()
 
+@rpc("any_peer","call_local")
 func create_pack():
+	if not multiplayer.is_server():
+		return
 	pack.create(cube)
-	rpc("rpc_display_pack", pack.cardIDs)
+	display_pack.rpc(pack.cardIDs)
 
 @rpc("any_peer","call_local")
-func rpc_display_pack(syncPack: Array[int]):
+func display_pack(syncPack: Array[int]):
 	for child in PackContainer.get_children():
 		child.queue_free()
 	for cardID in syncPack:
 		var card: Card = Globals.create_card(Globals.cardData_by_id[cardID])
 		PackContainer.add_child(card)
 
-func show_tooltip(card_data: CardData):
-	TooltipCard.card_data = card_data
-	TooltipCard.texture = card_data.texture
-	TooltipCard.state = Card.TOOLTIP
-	CardDescriptionLabel.text = card_data.description
-	LevelLabel.text = "Lvl: " + str(card_data.level) if card_data.is_monster else ""
-
-		
 func card_pressed(card:Card, index: int):
 	if index == 0: # left click
 		if card.state == card.PACK:
 			var card_index_in_pack := card.get_index()
-			rpc('rpc_add_card_from_pack_to_deck', card_index_in_pack, Globals.client_player.steam_id)
+			add_card_from_pack_to_deck.rpc(card_index_in_pack, Globals.client_player.steam_id)
+		elif card.state == card.MAINDECK or card.EXTRADECK:
+			return_card_from_deck_to_pack(card)
 	elif index == 1: # right click
 		print("Right clicked on card: %s" % card.card_data.name)
 		card.card_data.print_card_details()
 
-
 @rpc("any_peer","call_local")
-func rpc_add_card_from_pack_to_deck(card_index: int, player_steam_id:int):
+func add_card_from_pack_to_deck(card_index: int, player_steam_id:int):
 	var card = PackContainer.get_child(card_index)
 	var player: Player = Globals.get_player_by_steam_id(player_steam_id)
 	add_card_to_deck(card, player)
-	update_last_added_card(card, player)
+	update_log.rpc(card.card_data.id, player.player_name, "added")
 
 
 func add_card_to_deck(card: Card, player: Player):
@@ -131,6 +108,23 @@ func add_card_to_deck(card: Card, player: Player):
 	card.queue_free()
 	show_player_deck()
 
+func return_card_from_deck_to_pack(card:Card):
+	add_card_to_pack.rpc(card.card_data.id)
+	Globals.client_player.deck.remove(card.card_data)
+	card.queue_free()
+	update_log.rpc(card.card_data.id, Globals.client_player.player_name,  "returned")
+
+		
+@rpc("any_peer","call_local")
+func add_card_to_pack(card_id: int):
+	var cardData:CardData = Globals.cardData_by_id.get(card_id)
+	if cardData:
+		var card: Card = Globals.create_card(cardData)
+		PackContainer.add_child(card)
+
+
+
+
 func add_card_data_to_deck(cardData:CardData, player:Player):
 	if cardData.extra_deck:
 		player.deck.extraDeck.append(cardData)
@@ -138,23 +132,50 @@ func add_card_data_to_deck(cardData:CardData, player:Player):
 		player.deck.mainDeck.append(cardData)
 	show_player_deck()
 
-func _on_roll_race_button_pressed() -> void:
-	rpc("rpc_request_random_cube")
+func show_tooltip(card_data: CardData):
+	TooltipCard.card_data = card_data
+	Globals.load_card_image_to_ui(card_data, TooltipCard)
+	TooltipCard.state = Card.TOOLTIP
+	CardDescriptionLabel.text = card_data.description
+	LevelLabel.text = "Lvl: " + str(card_data.level) + ' ' if card_data.is_monster else ""
 
-@rpc("any_peer","call_local")
-func rpc_request_random_cube():
-	if not multiplayer.is_server():
-		return
-	roll_race_create_cube_create_pack()
 
+func _on_cubetype_menu_item_selected(index: int) -> void:
+	change_selected_cubetype.rpc(index)
+	create_cube.rpc(index)
+
+
+func _on_race_menu_item_selected(index: int) -> void:
+	var race_to_sync = RaceMenu.get_item_text(index)
+	change_selected_race.rpc(race_to_sync)
+	create_cube.rpc(Cube.Race)
+	
 func _on_roll_pack_button_pressed():
-	rpc( "rpc_request_new_pack")
+	create_pack.rpc()
+		
+func _on_random_cube_button_pressed() -> void:
+	race = ''
+	archetypes = []
+	create_cube.rpc()
 
 @rpc("any_peer","call_local")
-func rpc_request_new_pack():
-	if not multiplayer.is_server():
-		return
-	create_pack()
+func change_selected_cubetype(index: int):
+	CubeTypeMenu.select(index)
+
+@rpc("any_peer","call_local")
+func change_selected_race(new_race: String):
+	race = new_race
+	var popup = RaceMenu.get_popup()
+	
+	for i in popup.item_count:
+		if popup.get_item_text(i) == new_race:
+			RaceMenu.select(i)
+			break
+
+@rpc("any_peer","call_local")
+func change_selected_archetypes(new_archetypes: Array[String]):
+	archetypes = new_archetypes
+	# no need to sync archetype selection in the UI since it's always derived from
 
 func _on_save_deck_pressed():
 	default_filename = "[YuGiBoy]" + race + ".ydk"
@@ -171,9 +192,7 @@ func _on_save_deck_dialog_file_selected(path: String):
 	Settings.set_last_deck_path(dir)
 	current_shown_player.deck.save(path)
 	
-func _on_race_menu_item_selected(index: int) -> void:
-	var race_to_sync = RaceMenu.get_item_text(index)
-	rpc("rpc_sync_create_cube", race_to_sync)
+
 
 func on_player_selected(steam_name: String) -> void:
 	# Find the Player instance by name and display their deck
@@ -218,9 +237,12 @@ func update_deck_count_label():
 	var extra_count := current_shown_player.deck.extraDeck.size()
 	DeckCountLabel.text = "Cube: %d | Deck: %d | Main: %d | Extra: %d" % [cube_count, main_count + extra_count, main_count, extra_count]
 	
-func update_last_added_card(card: Card, player:Player):
-	LastAddedLabel.text = "%s added: %s" % [player.player_name, card.card_data.name]
-	current_added_card = card.card_data
+@rpc("any_peer","call_local")
+func update_log(card_id: int, player:String, action: String):
+	var card = Globals.cardData_by_id.get(card_id)
+	var cardname = card.name if card else "Unknown Card"
+	LastAddedLabel.text = "%s %s: %s" % [player, action, cardname]
+	current_added_card = card
 	
 func _on_last_added_hovered():
 	EventBus.card_hovered.emit(current_added_card)
@@ -232,3 +254,10 @@ func sync_state():
 func load_deck():
 	Globals.client_player.deck.load_deck()
 	show_player_deck()
+
+func populate_menus():
+	for r in Globals.race_counts.keys():
+		RaceMenu.add_item(r)
+	for c in Cube.cube_types:
+		if c != 'MasterCube':
+			CubeTypeMenu.add_item(c)

@@ -15,11 +15,20 @@ func _init(deckplayer:Player):
 
 func add(card: CardData):
 	if card.extra_deck:
-		player.deck.extraDeck.append(card)
+		extraDeck.append(card)
 	else:
-		player.deck.mainDeck.append(card)
+		mainDeck.append(card)
 	save(backup_file_name)
-	
+
+func remove(card:CardData):
+	if not card.extra_deck:
+		var index := mainDeck.find(card)
+		if index != -1:
+			mainDeck.remove_at(index)
+	else:	
+		var index := extraDeck.find(card)
+		if index != -1:
+			extraDeck.remove_at(index)
 func clear():
 	mainDeck = []
 	extraDeck = []
@@ -56,7 +65,7 @@ func sort_main_for_display() -> Array:
 			monsters.append(card_data)
 			continue
 
-		var ttype := String(card_data.type).to_lower()
+		var ttype := String(card_data.typename).to_lower()
 		if ttype.find("spell") != -1:
 			spells.append(card_data)
 			continue
@@ -129,13 +138,13 @@ func _sort_extra(a: CardData, b: CardData) -> bool:
 	return a.name < b.name
 	
 func _extra_type_order(card: CardData) -> int:
-	if card.type.contains("Fusion"):
+	if card.typename.contains("Fusion"):
 		return 0
-	if card.type.contains("Synchro"):
+	if card.typename.contains("Synchro"):
 		return 1
-	if card.type.contains("XYZ") or card.type.contains("Xyz"):
+	if card.typename.contains("XYZ") or card.typename.contains("Xyz"):
 		return 2
-	if card.type.contains("Link"):
+	if card.typename.contains("Link"):
 		return 3
 	return 99
 
@@ -178,7 +187,7 @@ func load_deck():
 	file.close()
 
 func save(file_name: String):
-	var path := Settings.get_last_deck_path() + '/' + file_name
+	var path = Settings.get_last_deck_path() + '/' + file_name
 	var ydk_text := build_ydk_string()
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
