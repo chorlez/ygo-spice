@@ -73,6 +73,12 @@ func create_cube(cube_type: int = CubeTypeMenu.get_selected_id()):
 	if multiplayer.is_server():
 		create_pack()
 
+@rpc("authority", 'call_remote')
+func sync_cube(cube_type : int, new_race: String, new_archetypes: Array[String]):
+	race = new_race
+	archetypes = new_archetypes
+	create_cube(cube_type)
+
 @rpc("any_peer","call_local")
 func create_pack():
 	if not multiplayer.is_server():
@@ -126,8 +132,6 @@ func add_card_to_pack(card_id: int):
 	if cardData:
 		var card: Card = Globals.create_card(cardData)
 		PackContainer.add_child(card)
-
-
 
 
 func add_card_data_to_deck(cardData:CardData, player:Player):
@@ -260,8 +264,8 @@ func _on_last_added_hovered():
 	EventBus.card_hovered.emit(current_added_card)
 	
 func sync_state():
-	rpc("rpc_sync_race", race)
-	rpc("rpc_display_pack", pack.cardIDs)
+	sync_cube.rpc(CubeTypeMenu.get_selected_id(), race, archetypes)
+	display_pack.rpc(pack.cardIDs)
 
 func load_deck():
 	Globals.client_player.deck.load_deck()
