@@ -43,12 +43,8 @@ func normalize_card(raw: Dictionary) -> void:
 			or card_type.contains("XYZ")
 			or card_type.contains("Link")) else 0
 		
-	var is_extra :bool = (
-		card_type.contains("Fusion")
-		or card_type.contains("Synchro")
-		or card_type.contains("XYZ")
-		or card_type.contains("Link")
-	)
+	card.extra_deck = card_type.contains("Fusion") or card_type.contains("Synchro") or card_type.contains("XYZ") or card_type.contains("Link")
+	
 	card.id = raw.get("id", 0)
 	card.name = raw.get("name", "")
 	

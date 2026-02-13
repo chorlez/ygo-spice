@@ -14,6 +14,8 @@ func _init(deckplayer:Player):
 	player = deckplayer
 
 func add(card: CardData):
+	print(card.name)
+	print(card.type)
 	if card.extra_deck:
 		extraDeck.append(card)
 	else:
