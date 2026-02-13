@@ -46,32 +46,27 @@ var type_weights := {
 var max_results := 50
 
 # Replace create to accept cards and race and build cube internally
-func _init(cubeType: int, n_game):
+func _init(cubeType: int, n_game, new_race = '', new_archetypes = []):
 	cube_type = cubeType
 	game = n_game
-	if not cube_type == MasterCube:
-		init_cube()
+	race = new_race
+	archetypes = new_archetypes
+	if cube_type == MasterCube:
+		return
+	init_cube()
 	
 	match cube_type:
-		MasterCube:
-			create_master_cube()
 		Race:
 			create_race_cube()
 		Archetype:
 			create_archetype_cube()
 		Attribute:
 			create_attribute_cube()
-	
-	if multiplayer and multiplayer.is_server():
-		EventBus.sync_state.emit()
-			
 
 func create_master_cube():
 	pass
 
 func create_race_cube():
-	game.race = game.race if game.race else roll_random_race()
-	race = game.race
 	add_race_cards_to_cube()
 	add_race_support_cards_to_cube()
 	add_staples_to_cube()
@@ -80,7 +75,6 @@ func create_race_cube():
 
 func create_archetype_cube():
 	number_of_archetypes = game.ArchetypeCountMenu.get_selected() + 1
-	game.archetypes = game.archetypes if game.archetypes else roll_random_archetypes()
 	archetypes = game.archetypes
 	spawn_archetype_dropdowns()
 	add_archetype_cards_to_cube()
@@ -110,29 +104,7 @@ func clear():
 	staples.clear()
 
 
-func roll_random_race() -> String:
-	var eligible_races: Array = []
-	for race_name in Globals.race_counts.keys():
-		var count :int = Globals.race_counts[race_name]
-		if count >= 20:
-			eligible_races.append(race_name)
-	var new_race = eligible_races.pick_random()
-	game.change_selected_race(new_race)
-	return new_race
 
-func roll_random_archetypes() -> Array[String]:
-	var eligible_archetypes: Array[String] = []
-	for archetype_name in Globals.cardData_by_archetype.keys():
-		var count :int = Globals.cardData_by_archetype[archetype_name].size()
-		if count >= 15:
-			eligible_archetypes.append(archetype_name)
-	var new_archetypes : Array[String] = []
-	while new_archetypes.size() < number_of_archetypes and eligible_archetypes.size() > 0:
-		var archetype = eligible_archetypes.pick_random()
-		new_archetypes.append(archetype)
-		eligible_archetypes.erase(archetype)
-	game.change_selected_archetypes(new_archetypes)
-	return new_archetypes
 
 # Populate monster/extra pools from provided cards for the selected race
 func add_race_cards_to_cube():

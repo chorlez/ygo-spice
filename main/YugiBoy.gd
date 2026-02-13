@@ -63,25 +63,48 @@ func initialize():
 		return
 	EventBus.player_connected.connect(sync_state)
 	
-	create_cube()
+	create_random_cube()
 
 @rpc("any_peer","call_local")
-func create_cube(cube_type: int = CubeTypeMenu.get_selected_id()):
+func create_cube(cube_type: int = CubeTypeMenu.get_selected_id(), new_race: String= race, new_archetypes: Array[String] = archetypes):
 	RaceCubeContainer.visible = cube_type == Cube.Race
 	ArchetypeCubeContainer.visible = cube_type == Cube.Archetype
-	cube = Cube.new(cube_type, self)
+	cube = Cube.new(cube_type, self, race, archetypes)
 	update_deck_count_label()
 	if multiplayer.is_server():
 		create_pack()
 
-@rpc("authority", 'call_remote')
-func sync_cube(cube_type : int, new_race: String, new_archetypes: Array[String]):
-	print(cube_type, new_race, new_archetypes)
-	change_selected_race(new_race)
-	change_selected_cubetype(cube_type)
-	race = new_race
-	archetypes = new_archetypes
-	create_cube(cube_type)
+@rpc("any_peer", 'call_local')
+func create_random_cube():
+	if multiplayer.is_server():
+		race = ''
+		archetypes = []
+		create_cube.rpc(CubeTypeMenu.get_selected_id(), roll_random_race(), roll_random_archetypes())
+
+func roll_random_race() -> String:
+	var eligible_races: Array = []
+	for race_name in Globals.race_counts.keys():
+		var count :int = Globals.race_counts[race_name]
+		if count >= 20:
+			eligible_races.append(race_name)
+	var new_race = eligible_races.pick_random()
+	change_selected_race.rpc(new_race)
+	return new_race
+
+func roll_random_archetypes() -> Array[String]:
+	var eligible_archetypes: Array[String] = []
+	for archetype_name in Globals.cardData_by_archetype.keys():
+		var count :int = Globals.cardData_by_archetype[archetype_name].size()
+		if count >= 15:
+			eligible_archetypes.append(archetype_name)
+	var new_archetypes : Array[String] = []
+	while new_archetypes.size() < cube.number_of_archetypes and eligible_archetypes.size() > 0:
+		var archetype = eligible_archetypes.pick_random()
+		new_archetypes.append(archetype)
+		eligible_archetypes.erase(archetype)
+	change_selected_archetypes.rpc(new_archetypes)
+	return new_archetypes
+
 
 @rpc("any_peer","call_local")
 func create_pack():
@@ -170,23 +193,17 @@ func _on_random_cube_button_pressed() -> void:
 
 func _on_archetype_count_menu_item_selected(index: int) -> void:
 	archetypes = []
-	create_cube.rpc(Cube.Archetype)
+	create_random_cube.rpc()
 
 func _on_cube_requested(index: int):
-	create_cube.rpc(index)
+	create_cube.rpc(index, race, archetypes)
 
-@rpc("any_peer", 'call_local')
-func create_random_cube():
-	if multiplayer.is_server():
-		race = ''
-		archetypes = []
-		create_cube()
 
 @rpc("any_peer","call_local")
 func change_selected_cubetype(index: int):
 	CubeTypeMenu.select(index)
 	if multiplayer.is_server():
-		create_cube(index)
+		create_cube.rpc(index, race, archetypes)
 
 @rpc("any_peer","call_local")
 func change_selected_race(new_race: String):
@@ -198,13 +215,13 @@ func change_selected_race(new_race: String):
 			RaceMenu.select(i)
 			break
 	if multiplayer.is_server():
-		create_cube(Cube.Race)
+		create_cube.rpc(Cube.Race, race, archetypes)
 
 @rpc("any_peer","call_local")
 func change_selected_archetypes(new_archetypes: Array[String]):
 	archetypes = new_archetypes
 	if multiplayer.is_server():
-		create_cube(Cube.Archetype)
+		create_cube.rpc(Cube.Archetype, race, archetypes)
 
 func _on_save_deck_pressed():
 	default_filename = "[YuGiBoy]" + race + ".ydk"
@@ -221,7 +238,6 @@ func _on_save_deck_dialog_file_selected(path: String):
 	Settings.set_last_deck_path(dir)
 	current_shown_player.deck.save(path)
 	
-
 
 func on_player_selected(steam_name: String) -> void:
 	# Find the Player instance by name and display their deck
@@ -277,7 +293,8 @@ func _on_last_added_hovered():
 	EventBus.card_hovered.emit(current_added_card)
 	
 func sync_state():
-	sync_cube.rpc(CubeTypeMenu.get_selected_id(), race, archetypes)
+	change_selected_race.rpc(race)
+	change_selected_archetypes.rpc(archetypes)
 	display_pack.rpc(pack.cardIDs)
 
 func load_deck():
