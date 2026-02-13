@@ -390,6 +390,7 @@ func on_archetype_button_pressed(archetype: String, lineedit: LineEdit):
 	for i in range(number_of_archetypes):
 		if lineedit == game.ArchetypeContainer.get_child(i):
 			archetypes[i] = archetype
+			game.archetypes[i] = archetype
 			break
 	hide_results()
 	EventBus.request_new_cube.emit(Archetype)
