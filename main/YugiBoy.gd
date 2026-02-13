@@ -42,7 +42,7 @@ func _ready():
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
 	EventBus.request_new_cube.connect(_on_cube_requested)
-	EventBus.sync_cube.connect(sync_cube)
+	EventBus.sync_state.connect(sync_state)
 	LastAddedLabel.mouse_entered.connect(_on_last_added_hovered)
 	ClearDeckButton.pressed.connect(clear_deck)
 	LoadDeckButton.pressed.connect(load_deck)
