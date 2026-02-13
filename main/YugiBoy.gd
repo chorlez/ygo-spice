@@ -98,7 +98,7 @@ func roll_random_archetypes() -> Array[String]:
 		if count >= 15:
 			eligible_archetypes.append(archetype_name)
 	var new_archetypes : Array[String] = []
-	while new_archetypes.size() < cube.number_of_archetypes and eligible_archetypes.size() > 0:
+	while new_archetypes.size() < ArchetypeCountMenu.get_selected_id() + 1 and eligible_archetypes.size() > 0:
 		var archetype = eligible_archetypes.pick_random()
 		new_archetypes.append(archetype)
 		eligible_archetypes.erase(archetype)
@@ -183,6 +183,7 @@ func _on_cubetype_menu_item_selected(index: int) -> void:
 func _on_race_menu_item_selected(index: int) -> void:
 	var race_to_sync = RaceMenu.get_item_text(index)
 	change_selected_race.rpc(race_to_sync)
+	create_cube.rpc(Cube.Race, race, archetypes)
 	
 	
 func _on_roll_pack_button_pressed():
@@ -215,8 +216,6 @@ func change_selected_race(new_race: String):
 		if popup.get_item_text(i) == new_race:
 			RaceMenu.select(i)
 			break
-	if multiplayer.is_server():
-		create_cube.rpc(Cube.Race, race, archetypes)
 
 @rpc("any_peer","call_local")
 func change_selected_archetypes(new_archetypes: Array[String]):
@@ -301,6 +300,7 @@ func _on_last_added_hovered():
 func sync_state():
 	change_selected_race.rpc(race)
 	change_selected_archetypes.rpc(archetypes)
+	create_cube.rpc()
 	display_pack.rpc(pack.cardIDs)
 
 func load_deck():
