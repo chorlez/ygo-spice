@@ -62,7 +62,7 @@ func _init(cubeType: int, n_game):
 		Attribute:
 			create_attribute_cube()
 	
-	if multiplayer.is_server():
+	if multiplayer and multiplayer.is_server():
 		EventBus.sync_cube.emit()
 			
 
