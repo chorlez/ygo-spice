@@ -18,6 +18,9 @@ default_font_size = 40
 [sub_resource type="Theme" id="Theme_jhidu"]
 default_font_size = 40
 
+[sub_resource type="Theme" id="Theme_2rg7u"]
+default_font_size = 40
+
 [sub_resource type="DPITexture" id="DPITexture_jhidu"]
 _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#fff\" fill-opacity=\".75\" rx=\"7\"/><circle cx=\"24\" cy=\"8\" r=\"5\" fill=\"#1a1a1a\"/></svg>
 "
@@ -132,14 +135,40 @@ layout_mode = 2
 theme = SubResource("Theme_bod78")
 theme_override_font_sizes/font_size = 40
 
-[node name="RaceMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer" unique_id=1266203913]
+[node name="RaceCube" type="HBoxContainer" parent="UIPanel/MarginContainer/UIlayer" unique_id=1081891326]
+visible = false
+layout_mode = 2
+
+[node name="RaceMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer/RaceCube" unique_id=1266203913]
 layout_mode = 2
 theme = SubResource("Theme_jhidu")
 theme_override_font_sizes/font_size = 40
 
-[node name="ArchetypesLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer" unique_id=653490345]
+[node name="ArchetypeCube" type="HBoxContainer" parent="UIPanel/MarginContainer/UIlayer" unique_id=273405411]
+visible = false
 layout_mode = 2
-theme_override_font_sizes/font_size = 30
+
+[node name="ArchetypeCountMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer/ArchetypeCube" unique_id=1664547623]
+layout_mode = 2
+theme = SubResource("Theme_2rg7u")
+theme_override_font_sizes/font_size = 40
+selected = 2
+item_count = 6
+popup/item_0/text = "1"
+popup/item_0/id = 0
+popup/item_1/text = "2"
+popup/item_1/id = 1
+popup/item_2/text = "3"
+popup/item_2/id = 2
+popup/item_3/text = "4"
+popup/item_3/id = 3
+popup/item_4/text = "5"
+popup/item_4/id = 4
+popup/item_5/text = "6"
+popup/item_5/id = 5
+
+[node name="ArchetypeContainer" type="HBoxContainer" parent="UIPanel/MarginContainer/UIlayer/ArchetypeCube" unique_id=1723818926]
+layout_mode = 2
 
 [node name="RollPackButton" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=124531509]
 layout_mode = 2
@@ -262,7 +291,7 @@ access = 2
 [connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_completed"]
 [connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/SaveDeck" to="." method="_on_save_deck_pressed"]
 [connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/RandomCubeButton" to="." method="_on_roll_race_button_pressed"]
-[connection signal="item_selected" from="UIPanel/MarginContainer/UIlayer/RaceMenu" to="." method="_on_race_menu_item_selected"]
+[connection signal="item_selected" from="UIPanel/MarginContainer/UIlayer/RaceCube/RaceMenu" to="." method="_on_race_menu_item_selected"]
 [connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/RollPackButton" to="." method="_on_roll_pack_button_pressed"]
 [connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/ReconnectButton" to="Steam" method="_on_reconnect_pressed"]
 [connection signal="dir_selected" from="SaveDeckDialog" to="." method="_on_save_deck_dialog_dir_selected"]

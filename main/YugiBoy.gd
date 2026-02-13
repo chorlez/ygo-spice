@@ -1,8 +1,11 @@
 extends Node
 
-@onready var RaceMenu: Node = get_node('UIPanel/MarginContainer/UIlayer/RaceMenu')
-@onready var ArchetypesLabel: Node = $UIPanel/MarginContainer/UIlayer/ArchetypesLabel
 @onready var CubeTypeMenu: Node = $UIPanel/MarginContainer/UIlayer/CubeTypeMenu
+@onready var RaceCubeContainer: Node = $UIPanel/MarginContainer/UIlayer/RaceCube
+@onready var RaceMenu: Node = get_node('UIPanel/MarginContainer/UIlayer/RaceCube/RaceMenu')
+@onready var ArchetypeCubeContainer: Node = $UIPanel/MarginContainer/UIlayer/ArchetypeCube
+@onready var ArchetypeCountMenu: Node = $UIPanel/MarginContainer/UIlayer/ArchetypeCube/ArchetypeCountMenu
+@onready var ArchetypeContainer: Node = $UIPanel/MarginContainer/UIlayer/ArchetypeCube/ArchetypeContainer
 @onready var RandomCubeButton: Node = get_node('UIPanel/MarginContainer/UIlayer/RandomCubeButton')
 @onready var DeckCountLabel: Node = $ToolTipPanel/TooltipArea/StatsBox/DeckCountLabel
 @onready var LevelLabel: Node = $ToolTipPanel/TooltipArea/StatsBox/LevelLabel
@@ -38,11 +41,13 @@ func _ready():
 	EventBus.start_civil_war.connect(initialize)
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
+	EventBus.request_new_cube.connect(_on_cube_requested)
 	LastAddedLabel.mouse_entered.connect(_on_last_added_hovered)
 	ClearDeckButton.pressed.connect(clear_deck)
 	LoadDeckButton.pressed.connect(load_deck)
 	RandomCubeButton.pressed.connect(_on_random_cube_button_pressed)
 	CubeTypeMenu.item_selected.connect(_on_cubetype_menu_item_selected)
+	ArchetypeCountMenu.item_selected.connect(_on_archetype_count_menu_item_selected)
 	# When a player is selected in the lobby, show their deck
 	EventBus.player_selected.connect(on_player_selected)
 	# Hook up sort button if present
@@ -61,8 +66,8 @@ func initialize():
 
 @rpc("any_peer","call_local")
 func create_cube(cube_type: int = CubeTypeMenu.get_selected_id()):
-	RaceMenu.visible = cube_type == Cube.Race
-	ArchetypesLabel.visible = cube_type == Cube.Archetype
+	RaceCubeContainer.visible = cube_type == Cube.Race
+	ArchetypeCubeContainer.visible = cube_type == Cube.Archetype
 	cube = Cube.new(cube_type, self)
 	update_deck_count_label()
 	if multiplayer.is_server():
@@ -157,6 +162,13 @@ func _on_random_cube_button_pressed() -> void:
 	race = ''
 	archetypes = []
 	create_cube.rpc()
+
+func _on_archetype_count_menu_item_selected(index: int) -> void:
+	archetypes = []
+	create_cube.rpc(Cube.Archetype)
+
+func _on_cube_requested(index: int):
+	create_cube.rpc(index)
 
 @rpc("any_peer","call_local")
 func change_selected_cubetype(index: int):

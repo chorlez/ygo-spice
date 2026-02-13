@@ -13,3 +13,5 @@ signal player_connected()
 signal player_selected(steam_name: String)
 
 signal mouse_clicked(event_position: Vector2)
+
+signal request_new_cube(cube_type: int)
