@@ -69,6 +69,8 @@ func initialize():
 func create_cube(cube_type: int = CubeTypeMenu.get_selected_id(), new_race: String= race, new_archetypes: Array[String] = archetypes, number_of_archetypes = ArchetypeCountMenu.get_selected_id() + 1):
 	RaceCubeContainer.visible = cube_type == Cube.Race
 	ArchetypeCubeContainer.visible = cube_type == Cube.Archetype
+	race = new_race
+	archetypes = new_archetypes
 	cube = Cube.new(cube_type, self, race, archetypes)
 	update_deck_count_label()
 	if multiplayer.is_server():
