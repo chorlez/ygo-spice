@@ -249,7 +249,23 @@ func _on_save_deck_dialog_file_selected(path: String):
 func on_player_selected(steam_name: String) -> void:
 	# Find the Player instance by name and display their deck
 	current_shown_player = Globals.get_player_by_steam_name(steam_name)
-	show_player_deck()
+	if current_shown_player != Globals.client_player:
+		request_deck.rpc(current_shown_player.steam_id)
+
+@rpc("any_peer", "call_local")
+func request_deck(steam_id):
+	if Globals.client_player.steam_id == steam_id:
+		sync_deck.rpc(steam_id, Globals.client_player.deck.get_export())
+
+@rpc("any_peer", "call_local")
+func sync_deck(steam_id, array_of_cards):
+	if Globals.client_player.steam_id != steam_id:
+		for player in playerList:
+			if player.steam_id == steam_id:
+				player.deck.load_from_export(array_of_cards)
+				if current_shown_player and current_shown_player.steam_id == steam_id:
+					show_player_deck()
+				break
 
 func show_player_deck() -> void:
 	# Clear current UI

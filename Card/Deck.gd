@@ -29,6 +29,7 @@ func remove(card:CardData):
 		var index := extraDeck.find(card)
 		if index != -1:
 			extraDeck.remove_at(index)
+			
 func clear():
 	mainDeck = []
 	extraDeck = []
@@ -231,3 +232,24 @@ func build_ydk_string() -> String:
 		lines.append(str(card_node.id))
 	
 	return "\n".join(lines)
+
+func get_export() -> Array:
+	var export:= []
+	for card in mainDeck:
+		if card != null:
+			export.append(card.id)
+	for card in extraDeck:
+		if card != null:
+			export.append(card.id)
+	return export
+	
+func load_from_export(export: Array):
+	clear()
+	for card_id in export:
+		add_card_by_id(card_id)
+
+
+func add_card_by_id(card_id:int):
+	var cardData:CardData = Globals.cardData_by_id.get(card_id)
+	if cardData:
+		add(cardData)
