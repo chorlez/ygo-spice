@@ -66,7 +66,7 @@ func initialize():
 	create_random_cube()
 
 @rpc("any_peer","call_local")
-func create_cube(cube_type: int = CubeTypeMenu.get_selected_id(), new_race: String= race, new_archetypes: Array[String] = archetypes):
+func create_cube(cube_type: int = CubeTypeMenu.get_selected_id(), new_race: String= race, new_archetypes: Array[String] = archetypes, number_of_archetypes = ArchetypeCountMenu.get_selected_id() + 1):
 	RaceCubeContainer.visible = cube_type == Cube.Race
 	ArchetypeCubeContainer.visible = cube_type == Cube.Archetype
 	cube = Cube.new(cube_type, self, race, archetypes)
@@ -193,6 +193,7 @@ func _on_random_cube_button_pressed() -> void:
 
 func _on_archetype_count_menu_item_selected(index: int) -> void:
 	archetypes = []
+	change_selected_archetype_count.rpc(index)
 	create_random_cube.rpc()
 
 func _on_cube_requested(index: int):
@@ -203,7 +204,7 @@ func _on_cube_requested(index: int):
 func change_selected_cubetype(index: int):
 	CubeTypeMenu.select(index)
 	if multiplayer.is_server():
-		create_cube.rpc(index, race, archetypes)
+		create_cube.rpc(index, race, archetypes, index + 1)
 
 @rpc("any_peer","call_local")
 func change_selected_race(new_race: String):
@@ -222,6 +223,11 @@ func change_selected_archetypes(new_archetypes: Array[String]):
 	archetypes = new_archetypes
 	if multiplayer.is_server():
 		create_cube.rpc(Cube.Archetype, race, archetypes)
+
+@rpc("any_peer", "call_local")
+func change_selected_archetype_count(index: int):
+	ArchetypeCountMenu.select(index)
+
 
 func _on_save_deck_pressed():
 	default_filename = "[YuGiBoy]" + race + ".ydk"
