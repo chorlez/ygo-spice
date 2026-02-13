@@ -251,6 +251,8 @@ func on_player_selected(steam_name: String) -> void:
 	current_shown_player = Globals.get_player_by_steam_name(steam_name)
 	if current_shown_player != Globals.client_player:
 		request_deck.rpc(current_shown_player.steam_id)
+	else:
+		show_player_deck()
 
 @rpc("any_peer", "call_local")
 func request_deck(steam_id):
@@ -260,7 +262,7 @@ func request_deck(steam_id):
 @rpc("any_peer", "call_local")
 func sync_deck(steam_id, array_of_cards):
 	if Globals.client_player.steam_id != steam_id:
-		for player in playerList:
+		for player in Globals.playerList:
 			if player.steam_id == steam_id:
 				player.deck.load_from_export(array_of_cards)
 				if current_shown_player and current_shown_player.steam_id == steam_id:
