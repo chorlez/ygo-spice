@@ -42,6 +42,7 @@ func _ready():
 	EventBus.card_hovered.connect(show_tooltip)
 	EventBus.card_pressed.connect(card_pressed)
 	EventBus.request_new_cube.connect(_on_cube_requested)
+	EventBus.sync_cube.connect(sync_cube)
 	LastAddedLabel.mouse_entered.connect(_on_last_added_hovered)
 	ClearDeckButton.pressed.connect(clear_deck)
 	LoadDeckButton.pressed.connect(load_deck)
@@ -62,7 +63,7 @@ func initialize():
 		return
 	EventBus.player_connected.connect(sync_state)
 	
-	create_cube.rpc()
+	create_cube()
 
 @rpc("any_peer","call_local")
 func create_cube(cube_type: int = CubeTypeMenu.get_selected_id()):
@@ -75,6 +76,8 @@ func create_cube(cube_type: int = CubeTypeMenu.get_selected_id()):
 
 @rpc("authority", 'call_remote')
 func sync_cube(cube_type : int, new_race: String, new_archetypes: Array[String]):
+	change_selected_race(new_race)
+	change_selected_cubetype(cube_type)
 	race = new_race
 	archetypes = new_archetypes
 	create_cube(cube_type)
@@ -151,21 +154,18 @@ func show_tooltip(card_data: CardData):
 
 func _on_cubetype_menu_item_selected(index: int) -> void:
 	change_selected_cubetype.rpc(index)
-	create_cube.rpc(index)
 
 
 func _on_race_menu_item_selected(index: int) -> void:
 	var race_to_sync = RaceMenu.get_item_text(index)
 	change_selected_race.rpc(race_to_sync)
-	create_cube.rpc(Cube.Race)
+	
 	
 func _on_roll_pack_button_pressed():
 	create_pack.rpc()
 		
 func _on_random_cube_button_pressed() -> void:
-	race = ''
-	archetypes = []
-	create_cube.rpc()
+	create_random_cube.rpc()
 
 func _on_archetype_count_menu_item_selected(index: int) -> void:
 	archetypes = []
@@ -174,9 +174,18 @@ func _on_archetype_count_menu_item_selected(index: int) -> void:
 func _on_cube_requested(index: int):
 	create_cube.rpc(index)
 
+@rpc("any_peer", 'call_local')
+func create_random_cube():
+	if multiplayer.is_server():
+		race = ''
+		archetypes = []
+		create_cube()
+
 @rpc("any_peer","call_local")
 func change_selected_cubetype(index: int):
 	CubeTypeMenu.select(index)
+	if multiplayer.is_server():
+		create_cube(index)
 
 @rpc("any_peer","call_local")
 func change_selected_race(new_race: String):
@@ -187,11 +196,14 @@ func change_selected_race(new_race: String):
 		if popup.get_item_text(i) == new_race:
 			RaceMenu.select(i)
 			break
+	if multiplayer.is_server():
+		create_cube(Cube.Race)
 
 @rpc("any_peer","call_local")
 func change_selected_archetypes(new_archetypes: Array[String]):
 	archetypes = new_archetypes
-	# no need to sync archetype selection in the UI since it's always derived from
+	if multiplayer.is_server():
+		create_cube(Cube.Archetype)
 
 func _on_save_deck_pressed():
 	default_filename = "[YuGiBoy]" + race + ".ydk"

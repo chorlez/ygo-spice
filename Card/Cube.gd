@@ -61,6 +61,9 @@ func _init(cubeType: int, n_game):
 			create_archetype_cube()
 		Attribute:
 			create_attribute_cube()
+	
+	if multiplayer.is_server():
+		EventBus.sync_cube.emit()
 			
 
 func create_master_cube():
