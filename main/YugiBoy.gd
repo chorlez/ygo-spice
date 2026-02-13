@@ -76,6 +76,7 @@ func create_cube(cube_type: int = CubeTypeMenu.get_selected_id()):
 
 @rpc("authority", 'call_remote')
 func sync_cube(cube_type : int, new_race: String, new_archetypes: Array[String]):
+	print(cube_type, new_race, new_archetypes)
 	change_selected_race(new_race)
 	change_selected_cubetype(cube_type)
 	race = new_race
