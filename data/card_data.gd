@@ -1,24 +1,23 @@
 extends Resource
 class_name CardData
 
-@export var id: int
-@export var name: String
-@export var typename: String
 enum {
 	MONSTER,
 	SPELL,
 	TRAP,
 	EXTRA}
+	
+@export var id: int
+@export var name: String
+@export var typename: String
 @export var type: int
 @export var race: String
 @export var archetype: String
 @export var level: int
 @export var atk: int
 @export var def: int
-@export var extra_deck: bool
 @export var description: String
 @export var is_staple: bool = false
-@export var is_monster: bool = false
 
 var texture: Texture2D = null
 
@@ -26,6 +25,18 @@ var texture: Texture2D = null
 func _to_string() -> String:
 	return name
 
+func is_extra() -> bool:
+	return type == CardData.EXTRA
+
+func is_spell() -> bool:
+	return type == CardData.SPELL
+
+func is_trap() -> bool:
+	return type == CardData.TRAP
+
+func is_monster() -> bool:
+	return type == CardData.MONSTER
+	
 func print_card_details():
 	print("Card ID: %d" % id)
 	print("Name: %s" % name)
@@ -35,5 +46,4 @@ func print_card_details():
 	print("Level: %d" % level)
 	print("ATK: %d" % atk)
 	print("DEF: %d" % def)
-	print("Extra Deck: %s" % str(extra_deck))
 	print("Description: %s" % description)  

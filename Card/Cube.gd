@@ -103,17 +103,14 @@ func clear():
 	extras.clear()
 	staples.clear()
 
-
-
-
 # Populate monster/extra pools from provided cards for the selected race
 func add_race_cards_to_cube():
 	for card in masterCube.monsters + masterCube.extras:
 		if card.race == race:
-			if not card.extra_deck:
-				monsters.append(card)
-			else:
+			if card.is_extra():
 				extras.append(card)
+			else:
+				monsters.append(card)
 
 				
 # Populate spell/support pool by matching race mentions and significant archetypes

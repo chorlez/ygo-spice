@@ -14,16 +14,14 @@ func _init(deckplayer:Player):
 	player = deckplayer
 
 func add(card: CardData):
-	print(card.name)
-	print(card.type)
-	if card.extra_deck:
+	if card.is_extra():
 		extraDeck.append(card)
 	else:
 		mainDeck.append(card)
 	save(backup_file_name)
 
 func remove(card:CardData):
-	if not card.extra_deck:
+	if not card.is_extra():
 		var index := mainDeck.find(card)
 		if index != -1:
 			mainDeck.remove_at(index)
@@ -64,15 +62,14 @@ func sort_main_for_display() -> Array:
 		if card_data == null:
 			continue
 		# Determine if it's a monster: prefer 'level' > 0, fall back to type string check
-		if card_data.is_monster:
+		if card_data.is_monster():
 			monsters.append(card_data)
 			continue
 
-		var ttype := String(card_data.typename).to_lower()
-		if ttype.find("spell") != -1:
+		elif card_data.is_spell():
 			spells.append(card_data)
 			continue
-		if ttype.find("trap") != -1:
+		elif card_data.is_trap():
 			traps.append(card_data)
 			continue
 

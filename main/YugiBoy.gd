@@ -242,8 +242,9 @@ func _on_save_deck_dialog_dir_selected(dir):
 
 func _on_save_deck_dialog_file_selected(path: String):
 	var dir := path.get_base_dir()
+	var file_name := path.get_file()
 	Settings.set_last_deck_path(dir)
-	current_shown_player.deck.save(path)
+	current_shown_player.deck.save(file_name)
 	
 
 func on_player_selected(steam_name: String) -> void:

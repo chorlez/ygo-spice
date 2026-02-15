@@ -34,17 +34,15 @@ func normalize_card(raw: Dictionary) -> void:
 
 	var card_type : String= raw.get("type", "")
 	card.typename = card_type
-	card.type = CardData.MONSTER if card_type.contains("Monster") else \
+	card.type = CardData.EXTRA if (
+							card_type.contains("Fusion") 
+							or card_type.contains("Synchro")
+							or card_type.contains("XYZ")
+							or card_type.contains("Link")) else \
+		CardData.MONSTER if card_type.contains("Monster") else \
 		CardData.SPELL if card_type.contains("Spell") else \
-		CardData.TRAP if card_type.contains("Trap") else \
-		CardData.EXTRA if (
-			card_type.contains("Fusion")
-			or card_type.contains("Synchro")
-			or card_type.contains("XYZ")
-			or card_type.contains("Link")) else 0
-		
-	card.extra_deck = card_type.contains("Fusion") or card_type.contains("Synchro") or card_type.contains("XYZ") or card_type.contains("Link")
-	
+		CardData.TRAP if card_type.contains("Trap") else 0
+			
 	card.id = raw.get("id", 0)
 	card.name = raw.get("name", "")
 	
@@ -77,7 +75,6 @@ func normalize_card(raw: Dictionary) -> void:
 			Globals.race_counts[card.race] += 1
 		else:
 			Globals.race_counts[card.race] = 1
-		card.is_monster = true
 	elif card.type == CardData.SPELL:
 		cube.spells.append(card)
 	elif card.type == CardData.TRAP:
