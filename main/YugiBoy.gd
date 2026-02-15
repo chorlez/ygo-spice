@@ -330,7 +330,8 @@ func load_deck():
 
 func populate_menus():
 	for r in Globals.race_counts.keys():
-		RaceMenu.add_item(r)
+		if Globals.race_counts[r] >= 20:
+			RaceMenu.add_item(r)
 	for c in Cube.cube_types:
 		if c != 'MasterCube':
 			CubeTypeMenu.add_item(c)
