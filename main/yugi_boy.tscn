@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bss7gssxhkutk" path="res://main/YugiBoy.gd" id="1_jhidu"]
 [ext_resource type="Script" uid="uid://c7gyykqfnu0wl" path="res://main/card_database.gd" id="1_ynwbq"]
+[ext_resource type="Script" uid="uid://w5h2vhmipfli" path="res://UI/ui.gd" id="2_bod78"]
 [ext_resource type="PackedScene" uid="uid://62xo4wcay34u" path="res://Card/card.tscn" id="3_ro6sk"]
 [ext_resource type="Script" uid="uid://e1py4etghvgy" path="res://Steam/Steam.gd" id="4_jhidu"]
 
@@ -39,20 +40,7 @@ offset_right = 2073.0
 offset_bottom = 1166.0
 script = ExtResource("1_jhidu")
 
-[node name="CardDatabase" type="Node" parent="." unique_id=35667800]
-script = ExtResource("1_ynwbq")
-
-[node name="HTTPRequest" type="HTTPRequest" parent="CardDatabase" unique_id=1040544210]
-
-[node name="ToolTipPanel" type="Panel" parent="." unique_id=558124]
-layout_mode = 0
-offset_top = 72.0
-offset_right = 960.0
-offset_bottom = 2160.0
-size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
-
-[node name="TooltipArea" type="VBoxContainer" parent="ToolTipPanel" unique_id=1792674749]
+[node name="SceneContainer" type="VBoxContainer" parent="." unique_id=2082617483]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -60,95 +48,75 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="StatsBox" type="HBoxContainer" parent="ToolTipPanel/TooltipArea" unique_id=154900566]
-layout_mode = 2
-
-[node name="DeckCountLabel" type="Label" parent="ToolTipPanel/TooltipArea/StatsBox" unique_id=773330472]
-layout_mode = 2
-size_flags_horizontal = 2
-theme_override_font_sizes/font_size = 30
-
-[node name="LevelLabel" type="Label" parent="ToolTipPanel/TooltipArea/StatsBox" unique_id=962498464]
-layout_mode = 2
-size_flags_horizontal = 8
-theme_override_font_sizes/font_size = 40
-
-[node name="TooltipCard" parent="ToolTipPanel/TooltipArea" unique_id=602510552 instance=ExtResource("3_ro6sk")]
-layout_mode = 2
-size_flags_vertical = 0
-
-[node name="ScrollContainer" type="ScrollContainer" parent="ToolTipPanel/TooltipArea" unique_id=617717268]
+[node name="UI" type="Control" parent="SceneContainer" unique_id=1421366841]
+custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 size_flags_vertical = 3
+script = ExtResource("2_bod78")
 
-[node name="CardDescriptionLabel" type="Label" parent="ToolTipPanel/TooltipArea/ScrollContainer" unique_id=264909246]
-custom_minimum_size = Vector2(100, 100)
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 2
-theme_override_font_sizes/font_size = 40
-autowrap_mode = 2
-
-[node name="UIPanel" type="Panel" parent="." unique_id=689442470]
+[node name="UIPanel" type="Panel" parent="SceneContainer/UI" unique_id=689442470]
+custom_minimum_size = Vector2(0, 150)
 layout_mode = 0
+offset_top = 4.0
 offset_right = 3840.0
-offset_bottom = 72.0
-size_flags_horizontal = 3
+offset_bottom = 154.0
+size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
-[node name="MarginContainer" type="MarginContainer" parent="UIPanel" unique_id=1102746348]
-layout_mode = 0
-offset_right = 3840.0
-offset_bottom = 74.4
+[node name="MarginContainer" type="MarginContainer" parent="SceneContainer/UI/UIPanel" unique_id=1102746348]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_constants/margin_left = 3
 theme_override_constants/margin_top = 3
 theme_override_constants/margin_right = 3
 theme_override_constants/margin_bottom = 3
 
-[node name="UIlayer" type="HBoxContainer" parent="UIPanel/MarginContainer" unique_id=1157266717]
+[node name="VBoxContainer" type="VBoxContainer" parent="SceneContainer/UI/UIPanel/MarginContainer" unique_id=762205034]
+layout_mode = 2
+
+[node name="TopUILayer" type="HBoxContainer" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer" unique_id=1157266717]
 custom_minimum_size = Vector2(1600, 0)
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="ClearDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=2019469344]
+[node name="ClearDeck" type="Button" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=2019469344]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = " Clear "
 
-[node name="LoadDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=540335788]
-layout_mode = 2
-theme_override_font_sizes/font_size = 40
-text = " Load "
-
-[node name="SaveDeck" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=649807316]
+[node name="SaveDeck" type="Button" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=649807316]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = " Save "
 
-[node name="RandomCubeButton" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=914896887]
+[node name="RandomCubeButton" type="Button" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=914896887]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Random Cube"
 
-[node name="CubeTypeMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer" unique_id=2025556995]
+[node name="CubeTypeMenu" type="OptionButton" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=2025556995]
 layout_mode = 2
 theme = SubResource("Theme_bod78")
 theme_override_font_sizes/font_size = 40
 
-[node name="RaceCube" type="HBoxContainer" parent="UIPanel/MarginContainer/UIlayer" unique_id=1081891326]
+[node name="RaceCube" type="HBoxContainer" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=1081891326]
 visible = false
 layout_mode = 2
 
-[node name="RaceMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer/RaceCube" unique_id=1266203913]
+[node name="RaceMenu" type="OptionButton" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer/RaceCube" unique_id=1266203913]
 layout_mode = 2
 theme = SubResource("Theme_jhidu")
 theme_override_font_sizes/font_size = 40
 
-[node name="ArchetypeCube" type="HBoxContainer" parent="UIPanel/MarginContainer/UIlayer" unique_id=273405411]
+[node name="ArchetypeCube" type="HBoxContainer" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=273405411]
 visible = false
 layout_mode = 2
 
-[node name="ArchetypeCountMenu" type="OptionButton" parent="UIPanel/MarginContainer/UIlayer/ArchetypeCube" unique_id=1664547623]
+[node name="ArchetypeCountMenu" type="OptionButton" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer/ArchetypeCube" unique_id=1664547623]
 layout_mode = 2
 theme = SubResource("Theme_2rg7u")
 theme_override_font_sizes/font_size = 40
@@ -167,101 +135,75 @@ popup/item_4/id = 4
 popup/item_5/text = "6"
 popup/item_5/id = 5
 
-[node name="ArchetypeContainer" type="HBoxContainer" parent="UIPanel/MarginContainer/UIlayer/ArchetypeCube" unique_id=1723818926]
+[node name="ArchetypeContainer" type="HBoxContainer" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer/ArchetypeCube" unique_id=1723818926]
 layout_mode = 2
 
-[node name="RollPackButton" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=124531509]
+[node name="RollPackButton" type="Button" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=124531509]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Roll Pack"
 
-[node name="SearchContainer" type="VBoxContainer" parent="UIPanel/MarginContainer/UIlayer" unique_id=462219083]
+[node name="SearchContainer" type="VBoxContainer" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=462219083]
 layout_mode = 2
 
-[node name="Spacer" type="Control" parent="UIPanel/MarginContainer/UIlayer" unique_id=1556526084]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="PlayerContainer" type="HBoxContainer" parent="UIPanel/MarginContainer/UIlayer" unique_id=938247576]
-layout_mode = 2
-
-[node name="Spacer2" type="Control" parent="UIPanel/MarginContainer/UIlayer" unique_id=1981291748]
+[node name="Spacer" type="Control" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=1556526084]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SearchInput" type="LineEdit" parent="UIPanel/MarginContainer/UIlayer" unique_id=971204107]
+[node name="PlayerContainer" type="HBoxContainer" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=938247576]
+layout_mode = 2
+
+[node name="Spacer2" type="Control" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=1981291748]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SearchInput" type="LineEdit" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=971204107]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 30
 placeholder_text = "Search Cube"
 
-[node name="SortModeButton" type="CheckButton" parent="UIPanel/MarginContainer/UIlayer" unique_id=1112692839]
+[node name="SortModeButton" type="CheckButton" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=1112692839]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 theme_override_icons/checked = SubResource("DPITexture_jhidu")
 theme_override_icons/unchecked = SubResource("DPITexture_bod78")
 text = "SORT: ADDED"
 
-[node name="LastAddedLabel" type="Label" parent="UIPanel/MarginContainer/UIlayer" unique_id=1824143048]
+[node name="LastAddedLabel" type="Label" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=1824143048]
 layout_mode = 2
 mouse_filter = 0
 theme_override_font_sizes/font_size = 30
 
-[node name="ReconnectButton" type="Button" parent="UIPanel/MarginContainer/UIlayer" unique_id=1323034806]
+[node name="BottomUILayer" type="HBoxContainer" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer" unique_id=1878414546]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LoadDeck" type="Button" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/BottomUILayer" unique_id=540335788]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
-text = "Reconnect"
+text = " Load "
 
-[node name="PackPanel" type="Panel" parent="." unique_id=1127568318]
-layout_mode = 0
-offset_left = 960.0
-offset_top = 72.0
-offset_right = 3840.0
-offset_bottom = 504.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
-
-[node name="PackContainer" type="GridContainer" parent="PackPanel" unique_id=493914726]
-custom_minimum_size = Vector2(1200, 180)
-layout_mode = 0
-offset_right = 2880.0
-offset_bottom = 432.0
-pivot_offset = Vector2(10, 10)
-theme_override_constants/h_separation = 0
-columns = 10
-
-[node name="MainDeckPanel" type="Panel" parent="." unique_id=131120404]
-layout_mode = 0
-offset_left = 960.0
-offset_top = 504.0
-offset_right = 3840.0
-offset_bottom = 1752.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
-
-[node name="ScrollContainer" type="ScrollContainer" parent="MainDeckPanel" unique_id=768154061]
-custom_minimum_size = Vector2(1200, 520)
-layout_mode = 0
-offset_right = 2880.0
-offset_bottom = 1248.0
-horizontal_scroll_mode = 0
-
-[node name="MainDeckContainer" type="GridContainer" parent="MainDeckPanel/ScrollContainer" unique_id=533736835]
-custom_minimum_size = Vector2(2880, 0)
+[node name="HBoxContainer" type="HBoxContainer" parent="SceneContainer" unique_id=2035261653]
+custom_minimum_size = Vector2(0, 2006)
 layout_mode = 2
-columns = 10
+size_flags_vertical = 3
 
-[node name="ExtraDeckPanel" type="Panel" parent="." unique_id=962543018]
-layout_mode = 0
-offset_left = 960.0
-offset_top = 1752.0
-offset_right = 3840.0
-offset_bottom = 2160.0
+[node name="ToolTip" type="Control" parent="SceneContainer/HBoxContainer" unique_id=385914237]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ToolTipPanel" type="Panel" parent="SceneContainer/HBoxContainer/ToolTip" unique_id=558124]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="ExtraDeckPanel" unique_id=338328833]
+[node name="TooltipArea" type="VBoxContainer" parent="SceneContainer/HBoxContainer/ToolTip/ToolTipPanel" unique_id=1792674749]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -269,17 +211,127 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ExtraDeckContainer" type="GridContainer" parent="ExtraDeckPanel/ScrollContainer" unique_id=1389378595]
+[node name="StatsBox" type="HBoxContainer" parent="SceneContainer/HBoxContainer/ToolTip/ToolTipPanel/TooltipArea" unique_id=154900566]
+layout_mode = 2
+
+[node name="DeckCountLabel" type="Label" parent="SceneContainer/HBoxContainer/ToolTip/ToolTipPanel/TooltipArea/StatsBox" unique_id=773330472]
+layout_mode = 2
+size_flags_horizontal = 2
+theme_override_font_sizes/font_size = 30
+
+[node name="LevelLabel" type="Label" parent="SceneContainer/HBoxContainer/ToolTip/ToolTipPanel/TooltipArea/StatsBox" unique_id=962498464]
+layout_mode = 2
+size_flags_horizontal = 8
+theme_override_font_sizes/font_size = 40
+
+[node name="TooltipCard" parent="SceneContainer/HBoxContainer/ToolTip/ToolTipPanel/TooltipArea" unique_id=602510552 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="SceneContainer/HBoxContainer/ToolTip/ToolTipPanel/TooltipArea" unique_id=617717268]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="CardDescriptionLabel" type="Label" parent="SceneContainer/HBoxContainer/ToolTip/ToolTipPanel/TooltipArea/ScrollContainer" unique_id=264909246]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 2
+theme_override_font_sizes/font_size = 40
+autowrap_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SceneContainer/HBoxContainer" unique_id=1117652559]
+custom_minimum_size = Vector2(2883, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Panel" type="Control" parent="SceneContainer/HBoxContainer/VBoxContainer" unique_id=2132236256]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PackPanel" type="Panel" parent="SceneContainer/HBoxContainer/VBoxContainer/Panel" unique_id=1127568318]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
+
+[node name="PackContainer" type="GridContainer" parent="SceneContainer/HBoxContainer/VBoxContainer/Panel/PackPanel" unique_id=493914726]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(10, 10)
+theme_override_constants/h_separation = 0
+columns = 10
+
+[node name="Deck" type="Control" parent="SceneContainer/HBoxContainer/VBoxContainer" unique_id=1359752792]
+custom_minimum_size = Vector2(0, 1665)
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SceneContainer/HBoxContainer/VBoxContainer/Deck" unique_id=1739029545]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MainDeckPanel" type="Panel" parent="SceneContainer/HBoxContainer/VBoxContainer/Deck/VBoxContainer" unique_id=131120404]
+custom_minimum_size = Vector2(0, 1332)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="SceneContainer/HBoxContainer/VBoxContainer/Deck/VBoxContainer/MainDeckPanel" unique_id=768154061]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_scroll_mode = 0
+
+[node name="MainDeckContainer" type="GridContainer" parent="SceneContainer/HBoxContainer/VBoxContainer/Deck/VBoxContainer/MainDeckPanel/ScrollContainer" unique_id=533736835]
+custom_minimum_size = Vector2(2880, 0)
+layout_mode = 2
+size_flags_vertical = 3
+columns = 10
+
+[node name="ExtraDeckPanel" type="Panel" parent="SceneContainer/HBoxContainer/VBoxContainer/Deck/VBoxContainer" unique_id=962543018]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="SceneContainer/HBoxContainer/VBoxContainer/Deck/VBoxContainer/ExtraDeckPanel" unique_id=338328833]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ExtraDeckContainer" type="GridContainer" parent="SceneContainer/HBoxContainer/VBoxContainer/Deck/VBoxContainer/ExtraDeckPanel/ScrollContainer" unique_id=1389378595]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 columns = 10
 
-[node name="Steam" type="Control" parent="." unique_id=581489316]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Steam" type="Node" parent="." unique_id=458727410]
 script = ExtResource("4_jhidu")
+
+[node name="CardDatabase" type="Node" parent="." unique_id=532621717]
+script = ExtResource("1_ynwbq")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="CardDatabase" unique_id=1040544210]
 
 [node name="SaveDeckDialog" type="FileDialog" parent="." unique_id=95948914]
 size = Vector2i(1920, 1080)
@@ -288,11 +340,10 @@ content_scale_aspect = 4
 content_scale_factor = 2.0
 access = 2
 
+[connection signal="pressed" from="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer/SaveDeck" to="." method="_on_save_deck_pressed"]
+[connection signal="pressed" from="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer/RandomCubeButton" to="." method="_on_roll_race_button_pressed"]
+[connection signal="item_selected" from="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer/RaceCube/RaceMenu" to="." method="_on_race_menu_item_selected"]
+[connection signal="pressed" from="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer/RollPackButton" to="." method="_on_roll_pack_button_pressed"]
 [connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_completed"]
-[connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/SaveDeck" to="." method="_on_save_deck_pressed"]
-[connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/RandomCubeButton" to="." method="_on_roll_race_button_pressed"]
-[connection signal="item_selected" from="UIPanel/MarginContainer/UIlayer/RaceCube/RaceMenu" to="." method="_on_race_menu_item_selected"]
-[connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/RollPackButton" to="." method="_on_roll_pack_button_pressed"]
-[connection signal="pressed" from="UIPanel/MarginContainer/UIlayer/ReconnectButton" to="Steam" method="_on_reconnect_pressed"]
 [connection signal="dir_selected" from="SaveDeckDialog" to="." method="_on_save_deck_dialog_dir_selected"]
 [connection signal="file_selected" from="SaveDeckDialog" to="." method="_on_save_deck_dialog_file_selected"]

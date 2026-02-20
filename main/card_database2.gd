@@ -1,81 +1,95 @@
-extends Node
+﻿extends Node
 
 const API_URL := "https://db.ygoprodeck.com/api/v7/cardinfo.php?format=tcg"
-var pendulum_filter :bool = true
+const CACHE_PATH := "res://data/cards.json"
+var use_pendulum :bool = false
 
-# DATABASE
-var cards_by_id : Dictionary = {}
-var cards_by_race : Dictionary = {}
-var cards_by_archetype : Dictionary = {}
-var cards_by_attribute: Dictionary = {}
-var cards_by_type: Dictionary = {}
-var cards_by_name: Dictionary = {}
-
-var staples: Array[CardData] = []
+@onready var cube := Globals.masterCube
 
 func _ready():
-	fetch_card_database()
-
-func fetch_card_database():
-	$HTTPRequest.request_completed.connect(_on_http_request_completed)
+	fetch_from_api()
+	
+func fetch_from_api():
 	$HTTPRequest.request(API_URL)
+
 
 func _on_http_request_completed(_result, response_code, _headers, body):
 	if response_code != 200:
 		push_error("Failed to fetch card data")
 		return
-	
+
 	var json = JSON.parse_string(body.get_string_from_utf8())
 	if json == null or not json.has("data"):
 		push_error("Invalid JSON response")
 		return
+
+	for raw_card in json["data"]:
+		normalize_card(raw_card)
+
+	#save_cache()
+	EventBus.start_civil_war.emit()
+
+func normalize_card(raw: Dictionary) -> void:
+	var card := CardData.new()
+
+	var card_type : String= raw.get("type", "")
+	card.typename = card_type
+	card.type = CardData.EXTRA if (
+							card_type.contains("Fusion") 
+							or card_type.contains("Synchro")
+							or card_type.contains("XYZ")
+							or card_type.contains("Link")) else \
+		CardData.MONSTER if card_type.contains("Monster") else \
+		CardData.SPELL if card_type.contains("Spell") else \
+		CardData.TRAP if card_type.contains("Trap") else 0
+			
+	card.id = raw.get("id", 0)
+	card.name = raw.get("name", "")
 	
-	build_card_database(json["data"])
-
-func build_card_database(raw_cards: Array) -> void:
-	for raw_card in raw_cards:
-		var type_name : String = raw_card.get("type", "")
-		var description : String = raw_card.get("desc", "")
-		if pendulum_filter:
-			if type_name.to_lower().find("pendulum") != -1 or description.to_lower().find("pendulum") != -1:
-				continue
-		var card_data := CardData.new()
+	card.race = raw.get("race", "")
+	card.archetype = raw.get("archetype", "")
+	card.level = get_int_or_zero(raw, "level")
+	card.atk = get_int_or_zero(raw, "atk")
+	card.def = get_int_or_zero(raw, "def")
+	card.description = raw.desc
+	
+	# Check pendulum filter
+	if not use_pendulum:
+		if 'pendulum' in card_type.to_lower()  or card.description.to_lower().find("pendulum") != -1:
+			return
+	### DISTRIBUTE CARDS TO PROPER LOCATIONS
+	if card.name in juicy_staples():
+		card.is_staple = true
+		cube.staples.append(card)
 		
-		card_data.id = raw_card.get("id", 0)
-		card_data.name = raw_card.get("name", "")
-		card_data.race = raw_card.get("race", "")
-		card_data.archetype = raw_card.get("archetype", "")
-		card_data.level = get_int_or_zero(raw_card, "level")
-		card_data.atk = get_int_or_zero(raw_card, "atk")
-		card_data.def = get_int_or_zero(raw_card, "def")
-		card_data.description = raw_card.get("desc", "")
-		card_data.type_name = type_name
-		card_data.type = CardData.EXTRA if (
-							type_name.contains("Fusion") 
-							or type_name.contains("Synchro")
-							or type_name.contains("XYZ")
-							or type_name.contains("Link")) else \
-			CardData.MONSTER if type_name.contains("Monster") else \
-			CardData.SPELL if type_name.contains("Spell") else \
-			CardData.TRAP if type_name.contains("Trap") else 0
-		
-		cards_by_id[card_data.id] = card_data
-		cards_by_name[card_data.name] = card_data
-		cards_by_race[card_data.race] = cards_by_race.get(card_data.race, []) + [card_data]
-		cards_by_archetype[card_data.archetype] = cards_by_archetype.get(card_data.archetype, []) + [card_data]
-		cards_by_attribute[card_data.race] = cards_by_attribute.get(card_data.race, []) + [card_data]
-		cards_by_type[card_data.type] = cards_by_type.get(card_data.type, []) + [card_data]
-		
-	juicy_staples()
-	EventBus.database_built.emit()
-
-
+	elif card.type == CardData.MONSTER:
+		cube.monsters.append(card)
+		if card.race in Globals.race_counts:
+			Globals.race_counts[card.race] += 1
+		else:
+			Globals.race_counts[card.race] = 1
+	elif card.type == CardData.EXTRA:
+		cube.extras.append(card)
+		#Keep count of race
+		if card.race in Globals.race_counts:
+			Globals.race_counts[card.race] += 1
+		else:
+			Globals.race_counts[card.race] = 1
+	elif card.type == CardData.SPELL:
+		cube.spells.append(card)
+	elif card.type == CardData.TRAP:
+		cube.traps.append(card)
+	# Index by ID
+	Globals.cardData_by_id[card.id] = card
+	if card.archetype != "":
+		Globals.cardData_by_archetype[card.archetype] = [card] if not Globals.cardData_by_archetype.has(card.archetype) else Globals.cardData_by_archetype[card.archetype] + [card]
+	
 func get_int_or_zero(dict: Dictionary, key: String) -> int:
 	var value = dict.get(key)
 	return value if value != null else 0
 
 
-func juicy_staples() -> void:
+func juicy_staples():
 	const STAPLE_CARDS := [
 	# === MONSTERS ===
 	"Effect Veiler",
@@ -136,7 +150,7 @@ func juicy_staples() -> void:
 	"Compulsory Evacuation Device",
 	"Dimensional Prison",
 	"Call of the Haunted",
-	"Magic Cylinder",
+	"Magic Cilinder",
 	"Trap Dustshoot",
 	"Mind Crush",
 	"Phoenix Wing Wind Blast",
@@ -175,10 +189,4 @@ func juicy_staples() -> void:
 	"Borrelsword Dragon",
 	"Apollousa, Bow of the Goddess",
 	]
-	for card_name in STAPLE_CARDS:
-		if cards_by_name.has(card_name):
-			var card_data = cards_by_name[card_name]
-			card_data.is_staple = true
-			staples.append(card_data)
-		else:
-			print("Warning: Staple card '%s' not found in database" % card_name)
+	return STAPLE_CARDS

@@ -9,7 +9,7 @@ enum {
 	
 @export var id: int
 @export var name: String
-@export var typename: String
+@export var type_name: String
 @export var type: int
 @export var race: String
 @export var archetype: String
