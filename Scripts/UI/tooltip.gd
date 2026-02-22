@@ -11,5 +11,7 @@ func _ready() -> void:
 
 
 func _on_card_hovered(card:CardData):
-	pass
-	
+	card_scene.card_data = card
+	CardDatabase.load_card_image_to_ui(card, card_scene)
+	card_description.text = card.description
+	level_label.text = "Level: %d" % card.level if card.is_monster() else ""

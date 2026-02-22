@@ -3,10 +3,12 @@ extends Node
 ### CLIENT SIDE RPC'S
 signal database_built()
 signal card_hovered(card_data:CardData)
-
+signal mouse_clicked(position:Vector2)
+signal add_card_to_deck(card_data:CardData)
+signal remove_card_from_deck(card_scene:CardScene)
+signal card_right_clicked(card_scene:CardScene)
 
 ### SERVER SIDE RPC'S
-
 @rpc("any_peer", 'call_local')
 func request_cube():
 	cube_requested.emit()
@@ -25,3 +27,9 @@ func sync_pack(cardIDs:Array[int]):
 	pack_created.emit(cardIDs)
 
 signal pack_created(cardIDs:Array[int])
+
+@rpc("any_peer", 'call_local')
+func remove_card_from_pack(pack_index:int):
+	card_removed_from_pack.emit(pack_index)
+
+signal card_removed_from_pack(pack_index:int)

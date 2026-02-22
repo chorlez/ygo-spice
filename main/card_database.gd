@@ -48,6 +48,8 @@ func build_card_database(raw_cards: Array) -> void:
 		if pendulum_filter:
 			if type_name.to_lower().find("pendulum") != -1 or description.to_lower().find("pendulum") != -1:
 				continue
+		if raw_card.get("race", "") == 'Yugi':
+			continue
 		var card_data := CardData.new()
 		
 		card_data.id = raw_card.get("id", 0)
@@ -79,9 +81,10 @@ func build_card_database(raw_cards: Array) -> void:
 	EventBus.database_built.emit()
 
 
-func create_card_scene(card_data: CardData) -> Card:
+func create_card_scene(card_data: CardData, state) -> CardScene:
 	var card: Node = CARDSCENE.instantiate()
 	card.card_data = card_data
+	card.state = state
 	if card_data.texture:
 		card.texture = card_data.texture
 	else:
@@ -89,7 +92,7 @@ func create_card_scene(card_data: CardData) -> Card:
 	return card
 
 # Fetch the image live and assign it to a card immediately
-func load_card_image_to_ui(card: CardData, CardObject: Card) -> void:
+func load_card_image_to_ui(card: CardData, CardObject: CardScene) -> void:
 	if card.texture:
 		CardObject.texture = card.texture
 		return

@@ -1,7 +1,6 @@
 extends Control
 
 var cube: Cube = Cube.new(self)
-@onready var pack = $SceneContainer/HBoxContainer/VBoxContainer/Pack
 
 func _init():
 	Globals.game = self

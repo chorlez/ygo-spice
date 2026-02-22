@@ -25,17 +25,20 @@ var texture: Texture2D = null
 func _to_string() -> String:
 	return name
 
-func is_extra() -> bool:
-	return type == CardData.EXTRA
+func is_extra_deck_monster() -> bool:
+	return type == EXTRA
 
 func is_spell() -> bool:
-	return type == CardData.SPELL
+	return type == SPELL
 
 func is_trap() -> bool:
-	return type == CardData.TRAP
+	return type == TRAP
+
+func is_main_deck_monster() -> bool:
+	return type == MONSTER
 
 func is_monster() -> bool:
-	return type == CardData.MONSTER
+	return type in [MONSTER, EXTRA]
 	
 func print_card_details():
 	print("Card ID: %d" % id)
