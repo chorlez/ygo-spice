@@ -22,9 +22,10 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-EventBus="*res://globals/event_bus.gd"
-Globals="*res://globals/globals.gd"
+EventBus="*res://Scripts/Globals/event_bus.gd"
+Globals="*res://Scripts/Globals/globals.gd"
 Settings="*uid://bku3x6uthh5b8"
+CardDatabase="*uid://c7gyykqfnu0wl"
 
 [display]
 

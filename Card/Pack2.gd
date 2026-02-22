@@ -1,5 +1,5 @@
-extends Node
-class_name Pack
+﻿extends Node
+class_name Pack2
 
 var cards: Array[CardData]
 var cardIDs: Array[int]

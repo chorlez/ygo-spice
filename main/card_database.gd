@@ -1,7 +1,11 @@
 extends Node
 
 const API_URL := "https://db.ygoprodeck.com/api/v7/cardinfo.php?format=tcg"
+const IMAGE_BASE_URL := "https://images.ygoprodeck.com/images/cards/"
+var CARDSCENE: PackedScene = preload("res://Card/card.tscn")
+@onready var HTTPRequestNode: HTTPRequest
 var pendulum_filter :bool = true
+
 
 # DATABASE
 var cards_by_id : Dictionary = {}
@@ -17,10 +21,14 @@ func _ready():
 	fetch_card_database()
 
 func fetch_card_database():
-	$HTTPRequest.request_completed.connect(_on_http_request_completed)
-	$HTTPRequest.request(API_URL)
+	print('Starting to fetch card database...')
+	HTTPRequestNode = HTTPRequest.new()
+	add_child(HTTPRequestNode)
+	HTTPRequestNode.request_completed.connect(_on_http_request_completed)
+	HTTPRequestNode.request(API_URL)
 
 func _on_http_request_completed(_result, response_code, _headers, body):
+	print("HTTP request completed with code %d" % response_code)
 	if response_code != 200:
 		push_error("Failed to fetch card data")
 		return
@@ -33,6 +41,7 @@ func _on_http_request_completed(_result, response_code, _headers, body):
 	build_card_database(json["data"])
 
 func build_card_database(raw_cards: Array) -> void:
+	print("Building card database with %d cards..." % raw_cards.size())
 	for raw_card in raw_cards:
 		var type_name : String = raw_card.get("type", "")
 		var description : String = raw_card.get("desc", "")
@@ -70,10 +79,56 @@ func build_card_database(raw_cards: Array) -> void:
 	EventBus.database_built.emit()
 
 
-func get_int_or_zero(dict: Dictionary, key: String) -> int:
-	var value = dict.get(key)
-	return value if value != null else 0
+func create_card_scene(card_data: CardData) -> Card:
+	var card: Node = CARDSCENE.instantiate()
+	card.card_data = card_data
+	if card_data.texture:
+		card.texture = card_data.texture
+	else:
+		load_card_image_to_ui(card_data, card)
+	return card
 
+# Fetch the image live and assign it to a card immediately
+func load_card_image_to_ui(card: CardData, CardObject: Card) -> void:
+	if card.texture:
+		CardObject.texture = card.texture
+		return
+
+	var http := HTTPRequest.new()
+	add_child(http)
+
+	# Callback when HTTP request finishes
+	http.request_completed.connect(
+		func(_result, response_code, _on_lobby_match_listheaders, body):
+			if not card or not CardObject:
+				return
+			if response_code != 200:
+				push_error("Failed to download image for card %d" % card.id)
+				http.queue_free()
+				return
+
+			var img := Image.new()
+			var err := img.load_jpg_from_buffer(body)
+			if err != OK:
+				push_error("Failed to decode image for card %d" % card.id)
+				http.queue_free()
+				return
+
+			var tex := ImageTexture.create_from_image(img)
+			card.texture = tex
+			CardObject.texture = tex
+
+			http.queue_free()
+	)
+
+	var url := IMAGE_BASE_URL + str(card.id) + ".jpg"
+	http.request(url)
+
+func get_card_by_id(card_id: int) -> CardData:
+	var card = cards_by_id.get(card_id)
+	if card == null:
+		print("Warning: Card ID %d not found in database" % card_id)
+	return card
 
 func juicy_staples() -> void:
 	const STAPLE_CARDS := [
@@ -182,3 +237,7 @@ func juicy_staples() -> void:
 			staples.append(card_data)
 		else:
 			print("Warning: Staple card '%s' not found in database" % card_name)
+
+func get_int_or_zero(dict: Dictionary, key: String) -> int:
+	var value = dict.get(key)
+	return value if value != null else 0

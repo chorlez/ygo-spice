@@ -1,10 +1,11 @@
 [gd_scene format=3 uid="uid://bt4kc8oa72in2"]
 
 [ext_resource type="Script" uid="uid://bss7gssxhkutk" path="res://main/YugiBoy.gd" id="1_jhidu"]
-[ext_resource type="Script" uid="uid://c7gyykqfnu0wl" path="res://main/card_database.gd" id="1_ynwbq"]
-[ext_resource type="Script" uid="uid://w5h2vhmipfli" path="res://UI/ui.gd" id="2_bod78"]
+[ext_resource type="Script" uid="uid://w5h2vhmipfli" path="res://Scripts/UI/ui.gd" id="2_bod78"]
+[ext_resource type="Script" uid="uid://q7eyii0wh0nv" path="res://Scripts/UI/tooltip.gd" id="3_2rg7u"]
 [ext_resource type="PackedScene" uid="uid://62xo4wcay34u" path="res://Card/card.tscn" id="3_ro6sk"]
-[ext_resource type="Script" uid="uid://e1py4etghvgy" path="res://Steam/Steam.gd" id="4_jhidu"]
+[ext_resource type="Script" uid="uid://dhfjrvqc3pkhn" path="res://Scripts/Classes/pack.gd" id="4_bod78"]
+[ext_resource type="Script" uid="uid://e1py4etghvgy" path="res://Scripts/Steam/steam.gd" id="4_jhidu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1t8k8"]
 bg_color = Color(0.018140132, 0.20371577, 0.24650532, 1)
@@ -192,6 +193,7 @@ size_flags_vertical = 3
 [node name="ToolTip" type="Control" parent="SceneContainer/HBoxContainer" unique_id=385914237]
 layout_mode = 2
 size_flags_horizontal = 3
+script = ExtResource("3_2rg7u")
 
 [node name="ToolTipPanel" type="Panel" parent="SceneContainer/HBoxContainer/ToolTip" unique_id=558124]
 layout_mode = 1
@@ -245,11 +247,12 @@ custom_minimum_size = Vector2(2883, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Panel" type="Control" parent="SceneContainer/HBoxContainer/VBoxContainer" unique_id=2132236256]
+[node name="Pack" type="Control" parent="SceneContainer/HBoxContainer/VBoxContainer" unique_id=2132236256]
 layout_mode = 2
 size_flags_vertical = 3
+script = ExtResource("4_bod78")
 
-[node name="PackPanel" type="Panel" parent="SceneContainer/HBoxContainer/VBoxContainer/Panel" unique_id=1127568318]
+[node name="PackPanel" type="Panel" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack" unique_id=1127568318]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -260,7 +263,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
 
-[node name="PackContainer" type="GridContainer" parent="SceneContainer/HBoxContainer/VBoxContainer/Panel/PackPanel" unique_id=493914726]
+[node name="PackContainer" type="GridContainer" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel" unique_id=493914726]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -269,7 +272,67 @@ grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(10, 10)
 theme_override_constants/h_separation = 0
-columns = 10
+columns = 12
+
+[node name="CardImage" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel/PackContainer" unique_id=319687067 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+
+[node name="CardImage2" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel/PackContainer" unique_id=2102619648 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+
+[node name="CardImage11" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel/PackContainer" unique_id=1858921164 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+
+[node name="CardImage12" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel/PackContainer" unique_id=2104990562 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+
+[node name="CardImage3" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel/PackContainer" unique_id=1861788581 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+
+[node name="CardImage9" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel/PackContainer" unique_id=1880107127 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+
+[node name="CardImage10" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel/PackContainer" unique_id=1613562669 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+
+[node name="CardImage4" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel/PackContainer" unique_id=296657747 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+
+[node name="CardImage5" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel/PackContainer" unique_id=211249471 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+
+[node name="CardImage6" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel/PackContainer" unique_id=426765144 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+
+[node name="CardImage7" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel/PackContainer" unique_id=1890656006 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
+
+[node name="CardImage8" parent="SceneContainer/HBoxContainer/VBoxContainer/Pack/PackPanel/PackContainer" unique_id=1527046670 instance=ExtResource("3_ro6sk")]
+layout_mode = 2
+size_flags_vertical = 3
+expand_mode = 1
 
 [node name="Deck" type="Control" parent="SceneContainer/HBoxContainer/VBoxContainer" unique_id=1359752792]
 custom_minimum_size = Vector2(0, 1665)
@@ -328,11 +391,6 @@ columns = 10
 [node name="Steam" type="Node" parent="." unique_id=458727410]
 script = ExtResource("4_jhidu")
 
-[node name="CardDatabase" type="Node" parent="." unique_id=532621717]
-script = ExtResource("1_ynwbq")
-
-[node name="HTTPRequest" type="HTTPRequest" parent="CardDatabase" unique_id=1040544210]
-
 [node name="SaveDeckDialog" type="FileDialog" parent="." unique_id=95948914]
 size = Vector2i(1920, 1080)
 content_scale_mode = 2
@@ -344,6 +402,5 @@ access = 2
 [connection signal="pressed" from="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer/RandomCubeButton" to="." method="_on_roll_race_button_pressed"]
 [connection signal="item_selected" from="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer/RaceCube/RaceMenu" to="." method="_on_race_menu_item_selected"]
 [connection signal="pressed" from="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer/RollPackButton" to="." method="_on_roll_pack_button_pressed"]
-[connection signal="request_completed" from="CardDatabase/HTTPRequest" to="CardDatabase" method="_on_http_request_completed"]
 [connection signal="dir_selected" from="SaveDeckDialog" to="." method="_on_save_deck_dialog_dir_selected"]
 [connection signal="file_selected" from="SaveDeckDialog" to="." method="_on_save_deck_dialog_file_selected"]

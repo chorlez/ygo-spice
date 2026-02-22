@@ -1,5 +1,5 @@
-extends Node
-class_name Deck
+﻿extends Node
+class_name Deck2
 
 var mainDeck: Array[CardData]
 var extraDeck: Array[CardData]

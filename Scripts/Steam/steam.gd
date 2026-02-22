@@ -5,6 +5,7 @@ var lobby_id := 0
 var peer
 
 func _ready():
+	print("Initializing Steam...")
 	OS.set_environment("SteamAppID", str(480))
 	OS.set_environment("SteamGameID", str(480))
 	Steam.steamInitEx()
@@ -62,3 +63,6 @@ func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 	peer = SteamMultiplayerPeer.new()
 	peer.create_client(lobby_owner)
 	multiplayer.multiplayer_peer = peer
+
+func _process(_delta: float) -> void:
+	Steam.run_callbacks()
