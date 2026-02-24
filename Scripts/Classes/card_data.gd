@@ -13,6 +13,7 @@ enum {
 @export var type: int
 @export var race: String
 @export var archetype: String
+@export var attribute: String
 @export var level: int
 @export var atk: int
 @export var def: int

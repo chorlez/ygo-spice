@@ -7,6 +7,10 @@ signal mouse_clicked(position:Vector2)
 signal add_card_to_deck(card_data:CardData)
 signal remove_card_from_deck(card_scene:CardScene)
 signal card_right_clicked(card_scene:CardScene)
+signal toggle_sort_mode()
+signal clear_deck()
+signal save_deck()
+signal load_deck()
 
 ### SERVER SIDE RPC'S
 @rpc("any_peer", 'call_local')

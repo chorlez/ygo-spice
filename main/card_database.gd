@@ -17,6 +17,7 @@ var cards_by_name: Dictionary = {}
 
 var staples: Array[CardData] = []
 
+
 func _ready():
 	fetch_card_database()
 
@@ -48,14 +49,13 @@ func build_card_database(raw_cards: Array) -> void:
 		if pendulum_filter:
 			if type_name.to_lower().find("pendulum") != -1 or description.to_lower().find("pendulum") != -1:
 				continue
-		if raw_card.get("race", "") == 'Yugi':
-			continue
 		var card_data := CardData.new()
 		
 		card_data.id = raw_card.get("id", 0)
 		card_data.name = raw_card.get("name", "")
 		card_data.race = raw_card.get("race", "")
 		card_data.archetype = raw_card.get("archetype", "")
+		card_data.attribute = raw_card.get("attribute", "")
 		card_data.level = get_int_or_zero(raw_card, "level")
 		card_data.atk = get_int_or_zero(raw_card, "atk")
 		card_data.def = get_int_or_zero(raw_card, "def")
@@ -74,10 +74,11 @@ func build_card_database(raw_cards: Array) -> void:
 		cards_by_name[card_data.name] = card_data
 		cards_by_race[card_data.race] = cards_by_race.get(card_data.race, []) + [card_data]
 		cards_by_archetype[card_data.archetype] = cards_by_archetype.get(card_data.archetype, []) + [card_data]
-		cards_by_attribute[card_data.race] = cards_by_attribute.get(card_data.race, []) + [card_data]
+		cards_by_attribute[card_data.attribute] = cards_by_attribute.get(card_data.attribute, []) + [card_data]
 		cards_by_type[card_data.type] = cards_by_type.get(card_data.type, []) + [card_data]
 		
 	juicy_staples()
+	cleanup_database()
 	EventBus.database_built.emit()
 
 
@@ -132,6 +133,18 @@ func get_card_by_id(card_id: int) -> CardData:
 	if card == null:
 		print("Warning: Card ID %d not found in database" % card_id)
 	return card
+
+func cleanup_database():
+	# Removing cards for which there are only 10 of the same race
+	for race in cards_by_race.keys():
+		if cards_by_race[race].size() <= 10:
+			for card in cards_by_race[race]:
+				cards_by_id.erase(card.id)
+				cards_by_name.erase(card.name)
+				cards_by_archetype[card.archetype].erase(card)
+				cards_by_attribute[card.attribute].erase(card)
+				cards_by_type[card.type].erase(card)
+			cards_by_race.erase(race)
 
 func juicy_staples() -> void:
 	const STAPLE_CARDS := [

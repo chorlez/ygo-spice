@@ -167,10 +167,10 @@ placeholder_text = "Search Cube"
 
 [node name="SortModeButton" type="CheckButton" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=1112692839]
 layout_mode = 2
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 30
 theme_override_icons/checked = SubResource("DPITexture_jhidu")
 theme_override_icons/unchecked = SubResource("DPITexture_bod78")
-text = "SORT: ADDED"
+text = "YGO Sort"
 
 [node name="LastAddedLabel" type="Label" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=1824143048]
 layout_mode = 2
@@ -366,7 +366,7 @@ grow_vertical = 2
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-columns = 10
+columns = 12
 
 [node name="Steam" type="Node" parent="." unique_id=458727410]
 script = ExtResource("4_jhidu")
