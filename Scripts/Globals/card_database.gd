@@ -93,6 +93,41 @@ func create_card_scene(card_data: CardData, state) -> CardScene:
 	return card
 
 # Fetch the image live and assign it to a card immediately
+func load_card_image_to_ui2(card: CardData, CardObject: CardScene) -> void:
+	if card.texture:
+		CardObject.texture = card.texture
+		return
+
+	var http := HTTPRequest.new()
+	add_child(http)
+
+	# Callback when HTTP request finishes
+	http.request_completed.connect(
+		func(_result, response_code, _on_lobby_match_listheaders, body):
+			if not card or not CardObject:
+				return
+			if response_code != 200:
+				push_error("Failed to download image for card %d" % card.id)
+				http.queue_free()
+				return
+
+			var img := Image.new()
+			var err := img.load_jpg_from_buffer(body)
+			if err != OK:
+				push_error("Failed to decode image for card %d" % card.id)
+				http.queue_free()
+				return
+
+			var tex := ImageTexture.create_from_image(img)
+			card.texture = tex
+			CardObject.texture = tex
+
+			http.queue_free()
+	)
+
+	var url := IMAGE_BASE_URL + str(card.id) + ".jpg"
+	http.request(url)
+
 func load_card_image_to_ui(card: CardData, CardObject: CardScene) -> void:
 	if card.texture:
 		CardObject.texture = card.texture
@@ -127,6 +162,7 @@ func load_card_image_to_ui(card: CardData, CardObject: CardScene) -> void:
 
 	var url := IMAGE_BASE_URL + str(card.id) + ".jpg"
 	http.request(url)
+
 
 func get_card_by_id(card_id: int) -> CardData:
 	var card = cards_by_id.get(card_id)

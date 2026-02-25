@@ -2,22 +2,28 @@ extends Control
 
 @onready var main_deck_container = $VBoxContainer/MainDeckPanel/ScrollContainer/MainDeckContainer
 @onready var extra_deck_container = $VBoxContainer/ExtraDeckPanel/ScrollContainer/ExtraDeckContainer
+@onready var DeckFileDialog = $DeckFileDialog
 
 var deck: Array[CardData] = []
 var deck_card_ids: Array[int] = []
 var main_deck: Array[CardData] = []
 var extra_deck: Array[CardData] = []
 
+var default_filename: String = '[YugiBoy]Deck.ydk'
+var backup_file_name: String = '[YugiBoy]Backup.ydk'
+
 var ygo_sort: bool = false
 
-var backup_file_name: String = '[YugiBoy]Backup.ydk'
 
 func _ready() -> void:
 	EventBus.add_card_to_deck.connect(add_card)
 	EventBus.remove_card_from_deck.connect(remove_card)
 	EventBus.toggle_sort_mode.connect(toggle_sort_mode)
 	EventBus.clear_deck.connect(clear_deck)
-	EventBus.load_deck.connect(load_deck)
+	EventBus.load_deck.connect(_on_load_deck_pressed)
+	EventBus.save_deck.connect(_on_save_deck_pressed)
+	DeckFileDialog.dir_selected.connect(_on_deck_file_dialog_dir_selected)
+	DeckFileDialog.file_selected.connect(_on_deck_file_dialog_file_selected)
 
 func add_card(card:CardData) -> void:
 	print("Adding card %s to deck" % card.name)
@@ -131,9 +137,7 @@ func get_extra_deck_sorted() -> Array[CardData]:
 	extra.sort_custom(extra_cmp)
 	return extra
 
-func load_deck():
-	var path = Settings.get_last_deck_path() + '/' + backup_file_name
-	print(path)
+func load_deck(path):
 	var file := FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		push_error("Failed to load deck")
@@ -155,6 +159,36 @@ func load_deck():
 		var card_id := int(line)
 		var card_data = CardDatabase.get_card_by_id(card_id)
 		
+		if not card_data:
+			continue
 		add_card(card_data)
 
 	file.close()
+
+
+
+func _on_save_deck_pressed():
+	DeckFileDialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
+	default_filename = "[YuGiBoy]" + 'implement' + ".ydk"
+	DeckFileDialog.current_dir = Settings.get_last_deck_path()
+	DeckFileDialog.current_file = default_filename
+	DeckFileDialog.popup_centered()
+
+func _on_load_deck_pressed():
+	DeckFileDialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	DeckFileDialog.current_dir = Settings.get_last_deck_path()
+	DeckFileDialog.popup_centered()
+
+func _on_deck_file_dialog_dir_selected(dir):
+	if DeckFileDialog.current_file.is_empty():
+		DeckFileDialog.current_file = default_filename
+
+func _on_deck_file_dialog_file_selected(path: String):
+	var dir := path.get_base_dir()
+	var file_name := path.get_file()
+	Settings.set_last_deck_path(dir)
+	if DeckFileDialog.file_mode == FileDialog.FILE_MODE_OPEN_FILE:
+		load_deck(path)
+	else:
+#		save_deck_to_path(path)
+		pass

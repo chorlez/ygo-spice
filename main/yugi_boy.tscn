@@ -368,15 +368,14 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 columns = 12
 
-[node name="Steam" type="Node" parent="." unique_id=458727410]
-script = ExtResource("4_jhidu")
-
-[node name="SaveDeckDialog" type="FileDialog" parent="." unique_id=95948914]
+[node name="DeckFileDialog" type="FileDialog" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Deck" unique_id=95948914]
 size = Vector2i(1920, 1080)
 content_scale_mode = 2
 content_scale_aspect = 4
 content_scale_factor = 2.0
 access = 2
 
-[connection signal="dir_selected" from="SaveDeckDialog" to="." method="_on_save_deck_dialog_dir_selected"]
-[connection signal="file_selected" from="SaveDeckDialog" to="." method="_on_save_deck_dialog_file_selected"]
+[node name="Steam" type="Node" parent="." unique_id=458727410]
+script = ExtResource("4_jhidu")
+
+[connection signal="dir_selected" from="SceneContainer/DisplayContainer/PackAndDeckContainer/Deck/DeckFileDialog" to="." method="_on_save_deck_dialog_dir_selected"]
