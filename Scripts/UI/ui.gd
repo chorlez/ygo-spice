@@ -6,7 +6,10 @@ extends Control
 @onready var SaveDeckButton = $UIPanel/MarginContainer/VBoxContainer/TopUILayer/SaveDeck
 @onready var LoadDeckButton = $UIPanel/MarginContainer/VBoxContainer/BottomUILayer/LoadDeck
 
+@onready var LogLabel = $UIPanel/MarginContainer/VBoxContainer/BottomUILayer/LogLabel
+
 var ygo_sort: bool = false
+var log_card_id: int = -1
 
 func _ready() -> void:
 	RollPackButton.pressed.connect(_on_roll_pack_pressed)
@@ -15,6 +18,29 @@ func _ready() -> void:
 	SaveDeckButton.pressed.connect(_on_save_deck_pressed)
 	LoadDeckButton.pressed.connect(_on_load_deck_pressed)
 	
+	EventBus.card_add_log.connect(log_card_added)
+	EventBus.card_remove_log.connect(log_card_removed)
+	LogLabel.mouse_entered.connect(_on_log_label_mouse_entered)
+	
+	
+func log_card_added(card_id: int, steam_name: String) -> void:
+	var card_data = CardDatabase.get_card_by_id(card_id)
+	log_card_id = card_id
+	if card_data:
+		LogLabel.text = "%s added %s to the deck" % [steam_name, card_data.name]
+	else:
+		LogLabel.text = "%s added an unknown card (ID: %d) to the deck" % [steam_name, card_id]
+
+func log_card_removed(card_id: int, steam_name: String) -> void:
+	var card_data = CardDatabase.get_card_by_id(card_id)
+	log_card_id = card_id
+	if card_data:
+		LogLabel.text = "%s removed %s from the deck" % [steam_name, card_data.name]
+	else:
+		LogLabel.text = "%s removed an unknown card (ID: %d) from the deck" % [steam_name, card_id]
+
+func _on_log_label_mouse_entered() -> void:
+	EventBus.card_hovered.emit(log_card_id)	
 
 func _on_roll_pack_pressed() -> void:
 	EventBus.open_pack.rpc()

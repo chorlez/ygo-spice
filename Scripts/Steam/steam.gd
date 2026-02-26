@@ -10,6 +10,9 @@ func _ready():
 	OS.set_environment("SteamGameID", str(480))
 	Steam.steamInitEx()
 	
+	multiplayer.connect("peer_connected", _on_player_connected)
+	multiplayer.connect("peer_disconnected", _on_peer_disconnected)
+	
 	find_or_create_lobby()
 
 
@@ -49,6 +52,7 @@ func _on_lobby_created(result, id):
 		multiplayer.multiplayer_peer = peer
 		
 		print("Lobby created successfully with ID %d" % lobby_id)
+	sync_players()
 
 func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 	if response != Steam.RESULT_OK:
@@ -63,6 +67,33 @@ func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 	peer = SteamMultiplayerPeer.new()
 	peer.create_client(lobby_owner)
 	multiplayer.multiplayer_peer = peer
+
+func _on_player_connected(id):
+	if not multiplayer.is_server():
+		return
+	sync_players.rpc()
+
+func _on_peer_disconnected(id):
+	pass
+
+@rpc("any_peer", 'call_local')
+func sync_players():
+	if not Globals.player:
+		var steam_id = peer.get_steam_id_for_peer_id(multiplayer.get_unique_id())
+		var steam_name = Steam.getFriendPersonaName(steam_id)
+		Globals.player = Player.new(multiplayer.get_unique_id(), steam_id, steam_name)
+		Globals.players.append(Globals.player)
+		Globals.players_by_peer_id[multiplayer.get_unique_id()] = Globals.player
+	for peer_id in multiplayer.get_peers():
+		if Globals.players_by_peer_id.has(peer_id):
+			continue
+		var steam_id = peer.get_steam_id_for_peer_id(peer_id)
+		var steam_name = Steam.getFriendPersonaName(steam_id)
+		var new_player = Player.new(peer_id, steam_id, steam_name)
+		Globals.players.append(new_player)
+		Globals.players_by_peer_id[peer_id] = new_player
+
+
 
 func _process(_delta: float) -> void:
 	Steam.run_callbacks()

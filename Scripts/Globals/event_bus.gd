@@ -2,7 +2,8 @@ extends Node
 
 ### CLIENT SIDE RPC'S
 signal database_built()
-signal card_hovered(card_data:CardData)
+signal player_connected(id:int)
+signal card_hovered(card_id: int)
 signal mouse_clicked(position:Vector2)
 signal add_card_to_deck(card_data:CardData)
 signal remove_card_from_deck(card_scene:CardScene)
@@ -37,3 +38,21 @@ func remove_card_from_pack(pack_index:int):
 	card_removed_from_pack.emit(pack_index)
 
 signal card_removed_from_pack(pack_index:int)
+
+@rpc("any_peer", 'call_local')
+func add_card_to_pack(card_id:int):
+	card_added_to_pack.emit(card_id)
+
+signal card_added_to_pack(card_id:int)
+
+@rpc("any_peer", 'call_local')
+func log_card_added(card_id: int, steam_name: String):
+	card_add_log.emit(card_id, steam_name)
+
+signal card_add_log(card_id: int, steam_name: String)
+
+@rpc("any_peer", 'call_local')
+func log_card_removed(card_id: int, steam_name: String):
+	card_remove_log.emit(card_id, steam_name)
+
+signal card_remove_log(card_id: int, steam_name: String)

@@ -9,8 +9,8 @@ extends Control
 func _ready() -> void:
 	EventBus.card_hovered.connect(_on_card_hovered)
 
-
-func _on_card_hovered(card:CardData):
+func _on_card_hovered(card_id: int) -> void:
+	var card = CardDatabase.get_card_by_id(card_id)
 	card_scene.card_data = card
 	CardDatabase.load_card_image_to_ui(card, card_scene)
 	card_description.text = card.description

@@ -186,8 +186,8 @@ func load_deck():
 
 	file.close()
 
-func save(file_name: String):
-	var path = Settings.get_last_deck_path() + '/' + file_name
+func save(file_name: String, dir = Settings.get_last_deck_path()):
+	var path = dir + '/' + file_name
 	var ydk_text := build_ydk_string()
 	var file := FileAccess.open(path, FileAccess.WRITE)
 	if file == null:

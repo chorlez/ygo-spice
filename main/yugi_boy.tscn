@@ -172,11 +172,6 @@ theme_override_icons/checked = SubResource("DPITexture_jhidu")
 theme_override_icons/unchecked = SubResource("DPITexture_bod78")
 text = "YGO Sort"
 
-[node name="LastAddedLabel" type="Label" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/TopUILayer" unique_id=1824143048]
-layout_mode = 2
-mouse_filter = 0
-theme_override_font_sizes/font_size = 30
-
 [node name="BottomUILayer" type="HBoxContainer" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer" unique_id=1878414546]
 layout_mode = 2
 size_flags_vertical = 3
@@ -185,6 +180,12 @@ size_flags_vertical = 3
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = " Load "
+
+[node name="LogLabel" type="Label" parent="SceneContainer/UI/UIPanel/MarginContainer/VBoxContainer/BottomUILayer" unique_id=1824143048]
+layout_mode = 2
+size_flags_horizontal = 10
+mouse_filter = 0
+theme_override_font_sizes/font_size = 30
 
 [node name="DisplayContainer" type="HBoxContainer" parent="SceneContainer" unique_id=2035261653]
 custom_minimum_size = Vector2(0, 2006)
@@ -230,6 +231,7 @@ theme_override_font_sizes/font_size = 40
 [node name="TooltipCard" parent="SceneContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea" unique_id=602510552 instance=ExtResource("3_ro6sk")]
 layout_mode = 2
 size_flags_vertical = 0
+state = 1
 
 [node name="ScrollContainer" type="ScrollContainer" parent="SceneContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea" unique_id=617717268]
 layout_mode = 2
@@ -240,6 +242,7 @@ custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 2
+mouse_filter = 0
 theme_override_font_sizes/font_size = 40
 autowrap_mode = 2
 

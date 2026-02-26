@@ -37,7 +37,22 @@ func add_card(card:CardData) -> void:
 		main_deck.append(card)
 		var card_scene = CardDatabase.create_card_scene(card, CardScene.MAINDECK)
 		main_deck_container.add_child(card_scene)
-	display_deck()
+	save_backup()
+
+func add_cards(cards: Array[CardData]) -> void:
+	for card in cards:
+		print("Adding card %s to deck" % card.name)
+		deck.append(card)
+		deck_card_ids.append(card.id)
+		if card.is_extra_deck_monster():
+			extra_deck.append(card)
+			var card_scene = CardDatabase.create_card_scene(card, CardScene.EXTRADECK)
+			extra_deck_container.add_child(card_scene)
+		else:
+			main_deck.append(card)
+			var card_scene = CardDatabase.create_card_scene(card, CardScene.MAINDECK)
+			main_deck_container.add_child(card_scene)
+	save_backup()
 
 func remove_card(card_scene: CardScene):
 	var card = card_scene.card_data
@@ -53,7 +68,7 @@ func remove_card(card_scene: CardScene):
 		index = main_deck.find(card)
 		main_deck.remove_at(index)
 		main_deck_container.remove_child(card_scene)
-	display_deck()
+	
 
 
 func display_deck():
@@ -142,7 +157,7 @@ func load_deck(path):
 	if file == null:
 		push_error("Failed to load deck")
 		return
-
+	var cards :Array[CardData]
 	var current_section := ""
 	clear_deck()
 	while not file.eof_reached():
@@ -161,10 +176,22 @@ func load_deck(path):
 		
 		if not card_data:
 			continue
-		add_card(card_data)
+		cards.append(card_data)
+	file.close()
+	add_cards(cards)
+	
 
+func save_deck(path):
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file == null:
+		push_error("Failed to save deck")
+		return
+	var ydk_string = build_ydk_string()
+	file.store_string(ydk_string)
 	file.close()
 
+func save_backup():
+	save_deck(Settings.get_last_deck_path() + '/' + backup_file_name)
 
 
 func _on_save_deck_pressed():
@@ -185,10 +212,87 @@ func _on_deck_file_dialog_dir_selected(dir):
 
 func _on_deck_file_dialog_file_selected(path: String):
 	var dir := path.get_base_dir()
-	var file_name := path.get_file()
 	Settings.set_last_deck_path(dir)
 	if DeckFileDialog.file_mode == FileDialog.FILE_MODE_OPEN_FILE:
 		load_deck(path)
 	else:
-#		save_deck_to_path(path)
-		pass
+		save_deck(path)
+		
+
+func _sort_monsters(a: CardData, b: CardData) -> bool:
+	# Level descending
+	if a.level != b.level:
+		return a.level > b.level
+
+	# ATK descending
+	if a.atk != b.atk:
+		return a.atk > b.atk
+
+	# Final tie-breaker: name
+	return a.name < b.name
+	
+func _sort_by_name(a: CardData, b: CardData) -> bool:
+	return a.name.to_lower() < b.name.to_lower()
+
+func _sort_extra(a: CardData, b: CardData) -> bool:
+	# 1️⃣ Type order
+	var type_a := _extra_type_order(a)
+	var type_b := _extra_type_order(b)
+	if type_a != type_b:
+		return type_a < type_b
+
+	# 2️⃣ Level / Rank (DESC, if present)
+	if a.level != b.level:
+		return a.level > b.level
+
+	# 3️⃣ ATK (DESC)
+	if a.atk != b.atk:
+		return a.atk > b.atk
+
+	# 4️⃣ Name
+	return a.name < b.name
+	
+func _extra_type_order(card: CardData) -> int:
+	if card.type_name.contains("Fusion"):
+		return 0
+	if card.type_name.contains("Synchro"):
+		return 1
+	if card.type_name.contains("XYZ") or card.type_name.contains("Xyz"):
+		return 2
+	if card.type_name.contains("Link"):
+		return 3
+	return 99
+
+func build_ydk_string() -> String:
+	var lines := []
+	
+	lines.append("#created by My Cube Draft App YuGiBoy")
+	lines.append("#main")
+	
+	var side_cards := []
+	
+	# MAIN DECK (max 60)
+	for i in main_deck.size():
+		var card_node = main_deck[i]
+		if i < 60:
+			lines.append(str(card_node.id))
+		else:
+			side_cards.append(card_node)
+	
+	lines.append("#extra")
+	
+	# EXTRA DECK (max 15)
+	for i in extra_deck.size():
+		var card_node = extra_deck[i]
+		if i < 15:
+			lines.append(str(card_node.id))
+		else:
+			side_cards.append(card_node)
+	
+	lines.append("!side")
+	
+	# SIDE DECK (overflow)
+	for card_node in side_cards:
+		lines.append(str(card_node.id))
+	
+	return "\n".join(lines)
