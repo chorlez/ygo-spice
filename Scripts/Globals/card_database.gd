@@ -182,6 +182,18 @@ func cleanup_database():
 				cards_by_type[card.type].erase(card)
 			cards_by_race.erase(race)
 
+func get_dropdown_options(selected: int) -> Array:
+	var key = Cube.cubetypes[selected]
+	var options = []
+	match key:
+		"Race":
+			options = cards_by_race.keys()
+		"Attribute":
+			options = cards_by_attribute.keys()
+		"Archetype":
+			options = cards_by_archetype.keys()
+	return options
+	
 func juicy_staples() -> void:
 	const STAPLE_CARDS := [
 	# === MONSTERS ===

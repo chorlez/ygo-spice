@@ -14,17 +14,11 @@ content_margin_top = 16.0
 content_margin_right = 16.0
 content_margin_bottom = 16.0
 bg_color = Color(0.018140132, 0.20371577, 0.24650532, 1)
-border_width_left = 10
-border_width_top = 10
-border_width_right = 10
-border_width_bottom = 10
+border_width_left = 7
+border_width_top = 7
+border_width_right = 7
+border_width_bottom = 7
 shadow_size = 10
-
-[sub_resource type="Theme" id="Theme_bod78"]
-default_font_size = 40
-
-[sub_resource type="Theme" id="Theme_jhidu"]
-default_font_size = 40
 
 [sub_resource type="DPITexture" id="DPITexture_jhidu"]
 _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#fff\" fill-opacity=\".75\" rx=\"7\"/><circle cx=\"24\" cy=\"8\" r=\"5\" fill=\"#1a1a1a\"/></svg>
@@ -35,6 +29,9 @@ base_scale = 3.0
 _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><g fill-opacity=\".5\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#1a1a1a\" rx=\"7\"/><circle cx=\"8\" cy=\"8\" r=\"5\" fill=\"#fff\"/></g></svg>
 "
 base_scale = 3.0
+
+[sub_resource type="Theme" id="Theme_bod78"]
+default_font_size = 40
 
 [node name="YugiBoy" type="Control" unique_id=1140980557]
 custom_minimum_size = Vector2(3840, 2160)
@@ -78,34 +75,20 @@ custom_minimum_size = Vector2(1600, 0)
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="ClearDeck" type="Button" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=2019469344]
+[node name="LoadDeck" type="Button" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=540335788]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
-text = " Clear "
+text = " Load "
 
 [node name="SaveDeck" type="Button" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=649807316]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
 text = " Save "
 
-[node name="RandomCubeButton" type="Button" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=914896887]
+[node name="ClearDeck" type="Button" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=2019469344]
 layout_mode = 2
 theme_override_font_sizes/font_size = 35
-text = "Random Cube"
-
-[node name="CubeTypeMenu" type="OptionButton" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=2025556995]
-layout_mode = 2
-theme = SubResource("Theme_bod78")
-theme_override_font_sizes/font_size = 35
-
-[node name="RaceCube" type="HBoxContainer" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=1081891326]
-visible = false
-layout_mode = 2
-
-[node name="RaceMenu" type="OptionButton" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer/RaceCube" unique_id=1266203913]
-layout_mode = 2
-theme = SubResource("Theme_jhidu")
-theme_override_font_sizes/font_size = 35
+text = " Clear "
 
 [node name="RollPackButton" type="Button" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=124531509]
 layout_mode = 2
@@ -113,10 +96,6 @@ theme_override_font_sizes/font_size = 35
 text = "Roll Pack"
 
 [node name="Spacer" type="Control" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=1556526084]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="Spacer2" type="Control" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=1981291748]
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -131,16 +110,40 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 30
 theme_override_icons/checked = SubResource("DPITexture_jhidu")
 theme_override_icons/unchecked = SubResource("DPITexture_bod78")
-text = "YGO Sort"
+text = "SORT"
 
 [node name="BottomUILayer" type="HBoxContainer" parent="SceneContainer/UI/UIPanel/VBoxContainer" unique_id=1878414546]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="LoadDeck" type="Button" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=540335788]
+[node name="CubeTypeMenu" type="OptionButton" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=2025556995]
 layout_mode = 2
+theme = SubResource("Theme_bod78")
 theme_override_font_sizes/font_size = 35
-text = " Load "
+
+[node name="CubeTypeSearch" type="LineEdit" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1024960188]
+custom_minimum_size = Vector2(400, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+placeholder_text = "Search"
+
+[node name="SupportToggle" type="CheckButton" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1975128580]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+theme_override_icons/checked = SubResource("DPITexture_jhidu")
+theme_override_icons/unchecked = SubResource("DPITexture_bod78")
+text = "SUPPORT ONLY"
+
+[node name="Control" type="Control" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1635649526]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="RuleContainer" type="HBoxContainer" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=908966900]
+layout_mode = 2
+
+[node name="Control2" type="Control" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1747331833]
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="LogLabel" type="Label" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1824143048]
 layout_mode = 2
@@ -186,6 +189,7 @@ theme_override_font_sizes/font_size = 40
 
 [node name="TooltipCard" parent="SceneContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea" unique_id=602510552 instance=ExtResource("3_ro6sk")]
 layout_mode = 2
+size_flags_horizontal = 3
 size_flags_vertical = 0
 state = 1
 
@@ -228,54 +232,6 @@ size_flags_vertical = 0
 theme_override_constants/h_separation = 18
 columns = 12
 
-[node name="CardImage" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel/PackContainer" unique_id=489059424 instance=ExtResource("3_ro6sk")]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-
-[node name="CardImage3" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel/PackContainer" unique_id=1580154533 instance=ExtResource("3_ro6sk")]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-
-[node name="CardImage4" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel/PackContainer" unique_id=1860936882 instance=ExtResource("3_ro6sk")]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-
-[node name="CardImage6" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel/PackContainer" unique_id=510642240 instance=ExtResource("3_ro6sk")]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-
-[node name="CardImage7" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel/PackContainer" unique_id=1310234901 instance=ExtResource("3_ro6sk")]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-
-[node name="CardImage8" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel/PackContainer" unique_id=1964723107 instance=ExtResource("3_ro6sk")]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-
-[node name="CardImage9" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel/PackContainer" unique_id=457663728 instance=ExtResource("3_ro6sk")]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-
-[node name="CardImage10" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel/PackContainer" unique_id=1686029663 instance=ExtResource("3_ro6sk")]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-
-[node name="CardImage11" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel/PackContainer" unique_id=944763267 instance=ExtResource("3_ro6sk")]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-
-[node name="CardImage12" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel/PackContainer" unique_id=549150222 instance=ExtResource("3_ro6sk")]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-
-[node name="CardImage13" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel/PackContainer" unique_id=866204728 instance=ExtResource("3_ro6sk")]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-
-[node name="CardImage5" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel/PackContainer" unique_id=215677145 instance=ExtResource("3_ro6sk")]
-custom_minimum_size = Vector2(220, 0)
-layout_mode = 2
-
 [node name="Deck" type="Control" parent="SceneContainer/DisplayContainer/PackAndDeckContainer" unique_id=1359752792]
 custom_minimum_size = Vector2(0, 1665)
 layout_mode = 2
@@ -305,7 +261,7 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/h_separation = 16
+theme_override_constants/h_separation = 18
 theme_override_constants/v_separation = 16
 columns = 10
 

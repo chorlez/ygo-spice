@@ -56,3 +56,9 @@ func log_card_removed(card_id: int, steam_name: String):
 	card_remove_log.emit(card_id, steam_name)
 
 signal card_remove_log(card_id: int, steam_name: String)
+
+@rpc("any_peer", 'call_local')
+func on_cube_search_option_pressed(type:String, option:String, support_only: bool):
+	cube_type_added.emit(type, option, support_only)
+
+signal cube_type_added(type:String, option:String, support_only: bool)

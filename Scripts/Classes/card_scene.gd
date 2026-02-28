@@ -22,7 +22,8 @@ func _ready():
 
 
 func _on_mouse_entered() -> void:
-	EventBus.card_hovered.emit(card_data.id)
+	if state != TOOLTIP:
+		EventBus.card_hovered.emit(card_data.id)
 
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

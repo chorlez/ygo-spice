@@ -9,6 +9,8 @@ var traps: Array[CardData]
 var extras: Array[CardData]
 var staples: Array[CardData]
 
+const cubetypes: Array = ['Race','Attribute','Archetype']
+
 func _init(game_ref):
 	game = game_ref
 	EventBus.cube_requested.connect(_on_request_cube)
