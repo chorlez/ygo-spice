@@ -1,12 +1,12 @@
 extends Control
 
-@onready var RollPackButton = $UIPanel/MarginContainer/VBoxContainer/TopUILayer/RollPackButton
-@onready var SortModeButton = $UIPanel/MarginContainer/VBoxContainer/TopUILayer/SortModeButton
-@onready var ClearDeckButton = $UIPanel/MarginContainer/VBoxContainer/TopUILayer/ClearDeck
-@onready var SaveDeckButton = $UIPanel/MarginContainer/VBoxContainer/TopUILayer/SaveDeck
-@onready var LoadDeckButton = $UIPanel/MarginContainer/VBoxContainer/BottomUILayer/LoadDeck
+@onready var RollPackButton = $UIPanel/VBoxContainer/TopUILayer/RollPackButton
+@onready var SortModeButton = $UIPanel/VBoxContainer/TopUILayer/SortModeButton
+@onready var ClearDeckButton = $UIPanel/VBoxContainer/TopUILayer/ClearDeck
+@onready var SaveDeckButton = $UIPanel/VBoxContainer/TopUILayer/SaveDeck
+@onready var LoadDeckButton = $UIPanel/VBoxContainer/BottomUILayer/LoadDeck
 
-@onready var LogLabel = $UIPanel/MarginContainer/VBoxContainer/BottomUILayer/LogLabel
+@onready var LogLabel = $UIPanel/VBoxContainer/BottomUILayer/LogLabel
 
 var ygo_sort: bool = false
 var log_card_id: int = -1

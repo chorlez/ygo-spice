@@ -8,7 +8,17 @@ const TOOLTIP: int = CardState.TOOLTIP
 const MAINDECK: int = CardState.MAINDECK
 const EXTRADECK: int = CardState.EXTRADECK
 
+const CARD_WIDTH_DICT: Dictionary = {
+	PACK: 220,
+	TOOLTIP: 400,
+	MAINDECK: 265,
+	EXTRADECK: 220
+}
+
 @export var state : CardState
+
+func _ready():
+	custom_minimum_size = Vector2(CARD_WIDTH_DICT[state],0)
 
 
 func _on_mouse_entered() -> void:
