@@ -14,7 +14,6 @@ extends Control
 
 var ygo_sort: bool = false
 var log_card_id: int = -1
-var active_search_box: Control
 
 func _ready() -> void:
 	RollPackButton.pressed.connect(_on_roll_pack_pressed)
@@ -26,7 +25,6 @@ func _ready() -> void:
 	
 	EventBus.card_add_log.connect(log_card_added)
 	EventBus.card_remove_log.connect(log_card_removed)
-	EventBus.mouse_clicked.connect(_close_searchbox)
 	EventBus.cube_type_added.connect(add_cube_type)
 	LogLabel.mouse_entered.connect(_on_log_label_mouse_entered)
 	
@@ -64,8 +62,9 @@ func add_options_to_cube_search(sc: ScrollContainer):
 		sc.get_node("SearchResultsVBox").add_child(button)
 
 func _on_cube_type_search_pressed(toggled_on) -> void:
-	var sc = _spawn_inline_results_container_below_lineedit(CubeTypeSearch)
-	add_options_to_cube_search(sc)
+	if toggled_on:
+		var sc = _spawn_inline_results_container_below_lineedit(CubeTypeSearch)
+		add_options_to_cube_search(sc)
 
 func _on_cube_search_option_pressed(option):
 	EventBus.on_cube_search_option_pressed.rpc(Cube.cubetypes[CubeTypeMenu.selected], option, SupportToggle.button_pressed)
@@ -91,15 +90,6 @@ func remove_cube_type(button: Button):
 	EventBus.remove_cube_type.rpc(button.text)
 	button.queue_free()
 	
-func _close_searchbox(pos: Vector2) -> void:
-	if not active_search_box:
-		return
-	if not active_search_box.get_global_rect().has_point(pos):
-		active_search_box.queue_free()
-		active_search_box = null
-	for lineedit in [CubeTypeSearch]:
-		lineedit.focus_mode = Control.FOCUS_NONE
-		lineedit.unedit()
 
 func _on_log_label_mouse_entered() -> void:
 	EventBus.card_hovered.emit(log_card_id)	
@@ -145,7 +135,6 @@ func _spawn_inline_results_container_below_lineedit(lineedit: LineEdit) -> Scrol
 	get_tree().get_root().add_child(panel)
 	panel.add_child(sc)
 	sc.add_child(vbox)
-	active_search_box = panel
 	# Try to position the scroll container below the LineEdit.
 	# Use rect_position/rect_size when available (Control), fallback to global_position.
 	var margin := 10
@@ -164,4 +153,32 @@ func _spawn_inline_results_container_below_lineedit(lineedit: LineEdit) -> Scrol
 	if sc is ScrollContainer:
 		sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	
+	var closing_func: Callable = func(_pos):
+		if panel.get_global_rect().has_point(_pos):
+			return
+		panel.queue_free()
+		lineedit.release_focus()
+		lineedit.unedit()
+
+	EventBus.mouse_clicked.connect(closing_func)
+	panel.tree_exited.connect(func():
+		if EventBus.mouse_clicked.is_connected(closing_func):
+			EventBus.mouse_clicked.disconnect(closing_func)
+	)
+	
 	return sc
+
+func _on_search_text_changed(text, lineedit: LineEdit):
+	var query = text.strip_edges().to_lower()
+	if query.is_empty():
+		return
+	_clear_dropdown_results(lineedit.get_meta('results_vbox'))
+	
+	if lineedit.get_meta('context') == "cube_search":	
+		for card in cube:
+			if card.name.to_lower().contains(query):
+				_add_card_to_cube_search(card)
+	elif lineedit.get_meta('context') == "archetype_dropdown":
+		for archetype in Globals.cardData_by_archetype.keys():
+			if archetype.to_lower().contains(query):
+				_add_archetype_to_search(archetype, lineedit)

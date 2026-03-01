@@ -72,10 +72,11 @@ func build_card_database(raw_cards: Array) -> void:
 		
 		cards_by_id[card_data.id] = card_data
 		cards_by_name[card_data.name] = card_data
-		cards_by_race[card_data.race] = cards_by_race.get(card_data.race, []) + [card_data]
 		cards_by_archetype[card_data.archetype] = cards_by_archetype.get(card_data.archetype, []) + [card_data]
 		cards_by_attribute[card_data.attribute] = cards_by_attribute.get(card_data.attribute, []) + [card_data]
 		cards_by_type[card_data.type] = cards_by_type.get(card_data.type, []) + [card_data]
+		if card_data.is_monster():
+			cards_by_race[card_data.race] = cards_by_race.get(card_data.race, []) + [card_data]
 		
 	juicy_staples()
 	cleanup_database()
