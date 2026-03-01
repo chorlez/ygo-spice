@@ -12,6 +12,7 @@ signal toggle_sort_mode()
 signal clear_deck()
 signal save_deck()
 signal load_deck()
+signal cube_changed(cube: Cube)
 
 ### SERVER SIDE RPC'S
 @rpc("any_peer", 'call_local')
@@ -62,3 +63,9 @@ func on_cube_search_option_pressed(type:String, option:String, support_only: boo
 	cube_type_added.emit(type, option, support_only)
 
 signal cube_type_added(type:String, option:String, support_only: bool)
+
+@rpc("authority", 'call_local')
+func sync_cube_build(build:Dictionary):
+	new_cube_build.emit(build)
+
+signal new_cube_build(build:Dictionary)

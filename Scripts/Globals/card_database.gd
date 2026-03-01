@@ -8,6 +8,7 @@ var pendulum_filter :bool = true
 
 
 # DATABASE
+var cards: Array[CardData]
 var cards_by_id : Dictionary = {}
 var cards_by_race : Dictionary = {}
 var cards_by_archetype : Dictionary = {}
@@ -70,6 +71,7 @@ func build_card_database(raw_cards: Array) -> void:
 			CardData.SPELL if type_name.contains("Spell") else \
 			CardData.TRAP if type_name.contains("Trap") else 0
 		
+		cards.append(card_data)
 		cards_by_id[card_data.id] = card_data
 		cards_by_name[card_data.name] = card_data
 		cards_by_archetype[card_data.archetype] = cards_by_archetype.get(card_data.archetype, []) + [card_data]

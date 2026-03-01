@@ -99,18 +99,18 @@ text = "Roll Pack"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SearchInput" type="LineEdit" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=971204107]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 30
-placeholder_text = "Search Cube"
-
 [node name="SortModeButton" type="CheckButton" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=1112692839]
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 theme_override_icons/checked = SubResource("DPITexture_jhidu")
 theme_override_icons/unchecked = SubResource("DPITexture_bod78")
 text = "SORT"
+
+[node name="LogLabel" type="Label" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=1824143048]
+layout_mode = 2
+size_flags_horizontal = 10
+mouse_filter = 0
+theme_override_font_sizes/font_size = 30
 
 [node name="BottomUILayer" type="HBoxContainer" parent="SceneContainer/UI/UIPanel/VBoxContainer" unique_id=1878414546]
 layout_mode = 2
@@ -122,7 +122,7 @@ theme = SubResource("Theme_bod78")
 theme_override_font_sizes/font_size = 35
 
 [node name="CubeTypeSearch" type="LineEdit" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1024960188]
-custom_minimum_size = Vector2(400, 0)
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 placeholder_text = "Search"
@@ -145,11 +145,17 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="LogLabel" type="Label" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1824143048]
+[node name="CubeSearch" type="LineEdit" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=971204107]
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
-size_flags_horizontal = 10
-mouse_filter = 0
 theme_override_font_sizes/font_size = 30
+placeholder_text = "Search Cube"
+
+[node name="CubeLabel" type="Label" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1632699807]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 30
+vertical_alignment = 1
 
 [node name="DisplayContainer" type="HBoxContainer" parent="SceneContainer" unique_id=2035261653]
 custom_minimum_size = Vector2(0, 2006)
