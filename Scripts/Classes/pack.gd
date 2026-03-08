@@ -17,6 +17,7 @@ func _ready():
 	EventBus.card_added_to_pack.connect(add_card_by_id)
 	EventBus.card_removed_from_pack.connect(remove_card_from_pack)
 	EventBus.cube_changed.connect(create)
+	EventBus.player_connected.connect(create)
 
 	
 func create():
