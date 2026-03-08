@@ -20,17 +20,12 @@ var cube_build := {
 
 func _init(game_ref):
 	game = game_ref
-	EventBus.cube_requested.connect(_on_request_cube)
+	EventBus.database_built.connect(create_master_cube)
 	EventBus.cube_type_added.connect(on_cube_type_added)
 	EventBus.cube_type_removed.connect(on_cube_type_removed)
 	EventBus.new_cube_build.connect(compose_cube)
 	EventBus.clear_cube.connect(create_master_cube)
 	
-	
-func _on_request_cube():
-	print('Cube requested, building cube...')
-	create_master_cube()
-	EventBus.cube_changed.emit()
 
 func add_card_to_cube(card: CardData):
 	if card.type == CardData.MONSTER:
