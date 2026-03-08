@@ -22,6 +22,21 @@ enum {
 
 var texture: Texture2D = null
 
+func get_property(property:String) -> String:
+	return {
+		"id": id,
+		"name": name,
+		"type_name": type_name,
+		"type": type,
+		"Race": race,
+		"Archetype": archetype,
+		"Attribute": attribute,
+		"Level": level,
+		"ATK": atk,
+		"DEF": def,
+		"Description": description,
+		"IsStaple": is_staple
+	}[property]
 
 func _to_string() -> String:
 	return name

@@ -20,6 +20,9 @@ border_width_right = 7
 border_width_bottom = 7
 shadow_size = 10
 
+[sub_resource type="Theme" id="Theme_bod78"]
+default_font_size = 40
+
 [sub_resource type="DPITexture" id="DPITexture_jhidu"]
 _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#fff\" fill-opacity=\".75\" rx=\"7\"/><circle cx=\"24\" cy=\"8\" r=\"5\" fill=\"#1a1a1a\"/></svg>
 "
@@ -29,9 +32,6 @@ base_scale = 3.0
 _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><g fill-opacity=\".5\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#1a1a1a\" rx=\"7\"/><circle cx=\"8\" cy=\"8\" r=\"5\" fill=\"#fff\"/></g></svg>
 "
 base_scale = 3.0
-
-[sub_resource type="Theme" id="Theme_bod78"]
-default_font_size = 40
 
 [node name="YugiBoy" type="Control" unique_id=1140980557]
 custom_minimum_size = Vector2(3840, 2160)
@@ -99,13 +99,6 @@ text = "Roll Pack"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SortModeButton" type="CheckButton" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=1112692839]
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
-theme_override_icons/checked = SubResource("DPITexture_jhidu")
-theme_override_icons/unchecked = SubResource("DPITexture_bod78")
-text = "SORT"
-
 [node name="LogLabel" type="Label" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=1824143048]
 layout_mode = 2
 size_flags_horizontal = 10
@@ -116,7 +109,18 @@ theme_override_font_sizes/font_size = 30
 layout_mode = 2
 size_flags_vertical = 3
 
+[node name="ClearCube" type="Button" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1614995683]
+layout_mode = 2
+theme_override_font_sizes/font_size = 35
+text = " Clear Cube"
+
 [node name="CubeTypeMenu" type="OptionButton" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=2025556995]
+layout_mode = 2
+theme = SubResource("Theme_bod78")
+theme_override_font_sizes/font_size = 35
+
+[node name="CubeTypeMenu2" type="OptionButton" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=411194547]
+visible = false
 layout_mode = 2
 theme = SubResource("Theme_bod78")
 theme_override_font_sizes/font_size = 35
@@ -126,13 +130,6 @@ custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 placeholder_text = "Search"
-
-[node name="SupportToggle" type="CheckButton" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1975128580]
-layout_mode = 2
-theme_override_font_sizes/font_size = 30
-theme_override_icons/checked = SubResource("DPITexture_jhidu")
-theme_override_icons/unchecked = SubResource("DPITexture_bod78")
-text = "SUPPORT ONLY"
 
 [node name="Control" type="Control" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1635649526]
 layout_mode = 2
@@ -145,17 +142,24 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="CubeLabel" type="Label" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1632699807]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 30
+vertical_alignment = 1
+
 [node name="CubeSearch" type="LineEdit" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=971204107]
 custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 30
 placeholder_text = "Search Cube"
 
-[node name="CubeLabel" type="Label" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1632699807]
+[node name="SortModeButton" type="CheckButton" parent="SceneContainer/UI/UIPanel/VBoxContainer/BottomUILayer" unique_id=1112692839]
 layout_mode = 2
-size_flags_vertical = 1
 theme_override_font_sizes/font_size = 30
-vertical_alignment = 1
+theme_override_icons/checked = SubResource("DPITexture_jhidu")
+theme_override_icons/unchecked = SubResource("DPITexture_bod78")
+text = "SORT"
 
 [node name="DisplayContainer" type="HBoxContainer" parent="SceneContainer" unique_id=2035261653]
 custom_minimum_size = Vector2(0, 2006)

@@ -16,6 +16,9 @@ var cards_by_attribute: Dictionary = {}
 var cards_by_type: Dictionary = {}
 var cards_by_name: Dictionary = {}
 
+var archetypes_by_race : Dictionary = {}
+var archetypes_by_attribute : Dictionary = {}
+
 var staples: Array[CardData] = []
 
 
@@ -79,7 +82,8 @@ func build_card_database(raw_cards: Array) -> void:
 		cards_by_type[card_data.type] = cards_by_type.get(card_data.type, []) + [card_data]
 		if card_data.is_monster():
 			cards_by_race[card_data.race] = cards_by_race.get(card_data.race, []) + [card_data]
-		
+	
+	prep_archetype_mappings()
 	juicy_staples()
 	cleanup_database()
 	EventBus.database_built.emit()
@@ -185,17 +189,50 @@ func cleanup_database():
 				cards_by_type[card.type].erase(card)
 			cards_by_race.erase(race)
 
-func get_dropdown_options(selected: int) -> Array:
+func get_dropdown_options(selected: int, selected2:int) -> Array:
 	var key = Cube.cubetypes[selected]
 	var options = []
 	match key:
-		"Race":
+		"Race", "Race Support":
 			options = cards_by_race.keys()
-		"Attribute":
+		"Attribute", "Attribute Support":
 			options = cards_by_attribute.keys()
 		"Archetype":
 			options = cards_by_archetype.keys()
+		'Race Archetypes':
+			options = archetypes_by_race[cards_by_race.keys()[selected2]]
+		"Attribute Archetypes":
+			options = archetypes_by_attribute[cards_by_attribute.keys()[selected2]]
 	return options
+
+func prep_archetype_mappings():
+	for race in cards_by_race.keys():
+		archetypes_by_race[race] = get_archetypes_majority('Race', race)
+	for attribute in cards_by_attribute.keys():
+		archetypes_by_attribute[attribute] = get_archetypes_majority('Attribute', attribute)
+		
+func get_archetypes_majority(property: String, value: String, threshold := 0.9) -> Array:
+	var result := []
+
+	for archetype in CardDatabase.cards_by_archetype.keys():
+		var match_count := 0
+		var monster_count := 0
+
+		for card in CardDatabase.cards_by_archetype[archetype]:
+			if card.is_monster():
+				monster_count += 1
+				if card.get_property(property) == value:
+					match_count += 1
+
+		if monster_count == 0:
+			continue
+
+		var ratio = float(match_count) / monster_count
+
+		if ratio >= threshold and monster_count >= 6:
+			result.append(archetype)
+
+	return result
 	
 func juicy_staples() -> void:
 	const STAPLE_CARDS := [

@@ -12,7 +12,7 @@ signal toggle_sort_mode()
 signal clear_deck()
 signal save_deck()
 signal load_deck()
-signal cube_changed(cube: Cube)
+signal cube_changed()
 
 ### SERVER SIDE RPC'S
 @rpc("any_peer", 'call_local')
@@ -59,13 +59,27 @@ func log_card_removed(card_id: int, steam_name: String):
 signal card_remove_log(card_id: int, steam_name: String)
 
 @rpc("any_peer", 'call_local')
-func on_cube_search_option_pressed(type:String, option:String, support_only: bool):
-	cube_type_added.emit(type, option, support_only)
+func on_cube_type_search_option_pressed(type:String, option:String):
+	if multiplayer.is_server():
+		cube_type_added.emit(type, option)
 
-signal cube_type_added(type:String, option:String, support_only: bool)
+signal cube_type_added(type:String, option:String)
+
+@rpc("any_peer", 'call_local')
+func remove_cube_type_option_pressed(type: String, option:String):
+	if multiplayer.is_server():
+		cube_type_removed.emit(type, option)
+
+signal cube_type_removed(type: String, option:String)
 
 @rpc("authority", 'call_local')
 func sync_cube_build(build:Dictionary):
 	new_cube_build.emit(build)
 
 signal new_cube_build(build:Dictionary)
+
+@rpc("any_peer", 'call_local')
+func clear_cube_requested():
+	clear_cube.emit()
+
+signal clear_cube()
