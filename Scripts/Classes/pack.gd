@@ -16,11 +16,12 @@ func _ready():
 	EventBus.pack_created.connect(fetch_pack)
 	EventBus.card_added_to_pack.connect(add_card_by_id)
 	EventBus.card_removed_from_pack.connect(remove_card_from_pack)
-	if multiplayer.is_server():
-		EventBus.cube_changed.connect(create)
+	EventBus.cube_changed.connect(create)
 
 	
 func create():
+	if not multiplayer.is_server():
+		return
 	clear()
 	var pack: Array[int] = []
 	while pack.size() < packSize:
