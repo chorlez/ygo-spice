@@ -67,6 +67,7 @@ func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 	peer = SteamMultiplayerPeer.new()
 	peer.create_client(lobby_owner)
 	multiplayer.multiplayer_peer = peer
+	sync_players.rpc()
 
 func _on_player_connected(id):
 	if not multiplayer.is_server():
@@ -93,7 +94,6 @@ func sync_players():
 		Globals.players.append(new_player)
 		Globals.players_by_peer_id[peer_id] = new_player
 	EventBus.players_updated.emit()
-
 
 
 func _process(_delta: float) -> void:
