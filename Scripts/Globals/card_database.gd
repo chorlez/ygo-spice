@@ -2,7 +2,7 @@ extends Node
 
 const API_URL := "https://db.ygoprodeck.com/api/v7/cardinfo.php?format=tcg"
 const IMAGE_BASE_URL := "https://images.ygoprodeck.com/images/cards/"
-var CARDSCENE: PackedScene = preload("res://Card/card.tscn")
+var CARDSCENE: PackedScene = preload("res://Scenes/card.tscn")
 @onready var HTTPRequestNode: HTTPRequest
 var pendulum_filter :bool = true
 

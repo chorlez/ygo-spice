@@ -91,11 +91,11 @@ func on_cube_type_added(type:String, option:String):
 	EventBus.sync_cube_build.rpc(cube_build.duplicate_deep())
 
 func on_cube_type_removed(type:String, option:String):
-	print('Adding cube type filter: %s - %s' % [type, option])
+	print('Removing cube type filter: %s - %s' % [type, option])
 	if cube_build[type].has(option): 
 		cube_build[type].remove_at(cube_build[type].find(option))
 		
-	EventBus.sync_cube_build.rpc(cube_build)
+	EventBus.sync_cube_build.rpc(cube_build.duplicate_deep())
 
 
 func get_random_card_id() -> int:

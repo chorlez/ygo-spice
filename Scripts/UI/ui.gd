@@ -26,7 +26,7 @@ func _ready() -> void:
 	ClearDeckButton.pressed.connect(_on_clear_deck_pressed)
 	SaveDeckButton.pressed.connect(_on_save_deck_pressed)
 	LoadDeckButton.pressed.connect(_on_load_deck_pressed)
-	ClearCubeButton.pressed.connect(func(): EventBus.clear_cube_requested.rpc())
+	ClearCubeButton.pressed.connect(_on_clear_cube_pressed)
 	CubeTypeSearch.editing_toggled.connect(_on_cube_type_search_pressed) 
 	CubeTypeMenu.item_selected.connect(_on_cube_type_menu_item_selected)
 	CubeSearch.editing_toggled.connect(_on_cube_search_pressed)
@@ -143,6 +143,12 @@ func _on_sort_mode_pressed() -> void:
 func _on_clear_deck_pressed() -> void:
 	EventBus.clear_deck.emit()
 
+func _on_clear_cube_pressed() -> void:
+	for child in RuleContainer.get_children():
+		child.queue_free()
+	EventBus.clear_cube_requested.rpc()
+	
+
 func _on_save_deck_pressed() -> void:
 	EventBus.save_deck.emit()
 
@@ -169,8 +175,6 @@ func _on_cube_type_menu_item_selected(index):
 		CubeTypeMenu2.selected = 0
 	else:
 		CubeTypeMenu2.visible = false
-	
-	
 
 func _spawn_inline_results_container_below_lineedit(lineedit: LineEdit) -> VBoxContainer:
 	# Create the scroll container and inner vbox

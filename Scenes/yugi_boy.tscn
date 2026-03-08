@@ -1,9 +1,9 @@
 [gd_scene format=3 uid="uid://bt4kc8oa72in2"]
 
-[ext_resource type="Script" uid="uid://bss7gssxhkutk" path="res://main/YugiBoy.gd" id="1_jhidu"]
+[ext_resource type="Script" path="res://Scripts/YugiBoy.gd" id="1_jhidu"]
 [ext_resource type="Script" uid="uid://w5h2vhmipfli" path="res://Scripts/UI/ui.gd" id="2_bod78"]
 [ext_resource type="Script" uid="uid://q7eyii0wh0nv" path="res://Scripts/UI/tooltip.gd" id="3_2rg7u"]
-[ext_resource type="PackedScene" uid="uid://62xo4wcay34u" path="res://Card/card.tscn" id="3_ro6sk"]
+[ext_resource type="PackedScene" uid="uid://62xo4wcay34u" path="res://Scenes/card.tscn" id="3_ro6sk"]
 [ext_resource type="Script" uid="uid://dhfjrvqc3pkhn" path="res://Scripts/Classes/pack.gd" id="4_bod78"]
 [ext_resource type="Script" uid="uid://e1py4etghvgy" path="res://Scripts/Steam/steam.gd" id="4_jhidu"]
 [ext_resource type="Script" uid="uid://dkote4ws5qcth" path="res://Scripts/Classes/deck.gd" id="6_dpgp8"]
