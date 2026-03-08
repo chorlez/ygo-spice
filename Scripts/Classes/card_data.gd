@@ -9,10 +9,11 @@ enum {
 	
 @export var id: int
 @export var name: String
-@export var typename: String
+@export var type_name: String
 @export var type: int
 @export var race: String
 @export var archetype: String
+@export var attribute: String
 @export var level: int
 @export var atk: int
 @export var def: int
@@ -21,21 +22,39 @@ enum {
 
 var texture: Texture2D = null
 
+func get_property(property:String) -> String:
+	return {
+		"id": id,
+		"name": name,
+		"type_name": type_name,
+		"type": type,
+		"Race": race,
+		"Archetype": archetype,
+		"Attribute": attribute,
+		"Level": level,
+		"ATK": atk,
+		"DEF": def,
+		"Description": description,
+		"IsStaple": is_staple
+	}[property]
 
 func _to_string() -> String:
 	return name
 
-func is_extra() -> bool:
-	return type == CardData.EXTRA
+func is_extra_deck_monster() -> bool:
+	return type == EXTRA
 
 func is_spell() -> bool:
-	return type == CardData.SPELL
+	return type == SPELL
 
 func is_trap() -> bool:
-	return type == CardData.TRAP
+	return type == TRAP
+
+func is_main_deck_monster() -> bool:
+	return type == MONSTER
 
 func is_monster() -> bool:
-	return type == CardData.MONSTER
+	return type in [MONSTER, EXTRA]
 	
 func print_card_details():
 	print("Card ID: %d" % id)

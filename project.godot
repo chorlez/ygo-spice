@@ -18,13 +18,14 @@ config/name="YugiBoy"
 run/main_scene="uid://bt4kc8oa72in2"
 config/features=PackedStringArray("4.6", "Forward Plus")
 boot_splash/bg_color=Color(0.09884725, 0.10664228, 0.32211593, 1)
-config/icon="res://icon.svg"
+config/icon="uid://c2m7w37dtphfi"
 
 [autoload]
 
-EventBus="*res://globals/event_bus.gd"
-Globals="*res://globals/globals.gd"
+EventBus="*res://Scripts/Globals/event_bus.gd"
+Globals="*res://Scripts/Globals/globals.gd"
 Settings="*uid://bku3x6uthh5b8"
+CardDatabase="*uid://c7gyykqfnu0wl"
 
 [display]
 

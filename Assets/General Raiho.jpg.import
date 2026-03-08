@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://hniebny1nhcs"
-path="res://.godot/imported/General Raiho.jpg-a3b1f619ab23aea3516969cf502e3bfb.ctex"
+path="res://.godot/imported/General Raiho.jpg-a41e97979b9bc938f7c639db4cb2acde.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Card/General Raiho.jpg"
-dest_files=["res://.godot/imported/General Raiho.jpg-a3b1f619ab23aea3516969cf502e3bfb.ctex"]
+source_file="res://Assets/General Raiho.jpg"
+dest_files=["res://.godot/imported/General Raiho.jpg-a41e97979b9bc938f7c639db4cb2acde.ctex"]
 
 [params]
 
