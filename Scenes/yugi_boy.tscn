@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bt4kc8oa72in2"]
 
-[ext_resource type="Script" path="res://Scripts/YugiBoy.gd" id="1_jhidu"]
+[ext_resource type="Script" uid="uid://bss7gssxhkutk" path="res://Scripts/YugiBoy.gd" id="1_jhidu"]
 [ext_resource type="Script" uid="uid://w5h2vhmipfli" path="res://Scripts/UI/ui.gd" id="2_bod78"]
 [ext_resource type="Script" uid="uid://q7eyii0wh0nv" path="res://Scripts/UI/tooltip.gd" id="3_2rg7u"]
 [ext_resource type="PackedScene" uid="uid://62xo4wcay34u" path="res://Scenes/card.tscn" id="3_ro6sk"]
@@ -99,7 +99,7 @@ text = "Roll Pack"
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="PlayerHolder" type="Control" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=1829984290]
+[node name="PlayerHolder" type="HBoxContainer" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=1827208795]
 layout_mode = 2
 
 [node name="LogLabel" type="Label" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=1824143048]
