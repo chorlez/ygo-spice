@@ -92,6 +92,7 @@ func sync_players():
 		var new_player = Player.new(peer_id, steam_id, steam_name)
 		Globals.players.append(new_player)
 		Globals.players_by_peer_id[peer_id] = new_player
+	EventBus.players_updated.emit()
 
 
 

@@ -4,6 +4,7 @@ extends Control
 @onready var ClearDeckButton = $UIPanel/VBoxContainer/TopUILayer/ClearDeck
 @onready var SaveDeckButton = $UIPanel/VBoxContainer/TopUILayer/SaveDeck
 @onready var LoadDeckButton = $UIPanel/VBoxContainer/TopUILayer/LoadDeck
+@onready var PlayerHolder = $UIPanel/VBoxContainer/TopUILayer/PlayerHolder
 @onready var LogLabel = $UIPanel/VBoxContainer/TopUILayer/LogLabel
 
 @onready var ClearCubeButton = $UIPanel/VBoxContainer/BottomUILayer/ClearCube
@@ -29,12 +30,13 @@ func _ready() -> void:
 	CubeTypeSearch.editing_toggled.connect(_on_cube_type_search_pressed) 
 	CubeTypeMenu.item_selected.connect(_on_cube_type_menu_item_selected)
 	CubeSearch.editing_toggled.connect(_on_cube_search_pressed)
+	LogLabel.mouse_entered.connect(_on_log_label_mouse_entered)
 	
 	EventBus.card_add_log.connect(log_card_added)
 	EventBus.card_remove_log.connect(log_card_removed)
 	EventBus.new_cube_build.connect(update_cube_build)
-	LogLabel.mouse_entered.connect(_on_log_label_mouse_entered)
 	EventBus.cube_changed.connect(update_cube_label)
+	EventBus.players_updated.connect(_on_player_updated)
 	
 	build_cube_menu()
 	
@@ -146,6 +148,15 @@ func _on_save_deck_pressed() -> void:
 
 func _on_load_deck_pressed() -> void:
 	EventBus.load_deck.emit()
+
+func _on_player_updated():
+	for child in PlayerHolder.get_children():
+		child.queue_free()
+	for player in Globals.playerList:
+		var label = Label.new()
+		label.text = player.steam_name
+		label.add_theme_font_size_override('font_size', 30)
+		PlayerHolder.add_child(label)
 
 func _on_cube_type_menu_item_selected(index):
 	var cube_type = CubeTypeMenu.get_item_text(index)
