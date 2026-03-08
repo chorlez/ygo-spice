@@ -99,6 +99,9 @@ text = "Roll Pack"
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="PlayerHolder" type="Control" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=1829984290]
+layout_mode = 2
+
 [node name="LogLabel" type="Label" parent="SceneContainer/UI/UIPanel/VBoxContainer/TopUILayer" unique_id=1824143048]
 layout_mode = 2
 size_flags_horizontal = 10
