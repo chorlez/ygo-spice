@@ -152,11 +152,12 @@ func _on_load_deck_pressed() -> void:
 func _on_player_updated():
 	for child in PlayerHolder.get_children():
 		child.queue_free()
-	for player in Globals.playerList:
-		var label = Label.new()
-		label.text = player.steam_name
-		label.add_theme_font_size_override('font_size', 30)
-		PlayerHolder.add_child(label)
+	for player in Globals.players:
+		var button = Button.new()
+		button.text = player.steam_name
+		button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		button.add_theme_font_size_override('font_size', 30)
+		PlayerHolder.add_child(button)
 
 func _on_cube_type_menu_item_selected(index):
 	var cube_type = CubeTypeMenu.get_item_text(index)

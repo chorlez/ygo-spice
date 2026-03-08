@@ -13,7 +13,7 @@ signal clear_deck()
 signal save_deck()
 signal load_deck()
 signal cube_changed()
-signal players_updated(
+signal players_updated()
 
 ### SERVER SIDE RPC'S
 @rpc("any_peer", 'call_local')
@@ -84,4 +84,3 @@ func clear_cube_requested():
 	clear_cube.emit()
 
 signal clear_cube()
-)
