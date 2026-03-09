@@ -13,13 +13,24 @@ func _ready():
 	multiplayer.connect("peer_connected", _on_player_connected)
 	multiplayer.connect("peer_disconnected", _on_peer_disconnected)
 	
+	Steam.connect("p2p_session_request", _on_p2p_session_request)
+	Steam.connect("p2p_session_connect_fail", _on_p2p_connect_fail)
+	Steam.lobby_match_list.connect(_on_lobbies_found)
+	Steam.lobby_created.connect(_on_lobby_created)
+	Steam.lobby_joined.connect(_on_lobby_joined)
+	Steam.allowP2PPacketRelay(true)
 	find_or_create_lobby()
 
+func _on_p2p_session_request(steam_id):
+	print("P2P session request from: ", steam_id)
+	Steam.acceptP2PSessionWithUser(steam_id)
+
+func _on_p2p_connect_fail(steam_id, error):
+	print("P2P connect fail: ", steam_id, " error: ", error)
 
 func find_or_create_lobby():
 	Steam.addRequestLobbyListDistanceFilter(Steam.LOBBY_DISTANCE_FILTER_WORLDWIDE)
 	Steam.addRequestLobbyListStringFilter("game_tag", game_name, Steam.LOBBY_COMPARISON_EQUAL)
-	Steam.lobby_match_list.connect(_on_lobbies_found)
 	Steam.requestLobbyList()
 
 func _on_lobbies_found(lobbies):
@@ -31,11 +42,9 @@ func _on_lobbies_found(lobbies):
 		join_lobby(lobbies[0])
 
 func host_lobby():
-	Steam.lobby_created.connect(_on_lobby_created)
 	Steam.createLobby(Steam.LOBBY_TYPE_PUBLIC, 4)
 
 func join_lobby(id):
-	Steam.lobby_joined.connect(_on_lobby_joined)
 	Steam.joinLobby(id)
 
 func _on_lobby_created(result, id):
@@ -52,7 +61,6 @@ func _on_lobby_created(result, id):
 		multiplayer.multiplayer_peer = peer
 		
 		print("Lobby created successfully with ID %d" % lobby_id)
-	sync_players()
 
 func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 	if response != Steam.RESULT_OK:
@@ -67,9 +75,9 @@ func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 	peer = SteamMultiplayerPeer.new()
 	peer.create_client(lobby_owner)
 	multiplayer.multiplayer_peer = peer
-	sync_players.rpc()
 
 func _on_player_connected(id):
+	print("Player connected with peer ID: %d" % id)
 	if not multiplayer.is_server():
 		return
 	sync_players.rpc()
@@ -93,6 +101,7 @@ func sync_players():
 		var new_player = Player.new(peer_id, steam_id, steam_name)
 		Globals.players.append(new_player)
 		Globals.players_by_peer_id[peer_id] = new_player
+	print("Current players: %s" % str(Globals.players))
 	EventBus.players_updated.emit()
 
 
