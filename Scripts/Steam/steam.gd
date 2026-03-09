@@ -63,6 +63,8 @@ func _on_lobby_created(result, id):
 		print("Lobby created successfully with ID %d" % lobby_id)
 
 func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
+	if multiplayer.is_server():
+		return
 	if response != Steam.RESULT_OK:
 		print("Failed to join lobby!")
 		return
