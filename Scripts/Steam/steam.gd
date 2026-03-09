@@ -63,14 +63,14 @@ func _on_lobby_created(result, id):
 		print("Lobby created successfully with ID %d" % lobby_id)
 
 func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
-	if multiplayer.is_server():
-		return
 	if response != Steam.RESULT_OK:
 		print("Failed to join lobby!")
 		return
 	lobby_id = slct_lobby_id
 
 	var lobby_owner = Steam.getLobbyOwner(slct_lobby_id)
+	if lobby_owner == Steam.getSteamID():
+		return
 	print("Joined lobby %d successfully" % lobby_id)
 
 	# Create multiplayer peer as CLIENT
