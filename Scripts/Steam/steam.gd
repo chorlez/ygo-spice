@@ -5,6 +5,9 @@ var lobby_id := 0
 var peer
 
 func _ready():
+	EventBus.database_built.connect(initiate_steam)
+
+func initiate_steam():
 	print("Initializing Steam...")
 	OS.set_environment("SteamAppID", str(480))
 	OS.set_environment("SteamGameID", str(480))
@@ -63,6 +66,7 @@ func _on_lobby_created(result, id):
 		print("Lobby created successfully with ID %d" % lobby_id)
 
 func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
+	print('Lobby join response: %d' % response)
 	if response != Steam.RESULT_OK:
 		print("Failed to join lobby!")
 		return
@@ -103,7 +107,9 @@ func sync_players():
 		var new_player = Player.new(peer_id, steam_id, steam_name)
 		Globals.players.append(new_player)
 		Globals.players_by_peer_id[peer_id] = new_player
-	print("Current players: %s" % str(Globals.players))
+	print("Current players:")
+	for player in Globals.players:
+		print("- %s (Peer ID: %d, Steam ID: %d)" % [player.steam_name, player.peer_id, player.steam_id])
 	EventBus.players_updated.emit()
 
 

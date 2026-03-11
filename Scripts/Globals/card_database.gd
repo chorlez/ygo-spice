@@ -24,6 +24,7 @@ var staples: Array[CardData] = []
 
 func _ready():
 	fetch_card_database()
+	
 
 func fetch_card_database():
 	print('Starting to fetch card database...')
