@@ -9,10 +9,10 @@ const MAINDECK: int = CardState.MAINDECK
 const EXTRADECK: int = CardState.EXTRADECK
 
 const CARD_WIDTH_DICT: Dictionary = {
-	PACK: 220,
-	TOOLTIP: 400,
-	MAINDECK: 265,
-	EXTRADECK: 220
+	PACK: 180,
+	TOOLTIP: 980,
+	MAINDECK: 230,
+	EXTRADECK: 160
 }
 
 @export var state : CardState

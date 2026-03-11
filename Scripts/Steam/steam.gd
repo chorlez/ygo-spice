@@ -64,6 +64,7 @@ func _on_lobby_created(result, id):
 		multiplayer.multiplayer_peer = peer
 		
 		print("Lobby created successfully with ID %d" % lobby_id)
+		sync_players()
 
 func _on_lobby_joined(slct_lobby_id, _permissions, _locked, response):
 	print('Lobby join response: %d' % response)

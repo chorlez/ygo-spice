@@ -2,23 +2,14 @@
 
 [ext_resource type="Script" uid="uid://bss7gssxhkutk" path="res://Scripts/YugiBoy.gd" id="1_jhidu"]
 [ext_resource type="Script" uid="uid://w5h2vhmipfli" path="res://Scripts/UI/ui.gd" id="2_bod78"]
+[ext_resource type="Texture2D" uid="uid://cs3tdf8n6ovx2" path="res://Assets/Heavenly background 2.png" id="2_yaru2"]
 [ext_resource type="Script" uid="uid://q7eyii0wh0nv" path="res://Scripts/UI/tooltip.gd" id="3_2rg7u"]
 [ext_resource type="PackedScene" uid="uid://62xo4wcay34u" path="res://Scenes/card.tscn" id="3_ro6sk"]
 [ext_resource type="Script" uid="uid://dhfjrvqc3pkhn" path="res://Scripts/Classes/pack.gd" id="4_bod78"]
+[ext_resource type="StyleBox" uid="uid://cyow2glxmevjr" path="res://Assets/panelStyleBox.tres" id="4_g6w1l"]
 [ext_resource type="Script" uid="uid://e1py4etghvgy" path="res://Scripts/Steam/steam.gd" id="4_jhidu"]
 [ext_resource type="Script" uid="uid://dkote4ws5qcth" path="res://Scripts/Classes/deck.gd" id="6_dpgp8"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1t8k8"]
-content_margin_left = 16.0
-content_margin_top = 16.0
-content_margin_right = 16.0
-content_margin_bottom = 16.0
-bg_color = Color(0.018140132, 0.20371577, 0.24650532, 1)
-border_width_left = 7
-border_width_top = 7
-border_width_right = 7
-border_width_bottom = 7
-shadow_size = 10
+[ext_resource type="StyleBox" uid="uid://c0tsvxwpe4ar7" path="res://Assets/spacerpanelStyleBox.tres" id="7_yaru2"]
 
 [sub_resource type="Theme" id="Theme_bod78"]
 default_font_size = 40
@@ -40,6 +31,13 @@ anchors_preset = 0
 offset_right = 2073.0
 offset_bottom = 1166.0
 script = ExtResource("1_jhidu")
+
+[node name="Background" type="TextureRect" parent="." unique_id=479615701]
+layout_mode = 0
+offset_right = 3839.0
+offset_bottom = 2160.0
+texture = ExtResource("2_yaru2")
+stretch_mode = 4
 
 [node name="SceneContainer" type="VBoxContainer" parent="." unique_id=2082617483]
 layout_mode = 1
@@ -65,7 +63,7 @@ offset_bottom = 4.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
+theme_override_styles/panel = ExtResource("4_g6w1l")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="SceneContainer/UI/UIPanel" unique_id=762205034]
 layout_mode = 2
@@ -164,17 +162,22 @@ theme_override_icons/checked = SubResource("DPITexture_jhidu")
 theme_override_icons/unchecked = SubResource("DPITexture_bod78")
 text = "SORT"
 
-[node name="DisplayContainer" type="HBoxContainer" parent="SceneContainer" unique_id=2035261653]
-custom_minimum_size = Vector2(0, 2006)
+[node name="PanelContainer" type="PanelContainer" parent="SceneContainer" unique_id=2013473363]
+layout_mode = 2
+theme_override_styles/panel = ExtResource("4_g6w1l")
+
+[node name="DisplayContainer" type="HBoxContainer" parent="SceneContainer/PanelContainer" unique_id=2035261653]
+custom_minimum_size = Vector2(0, 1900)
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ToolTip" type="Control" parent="SceneContainer/DisplayContainer" unique_id=385914237]
+[node name="ToolTip" type="Control" parent="SceneContainer/PanelContainer/DisplayContainer" unique_id=385914237]
 layout_mode = 2
 size_flags_horizontal = 3
 script = ExtResource("3_2rg7u")
 
-[node name="ToolTipPanel" type="PanelContainer" parent="SceneContainer/DisplayContainer/ToolTip" unique_id=1575256952]
+[node name="ToolTipPanel" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer/ToolTip" unique_id=1575256952]
+custom_minimum_size = Vector2(1000, 0)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -182,35 +185,35 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
+theme_override_styles/panel = ExtResource("4_g6w1l")
 
-[node name="TooltipArea" type="VBoxContainer" parent="SceneContainer/DisplayContainer/ToolTip/ToolTipPanel" unique_id=1792674749]
+[node name="TooltipArea" type="VBoxContainer" parent="SceneContainer/PanelContainer/DisplayContainer/ToolTip/ToolTipPanel" unique_id=1792674749]
 layout_mode = 2
 
-[node name="StatsBox" type="HBoxContainer" parent="SceneContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea" unique_id=154900566]
+[node name="StatsBox" type="HBoxContainer" parent="SceneContainer/PanelContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea" unique_id=154900566]
 layout_mode = 2
 
-[node name="DeckCountLabel" type="Label" parent="SceneContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea/StatsBox" unique_id=773330472]
+[node name="DeckCountLabel" type="Label" parent="SceneContainer/PanelContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea/StatsBox" unique_id=773330472]
 layout_mode = 2
 size_flags_horizontal = 2
 theme_override_font_sizes/font_size = 30
 
-[node name="LevelLabel" type="Label" parent="SceneContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea/StatsBox" unique_id=962498464]
+[node name="LevelLabel" type="Label" parent="SceneContainer/PanelContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea/StatsBox" unique_id=962498464]
 layout_mode = 2
 size_flags_horizontal = 8
 theme_override_font_sizes/font_size = 40
 
-[node name="TooltipCard" parent="SceneContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea" unique_id=602510552 instance=ExtResource("3_ro6sk")]
+[node name="TooltipCard" parent="SceneContainer/PanelContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea" unique_id=602510552 instance=ExtResource("3_ro6sk")]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 0
 state = 1
 
-[node name="ScrollContainer" type="ScrollContainer" parent="SceneContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea" unique_id=617717268]
+[node name="ScrollContainer" type="ScrollContainer" parent="SceneContainer/PanelContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea" unique_id=617717268]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="CardDescriptionLabel" type="Label" parent="SceneContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea/ScrollContainer" unique_id=264909246]
+[node name="CardDescriptionLabel" type="Label" parent="SceneContainer/PanelContainer/DisplayContainer/ToolTip/ToolTipPanel/TooltipArea/ScrollContainer" unique_id=264909246]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -219,39 +222,57 @@ mouse_filter = 0
 theme_override_font_sizes/font_size = 35
 autowrap_mode = 2
 
-[node name="PackAndDeckContainer" type="VBoxContainer" parent="SceneContainer/DisplayContainer" unique_id=1117652559]
-custom_minimum_size = Vector2(2883, 0)
+[node name="HorizontalSpacer1" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer" unique_id=962097895]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("7_yaru2")
+
+[node name="PackAndDeckContainer" type="VBoxContainer" parent="SceneContainer/PanelContainer/DisplayContainer" unique_id=1117652559]
+custom_minimum_size = Vector2(2683, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Pack" type="Control" parent="SceneContainer/DisplayContainer/PackAndDeckContainer" unique_id=2132236256]
-custom_minimum_size = Vector2(0, 350)
+[node name="VerticalSpacer1" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer" unique_id=1349924016]
+custom_minimum_size = Vector2(100, 25)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("7_yaru2")
+
+[node name="Pack" type="Control" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer" unique_id=2132236256]
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("4_bod78")
 
-[node name="PackPanel" type="PanelContainer" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack" unique_id=74778181]
-layout_mode = 0
-offset_right = 2883.0
-offset_bottom = 350.0
+[node name="PackPanel" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Pack" unique_id=74778181]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
+theme_override_styles/panel = ExtResource("4_g6w1l")
 
-[node name="PackContainer" type="GridContainer" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel" unique_id=1040459094]
+[node name="PackContainer" type="GridContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Pack/PackPanel" unique_id=1040459094]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
-theme_override_constants/h_separation = 18
+theme_override_constants/h_separation = 42
 columns = 12
 
-[node name="Deck" type="Control" parent="SceneContainer/DisplayContainer/PackAndDeckContainer" unique_id=1359752792]
-custom_minimum_size = Vector2(0, 1665)
+[node name="VerticalSpacer2" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer" unique_id=1855752403]
+custom_minimum_size = Vector2(100, 25)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("7_yaru2")
+
+[node name="Deck" type="Control" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer" unique_id=1359752792]
+custom_minimum_size = Vector2(0, 1600)
 layout_mode = 2
 size_flags_vertical = 3
 script = ExtResource("6_dpgp8")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Deck" unique_id=1739029545]
+[node name="VBoxContainer" type="VBoxContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck" unique_id=1739029545]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -259,48 +280,60 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MainDeckPanel" type="PanelContainer" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer" unique_id=1223381878]
-custom_minimum_size = Vector2(0, 1310)
+[node name="MainDeckPanel" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer" unique_id=1223381878]
+custom_minimum_size = Vector2(0, 1200)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
+theme_override_styles/panel = ExtResource("4_g6w1l")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer/MainDeckPanel" unique_id=768154061]
+[node name="ScrollContainer" type="ScrollContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer/MainDeckPanel" unique_id=768154061]
 layout_mode = 2
 horizontal_scroll_mode = 0
 
-[node name="MainDeckContainer" type="GridContainer" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer/MainDeckPanel/ScrollContainer" unique_id=533736835]
+[node name="MainDeckContainer" type="GridContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer/MainDeckPanel/ScrollContainer" unique_id=533736835]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/h_separation = 18
-theme_override_constants/v_separation = 16
+theme_override_constants/h_separation = 30
 columns = 10
 
-[node name="ExtraDeckPanel" type="PanelContainer" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer" unique_id=521382724]
-custom_minimum_size = Vector2(0, 355)
+[node name="VerticalSpacer3" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer" unique_id=330868853]
+custom_minimum_size = Vector2(100, 25)
 layout_mode = 2
-size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_1t8k8")
+theme_override_styles/panel = ExtResource("7_yaru2")
 
-[node name="ScrollContainer" type="ScrollContainer" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer/ExtraDeckPanel" unique_id=338328833]
+[node name="ExtraDeckPanel" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer" unique_id=521382724]
+custom_minimum_size = Vector2(0, 250)
 layout_mode = 2
+size_flags_vertical = 0
+theme_override_styles/panel = ExtResource("4_g6w1l")
 
-[node name="ExtraDeckContainer" type="GridContainer" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer/ExtraDeckPanel/ScrollContainer" unique_id=1389378595]
+[node name="ScrollContainer" type="ScrollContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer/ExtraDeckPanel" unique_id=338328833]
+custom_minimum_size = Vector2(0, 230)
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="ExtraDeckContainer" type="GridContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer/ExtraDeckPanel/ScrollContainer" unique_id=1389378595]
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 3
-columns = 12
+theme_override_constants/h_separation = 18
+columns = 15
 
-[node name="DeckFileDialog" type="FileDialog" parent="SceneContainer/DisplayContainer/PackAndDeckContainer/Deck" unique_id=95948914]
+[node name="DeckFileDialog" type="FileDialog" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck" unique_id=95948914]
 size = Vector2i(1920, 1080)
 content_scale_mode = 2
 content_scale_aspect = 4
 content_scale_factor = 2.0
 access = 2
 
+[node name="HorizontalSpacer2" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer" unique_id=529710122]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+theme_override_styles/panel = ExtResource("7_yaru2")
+
 [node name="Steam" type="Node" parent="." unique_id=458727410]
 script = ExtResource("4_jhidu")
 
-[connection signal="dir_selected" from="SceneContainer/DisplayContainer/PackAndDeckContainer/Deck/DeckFileDialog" to="." method="_on_save_deck_dialog_dir_selected"]
+[connection signal="dir_selected" from="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/DeckFileDialog" to="." method="_on_save_deck_dialog_dir_selected"]
