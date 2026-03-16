@@ -223,12 +223,12 @@ theme_override_font_sizes/font_size = 35
 autowrap_mode = 2
 
 [node name="HorizontalSpacer1" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer" unique_id=962097895]
-custom_minimum_size = Vector2(50, 0)
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_styles/panel = ExtResource("7_yaru2")
 
 [node name="PackAndDeckContainer" type="VBoxContainer" parent="SceneContainer/PanelContainer/DisplayContainer" unique_id=1117652559]
-custom_minimum_size = Vector2(2683, 0)
+custom_minimum_size = Vector2(2583, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -329,7 +329,7 @@ content_scale_factor = 2.0
 access = 2
 
 [node name="HorizontalSpacer2" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer" unique_id=529710122]
-custom_minimum_size = Vector2(50, 0)
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 theme_override_styles/panel = ExtResource("7_yaru2")
 
