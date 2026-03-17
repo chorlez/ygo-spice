@@ -17,3 +17,5 @@ mono_crash.*.json
 \[YugiBoy\]Backup.ydk
 \[YugiBoy\]Backup.ydk
 *.exe
+YugiBoy.console.exe
+YugiBoy.exe

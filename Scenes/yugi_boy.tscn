@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bss7gssxhkutk" path="res://Scripts/YugiBoy.gd" id="1_jhidu"]
 [ext_resource type="Script" uid="uid://w5h2vhmipfli" path="res://Scripts/UI/ui.gd" id="2_bod78"]
-[ext_resource type="Texture2D" uid="uid://cs3tdf8n6ovx2" path="res://Assets/Heavenly background 2.png" id="2_yaru2"]
+[ext_resource type="Texture2D" uid="uid://c4f74y1n6bm7l" path="res://Assets/Hex Background.png" id="2_yaru2"]
 [ext_resource type="Script" uid="uid://q7eyii0wh0nv" path="res://Scripts/UI/tooltip.gd" id="3_2rg7u"]
 [ext_resource type="PackedScene" uid="uid://62xo4wcay34u" path="res://Scenes/card.tscn" id="3_ro6sk"]
 [ext_resource type="Script" uid="uid://dhfjrvqc3pkhn" path="res://Scripts/Classes/pack.gd" id="4_bod78"]
@@ -37,7 +37,6 @@ layout_mode = 0
 offset_right = 3839.0
 offset_bottom = 2160.0
 texture = ExtResource("2_yaru2")
-stretch_mode = 4
 
 [node name="SceneContainer" type="VBoxContainer" parent="." unique_id=2082617483]
 layout_mode = 1
@@ -223,18 +222,19 @@ theme_override_font_sizes/font_size = 35
 autowrap_mode = 2
 
 [node name="HorizontalSpacer1" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer" unique_id=962097895]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 theme_override_styles/panel = ExtResource("7_yaru2")
 
 [node name="PackAndDeckContainer" type="VBoxContainer" parent="SceneContainer/PanelContainer/DisplayContainer" unique_id=1117652559]
-custom_minimum_size = Vector2(2583, 0)
+custom_minimum_size = Vector2(2533, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="VerticalSpacer1" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer" unique_id=1349924016]
-custom_minimum_size = Vector2(100, 25)
+custom_minimum_size = Vector2(100, 15)
 layout_mode = 2
+size_flags_vertical = 0
 theme_override_styles/panel = ExtResource("7_yaru2")
 
 [node name="Pack" type="Control" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer" unique_id=2132236256]
@@ -258,11 +258,11 @@ theme_override_styles/panel = ExtResource("4_g6w1l")
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
-theme_override_constants/h_separation = 42
+theme_override_constants/h_separation = 35
 columns = 12
 
 [node name="VerticalSpacer2" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer" unique_id=1855752403]
-custom_minimum_size = Vector2(100, 25)
+custom_minimum_size = Vector2(100, 16)
 layout_mode = 2
 theme_override_styles/panel = ExtResource("7_yaru2")
 
@@ -281,7 +281,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="MainDeckPanel" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer" unique_id=1223381878]
-custom_minimum_size = Vector2(0, 1200)
+custom_minimum_size = Vector2(0, 1250)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -295,31 +295,32 @@ horizontal_scroll_mode = 0
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/h_separation = 30
+theme_override_constants/h_separation = 32
+theme_override_constants/v_separation = 10
 columns = 10
 
 [node name="VerticalSpacer3" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer" unique_id=330868853]
-custom_minimum_size = Vector2(100, 25)
+custom_minimum_size = Vector2(100, 15)
 layout_mode = 2
 theme_override_styles/panel = ExtResource("7_yaru2")
 
 [node name="ExtraDeckPanel" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer" unique_id=521382724]
-custom_minimum_size = Vector2(0, 250)
+custom_minimum_size = Vector2(0, 300)
 layout_mode = 2
-size_flags_vertical = 0
 theme_override_styles/panel = ExtResource("4_g6w1l")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer/ExtraDeckPanel" unique_id=338328833]
-custom_minimum_size = Vector2(0, 230)
+clip_contents = false
+custom_minimum_size = Vector2(0, 268)
 layout_mode = 2
 size_flags_vertical = 0
 
-[node name="ExtraDeckContainer" type="GridContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer/ExtraDeckPanel/ScrollContainer" unique_id=1389378595]
-custom_minimum_size = Vector2(0, 300)
+[node name="ExtraDeckContainer" type="GridContainer" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck/VBoxContainer/ExtraDeckPanel/ScrollContainer" unique_id=644366725]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/h_separation = 18
-columns = 15
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/h_separation = 35
+columns = 12
 
 [node name="DeckFileDialog" type="FileDialog" parent="SceneContainer/PanelContainer/DisplayContainer/PackAndDeckContainer/Deck" unique_id=95948914]
 size = Vector2i(1920, 1080)
@@ -329,7 +330,7 @@ content_scale_factor = 2.0
 access = 2
 
 [node name="HorizontalSpacer2" type="PanelContainer" parent="SceneContainer/PanelContainer/DisplayContainer" unique_id=529710122]
-custom_minimum_size = Vector2(100, 0)
+custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 theme_override_styles/panel = ExtResource("7_yaru2")
 
