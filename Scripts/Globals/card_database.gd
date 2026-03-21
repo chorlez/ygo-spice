@@ -196,14 +196,17 @@ func get_dropdown_options(selected: int, selected2:int) -> Array:
 	match key:
 		"Race", "Race Support":
 			options = cards_by_race.keys()
-		"Attribute", "Attribute Support":
-			options = cards_by_attribute.keys()
-		"Archetype":
-			options = cards_by_archetype.keys()
 		'Race Archetypes':
 			options = archetypes_by_race[cards_by_race.keys()[selected2]]
+		"Attribute", "Attribute Support":
+			options = cards_by_attribute.keys().filter(func(k): return k != "")
 		"Attribute Archetypes":
-			options = archetypes_by_attribute[cards_by_attribute.keys()[selected2]]
+			var attribute_keys = cards_by_attribute.keys().filter(func(k): return k != "")
+			options = archetypes_by_attribute[attribute_keys[selected2]]
+		"Archetype":
+			options = cards_by_archetype.keys()
+
+		
 	return options
 
 func prep_archetype_mappings():
