@@ -201,7 +201,7 @@ func get_dropdown_options(selected: int, selected2:int) -> Array:
 		"Attribute", "Attribute Support":
 			options = cards_by_attribute.keys().filter(func(k): return k != "")
 		"Attribute Archetypes":
-			var attribute_keys = cards_by_attribute.keys().filter(func(k): return k != "")
+			var attribute_keys := cards_by_attribute.keys().filter(func(k): return k != "")
 			options = archetypes_by_attribute[attribute_keys[selected2]]
 		"Archetype":
 			options = cards_by_archetype.keys()
